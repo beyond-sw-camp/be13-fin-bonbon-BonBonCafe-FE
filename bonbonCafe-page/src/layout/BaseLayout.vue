@@ -4,11 +4,7 @@
     <div class="content-wrapper">
       <Sidebar />
       <main class="main-content">
-        <RouterView />
-        <div>
-          <h1>Main Content</h1>
-          <p>This is the main page of the application.</p>
-        </div>
+        <RouterView/>
       </main>
     </div>
     <Footer />
