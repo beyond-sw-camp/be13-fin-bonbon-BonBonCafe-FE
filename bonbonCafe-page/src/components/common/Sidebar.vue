@@ -31,6 +31,7 @@
                 :key="i"
                 :prepend-icon="item.icon"
                 :title="item.title"
+                @click="navigate(item)"
             ></v-list-item>
         </v-list-group>
       </v-list>
@@ -49,6 +50,7 @@
                 :key="i"
                 :prepend-icon="item.icon"
                 :title="item.title"
+                @click="navigate(item)"
             ></v-list-item>
         </v-list-group>
       </v-list>
@@ -67,6 +69,7 @@
                 :key="i"
                 :prepend-icon="item.icon"
                 :title="item.title"
+                @click="navigate(item)"
             ></v-list-item>
         </v-list-group>
       </v-list>
@@ -85,6 +88,7 @@
                 :key="i"
                 :prepend-icon="item.icon"
                 :title="item.title"
+                @click="navigate(item)"
             ></v-list-item>
         </v-list-group>
       </v-list>
@@ -103,6 +107,7 @@
                 :key="i"
                 :prepend-icon="item.icon"
                 :title="item.title"
+                @click="navigate(item)"
             ></v-list-item>
         </v-list-group>
       </v-list>
@@ -114,7 +119,9 @@
   
   <script setup>
   import { ref } from 'vue';
+  import { useRouter } from 'vue-router';
 
+  const router = useRouter();
   const opened = ref([]); 
   const drawer = ref(true);
 
@@ -144,7 +151,30 @@
   ];
   
   const navigate = (item) => {
-    console.log(`Navigating to ${item.title}`);
+    if (item.title === '가맹점주 관리') {
+      router.push('/franchisee-accounts');
+    }
+    if (item.title === '담당자 관리') {
+      router.push('/manager-accounts');
+    }
+    if (item.title === '메뉴 조회') {
+      router.push('/menu-list');
+    }
+    if (item.title === '메뉴 등록') {
+      router.push('/menu-register');
+    }
+    if (item.title === '가맹점 조회') {
+      router.push('/franchise-list');
+    }
+    if (item.title === '가맹점 등록') {
+      router.push('/franchise-register');
+    }
+    if (item.title === '매출 분석') {
+      router.push('/sales-analysis');
+    }
+    if (item.title === '매출 예측') {
+      router.push('/sales-forecast');
+    }
   };
   </script>
   
