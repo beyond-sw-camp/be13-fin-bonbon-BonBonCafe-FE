@@ -1,25 +1,24 @@
 <template>
 
-    <v-layout>
-        <v-app-bar
-        flat
-        class="transparent-app-bar"
-        >
-        
-        <v-btn icon="mdi-ribbon" variant="text" color="white"></v-btn>
-        <v-toolbar-title>BonBon-Cafe</v-toolbar-title>
+<v-layout>
+    <v-app-bar flat class="transparent-app-bar">
 
-        <template v-if="$vuetify.display.mdAndUp">
-          <v-btn icon="mdi-magnify" variant="text"></v-btn>
+      <v-btn icon="mdi-table-chair" variant="text" color="white" />
 
-          <v-btn icon="mdi-filter" variant="text"></v-btn>
-        </template>
+      <v-toolbar-title>BonBon-Cafe</v-toolbar-title>
 
-        <v-btn icon="mdi-dots-vertical" variant="text"></v-btn>
-      </v-app-bar>
+      <template v-if="$vuetify.display.mdAndUp">
+        <v-spacer />
 
+        <v-btn icon="mdi-magnify" variant="text" />
+        <v-btn icon="mdi-filter" variant="text" />
 
-    </v-layout>
+        <v-btn color="black" variant="text" @click="logout">Logout</v-btn>
+      </template>
+
+      <v-btn icon="mdi-dots-vertical" variant="text" />
+    </v-app-bar>
+  </v-layout>
 
 </template>
 

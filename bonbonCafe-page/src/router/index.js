@@ -10,6 +10,18 @@ const Login = () => import('@/views/auth/Login.vue');
 const NotFound = () => import('@/views/common/NotFound.vue');
 const MainView = () => import('@/views/MainView.vue')
 
+const FranchiseeAccount = () => import('@/views/accounts/FranchiseeAccount.vue')
+const ManagerAccounts = () => import('@/views/accounts/ManagerAccount.vue')
+
+const MenuList = () => import('@/views/menu/MenuList.vue')
+const MenuRegister = () => import('@/views/menu/MenuRegister.vue')
+
+const FranchiseList = () => import('@/views/franchise/FranchiseList.vue')
+const FranchiseRegister = () => import('@/views/franchise/FranchiseRegister.vue')
+
+const SalesAnalysis = () => import('@/views/sales/SalesAnalysis.vue')
+const SalesForecast = () => import('@/views/sales/SalesForecast.vue')
+
 // createRouter : Vue Router 설정 함수 
 const router = createRouter({
   // 라우터가 사용할 라우팅 모드 지정 (HTML 5 모드)
@@ -38,7 +50,48 @@ const router = createRouter({
           path:'',
           name: 'main',
           component: MainView,
+        },
+        {
+          path:'franchisee-accounts',
+          name: 'franchisee-accounts',
+          component: FranchiseeAccount,
+        },
+        {
+          path:'manager-accounts',
+          name: 'manager-accounts',
+          component: ManagerAccounts,
+        },
+        {
+          path:'menu-list',
+          name: 'menu-list',
+          component: MenuList,
+        },
+        {
+          path:'menu-register',
+          name: 'menu-register',
+          component: MenuRegister,
+        },
+        {
+          path:'franchise-register',
+          name: 'franchise-register',
+          component: FranchiseRegister,
+        },
+        {
+          path:'franchise-list',
+          name: 'franchise-list',
+          component: FranchiseList,
+        },
+        {
+          path:'sales-analysis',
+          name: 'sales-analysis',
+          component: SalesAnalysis,
+        },
+        {
+          path:'sales-forecast',
+          name: 'sales-forecast',
+          component: SalesForecast,
         }
+
       ]
     },
     {
