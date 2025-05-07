@@ -1,14 +1,17 @@
 <template>
-  <div class="app-container">
-    <Header />
-    <div class="content-wrapper">
-      <Sidebar />
-      <main class="main-content">
+  <v-layout class="rounded rounded-md border">
+    <Sidebar />
+
+    <v-main class="d-flex align-center justify-center main-bg" height="100%">
+      <Header />
+
+      <v-container>
         <RouterView/>
-      </main>
-    </div>
+      </v-container>
+    </v-main>
+
     <Footer />
-  </div>
+  </v-layout>
 </template>
 
 <script setup>
@@ -19,36 +22,9 @@ import Sidebar from '@/components/common/Sidebar.vue';
 </script>
 
 <style scoped>
-.app-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
-
-.content-wrapper {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
-
-main.main-content {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-}
-
-Sidebar {
-  width: 250px; /* 원하는 너비로 조정 */
-  flex-shrink: 0;
-}
-
-Header {
-  height: 60px; /* 원하는 높이로 조정 */
-  flex-shrink: 0;
-}
-
-Footer {
-  height: 40px; /* 원하는 높이로 조정 */
-  flex-shrink: 0;
+.main-bg {
+  background-color: #fffff4;
+  min-height: 100vh;
+  padding-top: 70px;
 }
 </style>
