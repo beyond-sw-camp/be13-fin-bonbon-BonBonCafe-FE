@@ -1,11 +1,10 @@
 <template>
 
-<v-layout>
-    <v-app-bar flat class="transparent-app-bar">
+    <v-app-bar flat class="transparent-app-bar" > 
 
-      <v-btn icon="mdi-table-chair" variant="text" color="white" />
+      <!-- <v-btn icon="mdi-table-chair" variant="text" color="black" /> -->
 
-      <v-toolbar-title>BonBon-Cafe</v-toolbar-title>
+      <!-- <v-toolbar-title color="black"black>BonBon-Cafe</v-toolbar-title> -->
 
       <template v-if="$vuetify.display.mdAndUp">
         <v-spacer />
@@ -15,10 +14,19 @@
 
         <v-btn color="black" variant="text" @click="logout">Logout</v-btn>
       </template>
-
+      
+      <v-btn
+        icon
+        class="ma-2"
+        size="48"
+        variant="text"
+      >
+        <v-avatar size="36">
+          <v-img src="https://cdn.vuetifyjs.com/images/john.jpg" alt="User" />
+        </v-avatar>
+      </v-btn>
       <v-btn icon="mdi-dots-vertical" variant="text" />
     </v-app-bar>
-  </v-layout>
 
 </template>
 
@@ -37,7 +45,4 @@
 }
 
 
-.v-toolbar-title {
-  color: white !important; /* 강제로 색 지정 */
-}
 </style>
