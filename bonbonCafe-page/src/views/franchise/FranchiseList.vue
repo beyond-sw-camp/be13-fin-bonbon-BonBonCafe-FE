@@ -1,53 +1,91 @@
 <template>
     <div>
-        <Table :header="header"/>
+        <div id="searchBar">
+            <div id="seachSel">
+                <v-select
+                density="compact"
+                placeholder="지역"
+                width="100"
+                variant="solo"
+                />
+                <v-select
+                density="compact"
+                placeholder="구"
+                width="100"
+                variant="solo"
+                />
+            </div>
+            <div>
+                <v-text-field
+                    density="compact"
+                    placeholder="Search here"
+                    prepend-inner-icon="mdi-magnify"
+                    variant="solo"
+                    width="200"
+                    flat
+                    single-line
+                />
+            </div>
+        </div>
+        <div>
+            <Table :header="header" :item="item"/>
+        </div>
     </div>
 </template>
 
 <script setup>
 
-    // import apiClient from '@/api';
-    // import { ref } from 'vue'
+    import apiClient from '@/api';
+    import { ref, onMounted } from 'vue'
     import Table from '@/components/franchise/Table.vue'
     
-    // const item = ref([])
-    // const pageInfo = reactive({
-    //     // 값을 정수로 변환하고 실패하면 1을 기본값으로 사용
-    //     currentPage: parseInt(currentRoute.query.page) || 1,
-    //     totalCount: 0, // 전체 데이터 수
-    //     pageLimit: 5, // 페이지네이션에 보이는 페이지의 수
-    //     listLimit: 0 // 한 페이지의 표시될 리스트의 수 
-    // });
+    const item = ref([])
+    const page = ref(1)
+    const totalCount = ref(1)    
+
 
     const header = [
-        { title: 'No.', align: 'start', key: 'id' },
-        { title: '가맹점 이름', align: 'start', key: 'name' },
-        { title: '가맹점 주소', align: 'start', key: 'address' },
-        { title: '담당자', align: 'start', key: 'managerName' },
-        { title: '등록일', align: 'start', key: 'createdDate' }
+        { title: 'No.', align: 'start', key: 'franchiseId', class: 'header'},
+        { title: '가맹점 이름', align: 'start', key: 'name', class: 'header' },
+        { title: '가맹점 주소', align: 'start', key: 'roadAddress', class: 'header' },
+        { title: '담당자', align: 'start', key: 'regionCode', class: 'header' },
+        { title: '등록일', align: 'start', key: 'openDate', class: 'header' }
     ]
 
-    // const fetchFrancise = async(page)=>{
-    //     try {
-    //         const response = await apiClient.get(`/franchise?page=${page-1}&size=10`);
-    //         item.value = response.data.content;
-    //         pageInfo.totalCount = response.data.totalElements
-    //     } catch (error) {
-    //         console.error("Error fetching boards:", error);
-    //     }
-    // }
+    const fetchFrancise = async(page)=>{
+        try {
+            const response = await apiClient.get(`/franchise?page=${page.value-1}&size=10`);
+            item.value = response.data.franchises;
+            totalCount.value = response.data.totalElements
+            console.log(response.data.franchises);
+            
+            console.log(item.value);
+            
+        } catch (error) {
+            console.error("Error fetching boards:", error);
+        }
+    }
 
     
-    // // 컴포넌트가 mount 될 때 실행
-    // onMounted(() => {
-    //     fetchFrancise(pageInfo.currentPage)
-    // })
+    // 컴포넌트가 mount 될 때 실행
+    onMounted(() => {
+        fetchFrancise(page)
+    })
 
 
 
 
 </script>
 
-<style lang="scss" scoped>
-
+<style scoped>
+#searchBar{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+#seachSel{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
 </style>

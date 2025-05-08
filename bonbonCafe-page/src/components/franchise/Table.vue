@@ -1,19 +1,19 @@
 <template>
-        <v-data-table-virtual
+        <v-data-table
         :headers="header"
-        height="400"
+        :items="item"
+        height="600"
         item-value="name"
         fixed-header
-    ></v-data-table-virtual>
+    ></v-data-table>
 </template>
 
 <script setup>
 
     const props = defineProps({
-        // item:{
-        //     type: Array,
-        //     required: true
-        // },
+        item:{
+            type: Array,
+        },
         header: {
             type: Array,
             required: true
@@ -22,6 +22,8 @@
 
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
+
+
 
 </style>
