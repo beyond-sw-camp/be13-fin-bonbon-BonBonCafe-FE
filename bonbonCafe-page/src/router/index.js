@@ -23,6 +23,9 @@ const MapView = () => import('@/views/franchise/MapView.vue')
 const SalesAnalysis = () => import('@/views/sales/SalesAnalysis.vue')
 const SalesForecast = () => import('@/views/sales/SalesForecast.vue')
 
+const Notice = () => import('@/views/board/Notice.vue')
+const Event = () => import('@/views/board/Event.vue')
+
 // createRouter : Vue Router 설정 함수 
 const router = createRouter({
   // 라우터가 사용할 라우팅 모드 지정 (HTML 5 모드)
@@ -106,6 +109,16 @@ const router = createRouter({
           path:'sales-forecast',
           name: 'sales-forecast',
           component: SalesForecast,
+        },
+        {
+          path:'notices',
+          name: 'notice',
+          component: Notice,
+        },
+        {
+          path:'events',
+          name: 'event',
+          component: Event,
         }
 
       ]
