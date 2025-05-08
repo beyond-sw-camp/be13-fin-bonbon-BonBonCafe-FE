@@ -22,7 +22,7 @@
 
                 <div v-if="menu.menuDetails?.length">
                     <p><strong>재료:</strong></p>
-                    <ul>
+                    <ul class="ingredient-list">
                         <li v-for="detail in menu.menuDetails" :key="detail.ingredientName">
                             {{ detail.ingredientName }} - {{ detail.quantity }}g
                         </li>
@@ -70,12 +70,24 @@ onMounted(async () => {
 
 <style scoped>
 h3 {
-    margin-bottom: 16px;
+  margin-bottom: 16px;
 }
 
 .category-chip-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+ul.ingredient-list {
+  padding-left: 1.2rem;
+  margin-top: 8px;
+  border-left: 3px solid #ccc;
+}
+
+.ingredient-list li {
+  margin-bottom: 6px;
+  padding-left: 4px;
+  list-style: '🌿 ';
 }
 </style>
