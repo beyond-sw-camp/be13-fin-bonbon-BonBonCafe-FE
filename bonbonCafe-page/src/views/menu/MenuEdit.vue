@@ -6,16 +6,30 @@
             <v-text-field v-model="menu.name" label="메뉴 이름" required />
             <v-text-field v-model="menu.price" label="가격" type="number" required />
             <v-text-field v-model="menu.description" label="설명" />
-
             <v-select v-model="menu.status" :items="['ACTIVE', 'INACTIVE']" label="상태" required />
-
             <v-text-field v-model="menu.image" label="이미지 URL" />
 
-            <v-autocomplete v-model="selectedCategories" :items="allCategories" label="카테고리" item-title="categoryName"
-                item-value="id" multiple chips />
+            <!-- ✅ 카테고리 선택 -->
+            <v-select v-model="selectedCategories" :items="allCategories" label="카테고리" item-title="categoryName"
+                item-value="id" multiple chips return-object />
+                <div class="d-flex justify-end mt-4">
+  <v-btn color="primary" type="submit" class="me-2">수정 완료</v-btn>
+  <v-btn color="secondary" @click="goBack">취소</v-btn>
+</div>
+            <div class="mt-4">
+                <p><strong>재료 선택 및 수량 입력</strong></p>
+                <v-row>
+                    <v-col v-for="(item, index) in ingredientInputs" :key="item.ingredientId" cols="12" sm="2">
+                        <v-card class="pa-3" elevation="1">
+                            <div class="mb-2">{{ item.ingredientName }}</div>
+                            <v-text-field v-model="item.quantity" type="number" label="수량" :suffix="item.unit" dense
+                                hide-details />
+                        </v-card>
+                    </v-col>
+                </v-row>
+            </div>
 
-            <v-btn color="primary" type="submit">수정 완료</v-btn>
-            <v-btn color="secondary" @click="goBack">취소</v-btn>
+
         </v-form>
     </div>
 </template>
@@ -37,11 +51,13 @@ const menu = ref({
     price: 0,
     description: '',
     status: 'ACTIVE',
-    image: ''
+    image: '',
+    menuDetails: []
 })
 
 const selectedCategories = ref([])
 const allCategories = ref([])
+const ingredientInputs = ref([])
 
 onMounted(async () => {
     const { data } = await apiClient.get(`/headquarters/${headquarterId}/menus/${menuId}`)
@@ -51,13 +67,25 @@ onMounted(async () => {
         description: data.description,
         status: data.status,
         image: data.image,
-        categories: data.categories,
-
+        menuDetails: data.menuDetails
     }
-    selectedCategories.value = data.categories.map(c => c.id)
 
-    const res = await apiClient.get(`/headquarters/${headquarterId}/categories`)
-    allCategories.value = res.data
+    const categoryRes = await apiClient.get('/categories')
+    allCategories.value = categoryRes.data
+    selectedCategories.value = categoryRes.data.filter(cat =>
+        data.categories.some(sel => sel.id === cat.id)
+    )
+
+    const ingredientRes = await apiClient.get('/ingredients')
+    ingredientInputs.value = ingredientRes.data.map(ing => {
+        const matched = data.menuDetails.find(d => d.ingredientName === ing.ingredientName)
+        return {
+            ingredientId: ing.ingredientId,
+            ingredientName: ing.ingredientName,
+            unit: ing.unit,
+            quantity: matched ? matched.quantity : 0
+        }
+    })
 })
 
 const submitUpdate = async () => {
@@ -67,7 +95,10 @@ const submitUpdate = async () => {
         description: menu.value.description,
         status: menu.value.status,
         image: menu.value.image,
-        categoryIds: selectedCategories.value.map(c => typeof c === 'object' ? c.id : c) // ✅ 여기!
+        categoryIds: selectedCategories.value.map(cat => cat.id),
+        menuDetails: ingredientInputs.value
+            .filter(item => item.quantity > 0)
+            .map(item => ({ ingredientId: item.ingredientId, quantity: item.quantity }))
     })
     alert('수정되었습니다.')
     router.push({ name: 'menu-detail', params: { headquarterId, menuId } })
