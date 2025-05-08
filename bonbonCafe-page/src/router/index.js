@@ -63,9 +63,19 @@ const router = createRouter({
           component: ManagerAccounts,
         },
         {
-          path:'menu-list',
+          path: 'headquarters/:headquarterId/menus',
           name: 'menu-list',
           component: MenuList,
+        },
+        {
+          path: 'headquarters/:headquarterId/menus/:menuId',
+          name: 'menu-detail',
+          component: () => import('@/views/menu/MenuDetail.vue')
+        },
+        {
+          path: 'headquarters/:headquarterId/menus/:menuId/edit',
+          name: 'menu-edit',
+          component: () => import('@/views/menu/MenuEdit.vue')
         },
         {
           path:'menu-register',
