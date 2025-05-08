@@ -1,10 +1,12 @@
 <template>
   <div>
-    가맹점 등록
+    <Form/>
   </div>
 </template>
 
-<script>
+<script setup>
+  import Form from '@/components/franchise/Form.vue'
+
 
 </script>
 

@@ -1,36 +1,29 @@
 <template>
-    <div>
-        <div id="searchBar">
-            <div id="seachSel">
-                <v-select
-                density="compact"
-                placeholder="지역"
-                width="100"
-                variant="solo"
-                />
-                <v-select
-                density="compact"
-                placeholder="구"
-                width="100"
-                variant="solo"
-                />
-            </div>
-            <div>
-                <v-text-field
-                    density="compact"
-                    placeholder="Search here"
-                    prepend-inner-icon="mdi-magnify"
-                    variant="solo"
-                    width="200"
-                    flat
-                    single-line
-                />
-            </div>
-        </div>
-        <div>
-            <Table :header="header" :item="item"/>
-        </div>
-    </div>
+    <v-container class="d-flex align-start pa-0" style="gap: 20px; flex-wrap: wrap;" fluid>
+        <SearchBox
+            v-model="selectedRegion"
+            :placeholder="'지역 선택'"
+            :items="regionList"
+            class=""
+        />
+        <SearchBox
+            v-model="selectedDistrict"
+            :placeholder="'구 선택'"
+            :items="districtList"
+        />
+        <v-text-field
+            density="compact"
+            placeholder="Search here"
+            prepend-inner-icon="mdi-magnify"
+            variant="solo"
+            width="200"
+            flat
+            single-line
+        />
+    </v-container>
+    <v-container class="pa-0">
+        <Table :header="header" :item="item"/>
+    </v-container>
 </template>
 
 <script setup>
@@ -38,10 +31,14 @@
     import apiClient from '@/api';
     import { ref, onMounted } from 'vue'
     import Table from '@/components/franchise/Table.vue'
+    import SearchBox from '@/components/franchise/Select.vue'
     
     const item = ref([])
     const page = ref(1)
     const totalCount = ref(1)    
+
+    const selectedRegion = ref(null);
+    const selectedDistrict = ref(null);
 
 
     const header = [
