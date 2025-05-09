@@ -1,5 +1,5 @@
 <template>
-    <v-data-table-server
+    <v-data-table-virtual
         class="rounded-t-lg border-opacity-30 border-surface-variant"
         :headers="header"
         :items="item"
@@ -7,7 +7,7 @@
         item-value="name"
         fixed-header
     >
-    </v-data-table-server>
+    </v-data-table-virtual>
 </template>
 
 <script setup>

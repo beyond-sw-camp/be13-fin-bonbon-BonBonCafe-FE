@@ -19,10 +19,7 @@
                 density="compact"
                 placeholder="Search here"
                 prepend-inner-icon="mdi-magnify"
-                variant="solo"
                 width="200"
-                flat
-                single-line
             />
         </div>
     <!-- </v-container> -->
