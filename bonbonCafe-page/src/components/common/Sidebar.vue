@@ -98,8 +98,8 @@
     '가맹점 등록': '/franchise-register',
     '매출 분석': '/sales-analysis',
     '매출 예측': '/sales-forecast',
-    '공지사항': '/notices',
-    '이벤트': '/events',
+    '공지사항': '/notice-list',
+    '이벤트': '/event-list',
   }
 
   const navigate = (title) => {
