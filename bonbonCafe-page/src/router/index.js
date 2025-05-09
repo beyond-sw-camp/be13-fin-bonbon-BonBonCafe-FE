@@ -23,8 +23,10 @@ const MapView = () => import('@/views/franchise/MapView.vue')
 const SalesAnalysis = () => import('@/views/sales/SalesAnalysis.vue')
 const SalesForecast = () => import('@/views/sales/SalesForecast.vue')
 
-const Notice = () => import('@/views/board/Notice.vue')
-const Event = () => import('@/views/board/Event.vue')
+const NoticeList = () => import('@/views/board/NoticeList.vue')
+const EventList = () => import('@/views/board/EventList.vue')
+
+const NoticeEdit = () => import('@/views/board/NoticeEdit.vue')
 
 // createRouter : Vue Router 설정 함수 
 const router = createRouter({
@@ -111,16 +113,43 @@ const router = createRouter({
           component: SalesForecast,
         },
         {
-          path:'notices',
+          path:'notice-list',
           name: 'notice',
-          component: Notice,
+          component: NoticeList,
         },
         {
-          path:'events',
+          path: 'headquarters/:headquarterId/notices/:noticeId/edit',
+          name: 'notice-edit',
+          component: NoticeEdit,
+        },
+        {
+          path:'event-list',
           name: 'event',
-          component: Event,
+          component: EventList,
+        },
+        {
+          path: 'notice-register',
+          name: 'notice-register',
+          component: () => import('@/views/board/NoticeRegister.vue')
+        },
+        {
+          path: 'event-register',
+          name: 'event-register',
+          component: () => import('@/views/board/EventRegister.vue')
+        },
+        {
+          path: '/headquarters/:headquarterId/events/:noticeId/edit',
+          name: 'event-edit',
+          component: () => import('@/views/board/NoticeEdit.vue')
+        },
+        {
+          path: '/headquarters/:headquarterId/notices/:noticeId',
+          component: () => import('@/views/board/NoticeDetail.vue')
+        },
+        {
+          path: '/headquarters/:headquarterId/events/:noticeId',
+          component: () => import('@/views/board/EventDetail.vue')
         }
-
       ]
     },
     {
