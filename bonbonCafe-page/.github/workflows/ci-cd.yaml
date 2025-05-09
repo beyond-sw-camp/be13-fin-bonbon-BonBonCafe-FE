@@ -1,0 +1,67 @@
+name: BonBon Front-end CI&CD
+on: 
+    push:
+        branches: 
+          - main
+jobs:
+    build-and-deploy:
+
+        name: Build And Deploy
+        runs-on: ubuntu-latest # 깃허브 액션을 실행할 운영체제(기본 우분투)
+        env: # 환경변수 설정
+            BUCKET: bonbon-front-end-bucket # 버켓이름
+            DIST: dist # 빌드 파일 이름
+            REGION: ap-northeast-2 # S3 배포 지역이름
+            CLOUDFRONT_ID: E255E3VZI3VDE5  # Cloud Front 배포 파일의 식별자 
+            
+
+        # 작업 순서
+        steps: 
+
+        # 1. 단계 | 깃허브 리포지토리 접근
+        - name: Checkout Repository # 작업 이름
+          uses: actions/checkout@v4 # 워크 플로 작업을 위한 저장소 액세스를 위한 도구
+
+        # 2. 단계 | node_modules 캐싱
+        - name: Cache node modules
+          uses: actions/cache@v3
+          with:
+            path: node_modules
+            key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+            restore-keys: |
+              ${{ runner.OS }}-build-
+              ${{ runner.OS }}-
+
+        # 3. 단계 | AWS 자격증명 구성 및 AWS CLI 설치
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v4
+          with:
+            aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}} 
+            aws-secret-access-key: ${{secrets.AWS_SECRET_KEY_ID}}
+            aws-region: ${{env.REGION}}
+        
+        #.4. 단계 | 프로젝트 관련 종속성을 설치할 노드 설치
+        - name: Set up Node.js
+          uses: actions/setup-node@v4
+          with:
+           node-version: '20'
+        
+        # 5. 단계 | 종속성 설치(node_modules)
+        - name: Install Dependencies
+          run: npm ci
+
+        # 6. 단계 | Vite 빌드
+        - name: Build 
+          run: npm run build
+
+        # 7. 단계 | AWS CLI 를 사용하여 S3 에 배포 파일을 업로드
+        - name : Sync files to S3
+          run: |
+            aws s3 sync --delete ${{env.DIST}} s3://${{env.BUCKET}}
+
+        # 8. 단계 | 캐시 무효화
+        - name : Clear Cash
+          run: |
+            aws cloudfront create-invalidation \
+              --distribution-id ${{ env.CLOUDFRONT_ID}} \
+              --paths "/*"
