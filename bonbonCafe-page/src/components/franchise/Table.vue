@@ -1,13 +1,13 @@
 <template>
-    <v-data-table
+    <v-data-table-server
+        class="rounded-t-lg border-opacity-30 border-surface-variant"
         :headers="header"
         :items="item"
         height="600"
         item-value="name"
         fixed-header
-        class="rounded-t-lg border-opacity-30 border-surface-variant"
-        
-    ></v-data-table>
+    >
+    </v-data-table-server>
 </template>
 
 <script setup>
@@ -19,7 +19,8 @@
         header: {
             type: Array,
             required: true
-        }
+        },
+        loading: Boolean
     })
 
 </script>
