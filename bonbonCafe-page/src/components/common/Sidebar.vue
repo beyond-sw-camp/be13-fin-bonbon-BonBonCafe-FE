@@ -1,194 +1,124 @@
-<template>
-    <v-app>
-      <!-- Sidebar -->
-      <v-navigation-drawer
-        v-model="drawer"
-        app
-        color="indigo-darken-4"
-        dark
-        permanent
-      >
-
-      <template v-slot:prepend>
-          <v-list-item
-            lines="two"
-          ></v-list-item>
-      </template>
-
+  <template>
+    <v-navigation-drawer
+      v-model="drawer"
+      app
+      class="custom-drawer"
+      dark
+      permanent
+      name="drawer"
+    >
+      <v-list-item
+        title="BonBon-Cafe"
+        subtitle="로그인 정보??"
+        prepend-avatar="https://cdn.vuetifyjs.com/images/john.jpg"
+      ></v-list-item>
       <v-divider></v-divider>
-
+  
       <v-list v-model:opened="opened">
-        <v-list-group value="Franchise">
+        <template v-for="(group, index) in menuGroups" :key="index">
+          <v-list-group :value="group.title">
             <template v-slot:activator="{ props }">
-                <v-list-item
-                    v-bind="props"
-                    prepend-icon="mdi-coffee-outline"
-                    title="가맹점 관리"
-                ></v-list-item>
+              <v-list-item
+                v-bind="props"
+                :prepend-icon="group.icon"
+                :title="group.title"
+              ></v-list-item>
             </template>
-            <v-list-item 
-                v-for="(item, i) in franchise"
-                :key="i"
-                :prepend-icon="item.icon"
-                :title="item.title"
-                @click="navigate(item)"
+            <v-list-item
+              v-for="(item, i) in group.items"
+              :key="i"
+              :title="item.title"
+              @click="navigate(item.title)"
             ></v-list-item>
-        </v-list-group>
+          </v-list-group>
+        </template>
       </v-list>
-
-      <v-list v-model:opened="opened">
-        <v-list-group value="Menu">
-            <template v-slot:activator="{ props }">
-                <v-list-item
-                    v-bind="props"
-                    prepend-icon="mdi-silverware-fork-knife"
-                    title="메뉴 관리"
-                ></v-list-item>
-            </template>
-            <v-list-item 
-                v-for="(item, i) in menu"
-                :key="i"
-                :prepend-icon="item.icon"
-                :title="item.title"
-                @click="navigate(item)"
-            ></v-list-item>
-        </v-list-group>
-      </v-list>
-
-      <v-list v-model:opened="opened">
-        <v-list-group value="Sales">
-            <template v-slot:activator="{ props }">
-                <v-list-item
-                    v-bind="props"
-                    prepend-icon="mdi-chart-bar"
-                    title="매출 분석"
-                ></v-list-item>
-            </template>
-            <v-list-item 
-                v-for="(item, i) in sales"
-                :key="i"
-                :prepend-icon="item.icon"
-                :title="item.title"
-                @click="navigate(item)"
-            ></v-list-item>
-        </v-list-group>
-      </v-list>
-
-      <v-list v-model:opened="opened">
-        <v-list-group value="Notice">
-            <template v-slot:activator="{ props }">
-                <v-list-item
-                    v-bind="props"
-                    prepend-icon="mdi-clipboard-check-outline"
-                    title="공지사항"
-                ></v-list-item>
-            </template>
-            <v-list-item 
-                v-for="(item, i) in notice"
-                :key="i"
-                :prepend-icon="item.icon"
-                :title="item.title"
-                @click="navigate(item)"
-            ></v-list-item>
-        </v-list-group>
-      </v-list>
-
-      <v-list v-model:opened="opened">
-        <v-list-group value="Account">
-            <template v-slot:activator="{ props }">
-                <v-list-item
-                    v-bind="props"
-                    prepend-icon="mdi-account-circle-outline"
-                    title="계정 관리"
-                ></v-list-item>
-            </template>
-            <v-list-item 
-                v-for="(item, i) in account"
-                :key="i"
-                :prepend-icon="item.icon"
-                :title="item.title"
-                @click="navigate(item)"
-            ></v-list-item>
-        </v-list-group>
-      </v-list>
-
-      </v-navigation-drawer>
-      
-    </v-app>
+    </v-navigation-drawer>
   </template>
   
-  <script setup>
-  import { ref } from 'vue';
-  import { useRouter } from 'vue-router';
 
-  const router = useRouter();
-  const opened = ref([]); 
-  const drawer = ref(true);
+<script setup>
+  import { ref } from 'vue'
+  import { useRouter } from 'vue-router'
 
-  const franchise = [
-    { title: '가맹점 조회', icon: 'mdi-magnify' },
-    { title: '가맹점 등록', icon: 'mdi-office-building-plus' },
-  ];
+  const router = useRouter()
+  const drawer = ref(true)
+  const opened = ref([])
 
-  const menu = [
-    { title: '메뉴 조회', icon: 'mdi-magnify' },
-    { title: '메뉴 등록', icon: 'mdi-menu' },
-  ];
+  const menuGroups = [
+  {
+    title: '가맹점 관리',
+    icon: 'mdi-coffee-outline',
+    items: [
+      { title: '가맹점 조회' },
+      { title: '가맹점 등록' },
+    ],
+  },
+  {
+    title: '메뉴 관리',
+    icon: 'mdi-silverware-fork-knife',
+    items: [
+      { title: '메뉴 조회' },
+      { title: '메뉴 등록' },
+    ],
+  },
+  {
+    title: '매출 분석',
+    icon: 'mdi-chart-bar',
+    items: [
+      { title: '매출 분석' },
+      { title: '매출 예측' },
+    ],
+  },
+  {
+    title: '공지사항',
+    icon: 'mdi-clipboard-check-outline',
+    items: [
+      { title: '공지사항' },
+      { title: '이벤트' },
+    ],
+  },
+  {
+  title: '계정 관리',
+  icon: 'mdi-account-circle-outline',
+  items: [
+    { title: '가맹점주 관리' },
+    { title: '담당자 관리' },
+  ],
+  },
+  ]
 
-  const sales = [
-    { title: '매출 분석', icon: 'mdi-trending-up' },
-    { title: '매출 예측', icon: 'mdi-lightbulb-on-10' },
-  ];
-  
-  const notice = [
-    { title: '공지사항', icon: 'mdi-bell-outline' },
-    { title: '이벤트', icon: 'mdi-calendar-text' },
-  ];
 
-  const account = [
-    { title: '가맹점주 관리', icon: 'mdi-chef-hat' },
-    { title: '담당자 관리', icon: 'mdi-pencil-outline' },
-  ];
-  
-  const navigate = (item) => {
-    if (item.title === '가맹점주 관리') {
-      router.push('/franchisee-accounts');
+  const routeMap = {
+    '가맹점주 관리': '/franchisee-accounts',
+    '담당자 관리': '/manager-accounts',
+    '메뉴 조회': '/menu-list',
+    '메뉴 등록': '/menu-register',
+    '가맹점 조회': '/franchise-list',
+    '가맹점 등록': '/franchise-register',
+    '매출 분석': '/sales-analysis',
+    '매출 예측': '/sales-forecast',
+    '공지사항': '/notice-list',
+    '이벤트': '/event-list',
+  }
+
+  const navigate = (title) => {
+  const path = routeMap[title]
+    if (path) {
+      router.push(path)
     }
-    if (item.title === '담당자 관리') {
-      router.push('/manager-accounts');
-    }
-    if (item.title === '메뉴 조회') {
-      router.push('/menu-list');
-    }
-    if (item.title === '메뉴 등록') {
-      router.push('/menu-register');
-    }
-    if (item.title === '가맹점 조회') {
-      router.push('/franchise-list');
-    }
-    if (item.title === '가맹점 등록') {
-      router.push('/franchise-register');
-    }
-    if (item.title === '매출 분석') {
-      router.push('/sales-analysis');
-    }
-    if (item.title === '매출 예측') {
-      router.push('/sales-forecast');
-    }
-  };
-  </script>
-  
+  }
+</script>
   <style scoped>
   .v-navigation-drawer {
     max-width: 250px;
   }
   
-  .main-bg {
-    background-color: #f5f5f5;
-    min-height: 100vh;
-    padding-top: 16px;
+  .custom-drawer {
+    background-color: #2A3663 !important;
+    color: white !important; /* 텍스트 색상 강제 적용 */
   }
-  
+
   .v-list-item {
     cursor: pointer;
     padding: 12px 16px;

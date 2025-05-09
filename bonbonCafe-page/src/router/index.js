@@ -22,6 +22,11 @@ const FranchiseRegister = () => import('@/views/franchise/FranchiseRegister.vue'
 const SalesAnalysis = () => import('@/views/sales/SalesAnalysis.vue')
 const SalesForecast = () => import('@/views/sales/SalesForecast.vue')
 
+const NoticeList = () => import('@/views/board/NoticeList.vue')
+const EventList = () => import('@/views/board/EventList.vue')
+
+const NoticeEdit = () => import('@/views/board/NoticeEdit.vue')
+
 // createRouter : Vue Router 설정 함수 
 const router = createRouter({
   // 라우터가 사용할 라우팅 모드 지정 (HTML 5 모드)
@@ -62,9 +67,19 @@ const router = createRouter({
           component: ManagerAccounts,
         },
         {
-          path:'menu-list',
+          path: 'headquarters/:headquarterId/menus',
           name: 'menu-list',
           component: MenuList,
+        },
+        {
+          path: 'headquarters/:headquarterId/menus/:menuId',
+          name: 'menu-detail',
+          component: () => import('@/views/menu/MenuDetail.vue')
+        },
+        {
+          path: 'headquarters/:headquarterId/menus/:menuId/edit',
+          name: 'menu-edit',
+          component: () => import('@/views/menu/MenuEdit.vue')
         },
         {
           path:'menu-register',
@@ -90,8 +105,45 @@ const router = createRouter({
           path:'sales-forecast',
           name: 'sales-forecast',
           component: SalesForecast,
+        },
+        {
+          path:'notice-list',
+          name: 'notice',
+          component: NoticeList,
+        },
+        {
+          path: 'headquarters/:headquarterId/notices/:noticeId/edit',
+          name: 'notice-edit',
+          component: NoticeEdit,
+        },
+        {
+          path:'event-list',
+          name: 'event',
+          component: EventList,
+        },
+        {
+          path: 'notice-register',
+          name: 'notice-register',
+          component: () => import('@/views/board/NoticeRegister.vue')
+        },
+        {
+          path: 'event-register',
+          name: 'event-register',
+          component: () => import('@/views/board/EventRegister.vue')
+        },
+        {
+          path: '/headquarters/:headquarterId/events/:noticeId/edit',
+          name: 'event-edit',
+          component: () => import('@/views/board/NoticeEdit.vue')
+        },
+        {
+          path: '/headquarters/:headquarterId/notices/:noticeId',
+          component: () => import('@/views/board/NoticeDetail.vue')
+        },
+        {
+          path: '/headquarters/:headquarterId/events/:noticeId',
+          component: () => import('@/views/board/EventDetail.vue')
         }
-
       ]
     },
     {
