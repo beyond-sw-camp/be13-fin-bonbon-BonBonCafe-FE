@@ -48,11 +48,15 @@ jobs:
         
         # 5. 단계 | 종속성 설치(node_modules)
         - name: Install Dependencies
-          run: npm ci
+          run: |
+              cd bonbonCafe-page
+              npm ci
 
         # 6. 단계 | Vite 빌드
         - name: Build 
-          run: npm run build
+          run: |
+              cd bonbonCafe-page
+              npm run build
 
         # 7. 단계 | AWS CLI 를 사용하여 S3 에 배포 파일을 업로드
         - name : Sync files to S3
