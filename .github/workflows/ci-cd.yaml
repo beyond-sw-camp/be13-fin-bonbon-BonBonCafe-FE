@@ -10,7 +10,7 @@ jobs:
         runs-on: ubuntu-latest # 깃허브 액션을 실행할 운영체제(기본 우분투)
         env: # 환경변수 설정
             BUCKET: bonbon-front-end-bucket # 버켓이름
-            DIST: dist # 빌드 파일 이름
+            DIST: bonbonCafe-page/dist/ # 빌드 파일 이름
             REGION: ap-northeast-2 # S3 배포 지역이름
             CLOUDFRONT_ID: E255E3VZI3VDE5  # Cloud Front 배포 파일의 식별자 
             
