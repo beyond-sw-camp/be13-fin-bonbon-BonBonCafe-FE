@@ -1,7 +1,5 @@
 <template>
-    <div>
         <KakaoMap/>
-    </div>
 </template>
 
 <script setup>

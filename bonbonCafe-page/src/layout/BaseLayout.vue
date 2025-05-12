@@ -3,11 +3,11 @@
     <Sidebar />
 
     <!-- <v-main class="d-flex align-center justify-center main-bg" height="100%"> -->
-    <v-main class="d-flex flex-column main-bg"  style="height: 130vh;">
+    <v-main class="d-flex flex-column main-bg"  style="width: 100%; height: 130vh;">
       <Header />
 
       <v-container
-        class="flex-grow-1 v-col-10"
+        class="flex-grow-1 v-col-10 pa-0 "
        >
         <RouterView/>
       </v-container>
