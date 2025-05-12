@@ -60,6 +60,8 @@ const loadMap = async (container) => {
           removable: true
         })
 
+
+        // click event 화면에 해당 가맹점 조회??
         kakao.maps.event.addListener(marker, 'click', function () {
           infowindow.open(map, marker)
         })
