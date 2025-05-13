@@ -1,34 +1,33 @@
 <template>
-    <!-- <v-container class="d-flex flex-sm-row justify-space-around pa-0" > -->
-    <div id="div0">
-        <div id="div1">
-            <SelectBox
-            class="select-region"
-            v-model="selectedRegion"
-            :placeholder="'지역 선택'"
-            :items="regionList"
-            />
-            <SelectBox
-                class="select-district"
-                v-model="selectedDistrict"
-                :placeholder="'구 선택'"
-                :items="districtList"
-            />
-            <v-text-field
-                class="search-input"
-                density="compact"
-                placeholder="Search here"
-                prepend-inner-icon="mdi-magnify"
-                width="200"
-            />
+    <div class="pa-10">
+        <div id="div0">
+            <div id="div1">
+                <SelectBox
+                class="select-region"
+                v-model="selectedRegion"
+                :placeholder="'지역 선택'"
+                :items="regionList"
+                />
+                <SelectBox
+                    class="select-district"
+                    v-model="selectedDistrict"
+                    :placeholder="'구 선택'"
+                    :items="districtList"
+                />
+                <v-text-field
+                    class="search-input"
+                    density="compact"
+                    placeholder="Search here"
+                    prepend-inner-icon="mdi-magnify"
+                    width="200"
+                />
+            </div>
         </div>
-    <!-- </v-container> -->
-    <!-- <v-container class="pa-0"> -->
+        <div>
+            <Table :header="header" :item="item"/>
+        </div>
     </div>
-    <div>
-        <Table :header="header" :item="item"/>
-    </div>
-    <!-- </v-container> -->
+
 </template>
 
 
@@ -82,27 +81,27 @@
 </script>
 
 <style scoped>
-#div0 {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    width: 100%;
-}
-#div1 {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    align-items: center;
-    
-}
-.select-region {
-  width: 200px;
-}
-.select-district {
-  width: 150px;
-}
-.search-input {
-  width: 300px;
-  margin-left: 50px; /* 여백 주고 싶다면 */
-}
+    #div0 {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        width: 100%;
+    }
+    #div1 {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+        align-items: center;
+        
+    }
+    .select-region {
+    width: 200px;
+    }
+    .select-district {
+    width: 150px;
+    }
+    .search-input {
+    width: 300px;
+    margin-left: 50px; /* 여백 주고 싶다면 */
+    }
 </style>

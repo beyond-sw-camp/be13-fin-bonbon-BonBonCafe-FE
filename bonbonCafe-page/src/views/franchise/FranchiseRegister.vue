@@ -1,8 +1,5 @@
 <template>
-  <v-container class="pa-0">
-
-
-   
+  <v-container>
     
     <form @submit.prevent="handleSubmit">
       <v-container>
