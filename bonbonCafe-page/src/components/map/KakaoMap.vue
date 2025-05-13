@@ -1,24 +1,8 @@
 <template>
     <div id="map-container">
-          <div v-if="selecteStror" id="info">
-            <h3>{{ selecteStror.name }}</h3>
-
-            <h4>매장 정보</h4>
-            <v-table class="border ">
-              <tr>
-                <td>가맹점 연락처</td>
-                <td>dd</td>
-              </tr>
-              <tr>
-                <td>담당자</td>
-                <td>dd</td>
-              </tr>
-              <tr>
-                <td>담당자 연락처</td>
-                <td>dd</td>
-              </tr>
-            </v-table>
-          </div>
+        <div v-if="selecteStror" id="info">
+          <FranchiseInfo/>
+        </div>
         <div id="maps" ref="mapContainer" style="width:100%;height:725px; "></div>
     </div>
 </template>
@@ -26,6 +10,7 @@
 <script setup>
   import { onMounted, ref } from 'vue';
   import apiClient from '@/api' ;
+  import FranchiseInfo from '@/components/map/FranchiseInfo.vue' ;
   const {VITE_KAKAO_MAP_KEY} = import.meta.env;
   const mapContainer = ref(null)
   const selecteStror = ref(null) // 선택된 가맹점 정보
@@ -108,7 +93,7 @@
 
         const infowindow = new kakao.maps.InfoWindow({
           content: iwContent,
-          removable: true
+          // removable: true
         })
 
         kakao.maps.event.addListener(marker, 'click', function () {
