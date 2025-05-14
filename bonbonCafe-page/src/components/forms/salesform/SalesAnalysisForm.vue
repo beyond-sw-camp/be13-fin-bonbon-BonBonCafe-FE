@@ -67,14 +67,22 @@ async function onSearch() {
   const start = dayjs(startDate.value).format('YYYY-MM-DD')
   const end = dayjs(endDate.value).format('YYYY-MM-DD')
 
-  await salesStore.setFilters({
-    region: salesStore.filters.region,
-    store: salesStore.filters.store,
-    startDate: start,
-    endDate: end
+  if (start > end) {
+      return alert('시작일이 종료일보다 클 수 없습니다.')
+    }
+  try {
+      await salesStore.setFilters({
+      region: salesStore.filters.region,
+      store: salesStore.filters.store,
+      startDate: start,
+      endDate: end
   })
   await salesStore.fetchMenuRanking()
+  } catch (error) {
+    alert(error.response?.data.message || '매출 조회 중 오류가 발생했습니다..')
+  }
 }
+
 
 function initChart() {
   const ctx = chartRef.value.getContext('2d')
