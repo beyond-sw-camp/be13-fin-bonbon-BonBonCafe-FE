@@ -1,13 +1,9 @@
 <template>
-    <div>
-        <h3>매출 예측</h3>
-    </div>
+  <v-container fluid>
+    <sales-forecast-form />
+  </v-container>
 </template>
 
-<script>
-
+<script setup>
+import SalesForecastForm from '@/components/forms/salesform/SalesForecastForm.vue'
 </script>
-
-<style lang="scss" scoped>
-
-</style>

@@ -1,9 +1,15 @@
 <template>
   <div class="w-full">
     <h3 class="text-lg font-bold mb-2">메뉴별 판매 비율</h3>
-    <Doughnut :data="chartData" :options="chartOptions" class="mb-4" />
+    <Doughnut 
+      v-if="ranking.length"
+      :data="chartData" 
+      :options="chartOptions" 
+      class="mb-4" />
 
-    <table class="table-auto w-full text-sm">
+    <table
+      v-if="ranking.length" 
+      class="table-auto w-full text-sm">
       <thead>
         <tr>
           <th class="text-left px-2 py-1">메뉴</th>
