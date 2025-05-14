@@ -1,7 +1,7 @@
 <template>
     <div id="map-container">
-        <div v-if="selecteStror" id="info">
-          <FranchiseInfo/>
+        <div v-if="selectedStore" id="info">
+          <FranchiseInfo :selectedStore="selectedStore"/>
         </div>
         <div id="maps" ref="mapContainer" style="width:100%;height:725px; "></div>
     </div>
@@ -12,9 +12,10 @@
   import apiClient from '@/api' ;
   import FranchiseInfo from '@/components/map/FranchiseInfo.vue' ;
   const {VITE_KAKAO_MAP_KEY} = import.meta.env;
-  const mapContainer = ref(null)
-  const selecteStror = ref(null) // 선택된 가맹점 정보
-
+  const mapContainer = ref(null);
+  const selectedStore = ref(null); // 선택된 가맹점 정보
+  
+  
   const fetchMarkers = async () => {
     try {
       const response = await apiClient.get('/franchise/locations') // 백엔드에 맞게 조정
@@ -37,7 +38,7 @@
           level: 12
         }
 
-        const map = new window.kakao.maps.Map(container, options)
+        const map = new window.kakao.maps.Map(container, options) // 지도 생성
 
         const imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png'
         const imageSize = new kakao.maps.Size(40, 40)
@@ -53,33 +54,6 @@
           minLevel: 10
         })
 
-        // markerList.forEach(store => {
-        //   const markerPosition = new kakao.maps.LatLng(store.latitude, store.longitude)
-
-        //   const marker = new kakao.maps.Marker({
-        //     position: markerPosition,
-        //     image: markerImage,
-        //     title: store.name
-        //   })
-
-        //   marker.setMap(map)
-
-        //   const iwContent = `<div style="padding:5px;"><span class="title">${store.name}</span></div>`
-
-        //   const infowindow = new kakao.maps.InfoWindow({
-        //     content: iwContent,
-        //     removable: true
-        //   })
-
-
-        //   // 마커 클릭 이벤트 추가
-        //   kakao.maps.event.addListener(marker, 'click', function () {
-        //     infowindow.open(map, marker)
-        //   })
-        //   return marker
-        // })
-         // 마커 배열 생성
-
       const markers = markerList.map(store => {
         const markerPosition = new kakao.maps.LatLng(store.latitude, store.longitude)
 
@@ -93,12 +67,15 @@
 
         const infowindow = new kakao.maps.InfoWindow({
           content: iwContent,
-          // removable: true
+          removable: true
         })
 
-        kakao.maps.event.addListener(marker, 'click', function () {
-          infowindow.open(map, marker)
-          selecteStror.value = store // 가맹점 정보 저장
+        kakao.maps.event.addListener(marker, 'click', async function () {
+          infowindow.open(map, marker);
+          // selectedStore.value = fetchFranciseInfo(store) // 가맹점 정보 저장
+          // selectedStore.value = await fetchFranciseInfo(store); // 가맹점 정보 저장
+          selectedStore.value = store; // 가맹점 정보 저장
+          
         })
 
         return marker
@@ -108,6 +85,16 @@
       })
     }
   }
+
+  // const fetchFranciseInfo = async (store) => {
+  //   try {
+  //     const response = await apiClient.get(`/franchise/summary/${store.name}`)
+      
+  //     return response.data
+  //   } catch (error) {
+  //     console.error('프랜차이즈 데이터 불러오기 실패:', error)
+  //   }
+  // }
 
 onMounted(() => {
   loadMap(mapContainer.value)
