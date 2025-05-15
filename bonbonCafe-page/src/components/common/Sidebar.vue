@@ -64,6 +64,17 @@
     ],
   },
   {
+    title: '재고 관리',
+    icon: 'mdi-warehouse',
+    items: [
+      { title: '재고 조회' },
+      { title: '본사 재고 조회' },
+      { title: '재고 주문' },
+      { title: '재고 주문 내역' },
+      { title: '가맹점들의 주문 내역'}
+    ],
+  },
+  {
     title: '매출 분석',
     icon: 'mdi-chart-bar',
     items: [
@@ -93,8 +104,13 @@
   const routeMap = {
     '가맹점주 관리': '/franchisee-accounts',
     '담당자 관리': '/manager-accounts',
-    '메뉴 조회': '/menu-list',
+    '메뉴 조회': { name: 'menu-list', params: { headquarterId: 1 }}, // 하드코딩
     '메뉴 등록': '/menu-register',
+    '재고 조회': '/franchise-stock-list',
+    '본사 재고 조회': { name: 'headquarter-stock-list', params: { headquarterId: 1 } }, // 하드코딩
+    '재고 주문': '/stock-order',
+    '재고 주문 내역': '/stock-order-history',
+    '가맹점들의 주문 내역': { name: 'franchise-order-list', params: { headquarterId: 1 } }, // 하드코딩
     '가맹점 조회': '/franchise-list',
     '가맹점 등록': '/franchise-register',
     'kakao map': '/kakao-map',
