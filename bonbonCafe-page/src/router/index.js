@@ -30,6 +30,7 @@ const HeadquarterStockEdit = () => import('@/views/stock/HeadquarterStockEdit.vu
 
 const FranchiseList = () => import('@/views/franchise/FranchiseList.vue')
 const FranchiseRegister = () => import('@/views/franchise/FranchiseRegister.vue')
+const MapView = () => import('@/views/franchise/MapView.vue')
 
 const SalesAnalysis = () => import('@/views/sales/SalesAnalysis.vue')
 const SalesForecast = () => import('@/views/sales/SalesForecast.vue')
@@ -155,6 +156,11 @@ const router = createRouter({
           path:'franchise-list',
           name: 'franchise-list',
           component: FranchiseList,
+        },
+        {
+          path:'kakao-map',
+          name: 'kakao-map',
+          component: MapView,
         },
         {
           path:'sales-analysis',

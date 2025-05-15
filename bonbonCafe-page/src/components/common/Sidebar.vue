@@ -52,6 +52,7 @@
     items: [
       { title: '가맹점 조회' },
       { title: '가맹점 등록' },
+      { title: 'kakao map' },
     ],
   },
   {
@@ -112,6 +113,7 @@
     '가맹점들의 주문 내역': { name: 'franchise-order-list', params: { headquarterId: 1 } }, // 하드코딩
     '가맹점 조회': '/franchise-list',
     '가맹점 등록': '/franchise-register',
+    'kakao map': '/kakao-map',
     '매출 분석': '/sales-analysis',
     '매출 예측': '/sales-forecast',
     '공지사항': '/notice-list',
