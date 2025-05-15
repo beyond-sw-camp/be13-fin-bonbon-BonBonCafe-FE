@@ -84,10 +84,10 @@ const props = defineProps({
     const fetchFranciseInfo = async (store) => {
         try {
             const response = await apiClient.get(`/franchise/summary/${store.name}`)
-            // data.franchiseTel = response.data.franchiseTel;
-            // data.managerName = response.data.managerName;
-            // data.managerTel = response.data.managerTel;
-            // console.log( data.franchiseId);        
+            data.franchiseTel = response.data.franchiseTel;
+            data.managerName = response.data.managerName;
+            data.managerTel = response.data.managerTel;
+            console.log( data.franchiseId);        
             return response.data
         } catch (error) {
             console.error('프랜차이즈 데이터 불러오기 실패:', error)

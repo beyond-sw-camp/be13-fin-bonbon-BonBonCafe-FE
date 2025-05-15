@@ -51,7 +51,8 @@
         { title: 'No.', align: 'start', key: 'franchiseId', class: 'header'},
         { title: '가맹점 이름', align: 'start', key: 'name', class: 'header' },
         { title: '가맹점 주소', align: 'start', key: 'roadAddress', class: 'header' },
-        { title: '담당자', align: 'start', key: 'regionCode', class: 'header' },
+        { title: '담당자', align: 'start', key: 'managerName', class: 'header' },
+        { title: '가맹점 연락처', align: 'start', key: 'franchiseTel', class: 'header' },
         { title: '등록일', align: 'start', key: 'openDate', class: 'header' }
     ]
 
