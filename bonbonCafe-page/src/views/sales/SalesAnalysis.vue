@@ -1,13 +1,9 @@
 <template>
-    <div>
-        <h3>매출 분석</h3>
-    </div>
+  <v-container fluid>
+    <sales-analysis-form />
+  </v-container>
 </template>
 
-<script>
-
+<script setup>
+import SalesAnalysisForm from '@/components/forms/salesform/SalesAnalysisForm.vue';
 </script>
-
-<style lang="scss" scoped>
-
-</style>

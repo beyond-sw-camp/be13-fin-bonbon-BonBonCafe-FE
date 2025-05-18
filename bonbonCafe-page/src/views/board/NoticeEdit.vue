@@ -1,6 +1,6 @@
 <template>
     <div>
-      <h2>{{ form.postType === 'EVENT' ? '이벤트 수정' : '공지사항 수정' }}</h2>
+      <h2>게시글 수정</h2>
   
       <v-form @submit.prevent="submitUpdate" ref="formRef">
         <v-text-field v-model="form.title" label="제목" required />
@@ -14,7 +14,7 @@
   
         <div class="mt-4 d-flex justify-end" style="gap: 8px;">
           <v-btn color="primary" type="submit">
-            {{ form.postType === 'EVENT' ? '이벤트 수정 완료' : '공지 수정 완료' }}
+            수정 완료
           </v-btn>
           <v-btn color="secondary" @click="goBack">취소</v-btn>
         </div>
