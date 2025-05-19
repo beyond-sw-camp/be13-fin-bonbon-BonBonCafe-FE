@@ -51,6 +51,12 @@ watch(() => props.storeId, async (newStoreId) => {
             startDate: start.format('YYYY-MM-DD'),
             endDate: end.format('YYYY-MM-DD')
         })
+
+        // 날짜 포맷 한국식으로 변경
+        salesStore.labels = salesStore.labels.map(dateStr =>
+            dayjs(dateStr).format('MM-DD')
+        )
+
         updateChart()
     }
 })
@@ -70,13 +76,17 @@ function updateChart() {
 function initChart() {
     const ctx = chartRef.value.getContext('2d')
     chartInstance = new Chart(ctx, {
-        type: 'bar',
+        // type: 'bar',
+        type: 'line',
         data: {
         labels: salesStore.labels,                   // 날짜 목록
         datasets: [{
             label: '매출 (원)',                         // 데이터 레이블
             data: salesStore.values,                   // 매출 금액 데이터
-            backgroundColor: '#1976D2'                 // 바 색상
+            // backgroundColor: '#1976D2',                 // 바 색상
+            borderColor: 'rgb(75, 192, 192)',
+            fill: false,            // 하단 채우기 비활성화
+            tension: 0.1            // 곡선 정도
         }]
         },
         options: {
