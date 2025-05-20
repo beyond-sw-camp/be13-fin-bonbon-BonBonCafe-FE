@@ -14,6 +14,8 @@
         v-model="quantity"
         type="number"
         label="수량"
+        :rules="[v => v <= 999999 || '수량은 최대 999999까지 입력할 수 있어요.']"
+        @input="onQuantityInput"
         required
       />
       <v-btn color="primary" type="submit">등록</v-btn>
@@ -60,6 +62,13 @@ const submitRequest = async () => {
   } catch (error) {
     const message = error.response?.data?.message || '알 수 없는 오류가 발생했습니다.'
     alert(`❌ 신청 실패: ${message}`)
+  }
+}
+
+const onQuantityInput = (e) => {
+  const val = Number(e.target.value)
+  if (val > 999999) {
+    quantity.value = 999999
   }
 }
 </script>
