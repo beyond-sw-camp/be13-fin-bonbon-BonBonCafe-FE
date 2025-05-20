@@ -48,7 +48,6 @@ import { useRouter } from 'vue-router'
 import apiClient from '@/api'
 
 const router = useRouter()
-const headquarterId = 3 // 하드코딩된 본사 ID
 
 const notices = ref([])
 const page = ref(1)
@@ -58,7 +57,7 @@ const totalElements = ref(0)
 
 const fetchNotices = async () => {
   try {
-    const { data } = await apiClient.get(`/notice/${headquarterId}`, {
+    const { data } = await apiClient.get(`/notice`, {
       params: {
         page: page.value - 1,
         postType: 'NOTICE'
@@ -73,7 +72,7 @@ const fetchNotices = async () => {
 }
 
 const goToDetail = (noticeId) => {
-  router.push(`/headquarters/${headquarterId}/notices/${noticeId}`)
+  router.push(`/headquarters/notices/${noticeId}`)
 }
 
 const goToRegister = () => {

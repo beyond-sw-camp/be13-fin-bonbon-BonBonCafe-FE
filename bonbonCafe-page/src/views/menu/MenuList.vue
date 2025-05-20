@@ -84,7 +84,6 @@
   
   const route = useRoute()
   const router = useRouter()
-  const headquarterId = route.params.headquarterId
   
   const menus = ref([])
   const allCategories = ref([])
@@ -98,7 +97,7 @@
   const fetchAllMenus = async () => {
     selectedCategoryId.value = null
     try {
-      const { data } = await apiClient.get(`/headquarters/${headquarterId}/menus`, {
+      const { data } = await apiClient.get(`/headquarters/menus`, {
         params: {
           page: page.value - 1,
           search: search.value || null
@@ -115,7 +114,7 @@
   const fetchMenusByCategory = async (categoryId) => {
     selectedCategoryId.value = categoryId
     try {
-      const { data } = await apiClient.get(`/headquarters/${headquarterId}/categories/${categoryId}/menus`)
+      const { data } = await apiClient.get(`/headquarters/categories/${categoryId}/menus`)
       menus.value = data
       totalPages.value = 1
     } catch (e) {
@@ -123,8 +122,8 @@
     }
   }
   
-  const goToDetail = (hqId, menuId) => {
-    router.push(`/headquarters/${hqId}/menus/${menuId}`)
+  const goToDetail = (headquarterId, menuId) => {
+    router.push({ name: 'menu-detail', params: { menuId } })
   }
   
   // 🔍 검색 실행 시 전체탭 + 1페이지로 초기화
@@ -135,7 +134,7 @@
   }
   
   onMounted(async () => {
-    const { data } = await apiClient.get(`/headquarters/${headquarterId}/categories`)
+    const { data } = await apiClient.get(`/headquarters/categories`)
     allCategories.value = data
     await fetchAllMenus()
   })

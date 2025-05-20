@@ -43,7 +43,7 @@
   
   const fetchNotice = async () => {
     try {
-      const { data } = await apiClient.get(`/notice/${noticeId}/${headquarterId}`)
+      const { data } = await apiClient.get(`/notice/${noticeId}`)
       notice.value = data
     } catch (e) {
       console.error('❌ 상세 조회 실패', e)
@@ -67,7 +67,7 @@
   }
   
   const goToEdit = () => {
-    router.push(`/headquarters/${headquarterId}/events/${noticeId}/edit`)
+    router.push(`/events/${noticeId}/edit`)
   }
   
   const deleteNotice = async () => {
@@ -75,7 +75,7 @@
     if (!confirmed) return
   
     try {
-      await apiClient.delete(`/notice/${noticeId}/${headquarterId}`)
+      await apiClient.delete(`/notice/${noticeId}`)
       alert('삭제되었습니다.')
       router.push('/event-list') // 또는 name: 'event' 사용 가능
     } catch (e) {
