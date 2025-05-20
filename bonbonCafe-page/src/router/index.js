@@ -25,7 +25,7 @@ const MyHeadquarterInfo = () => import('@/views/headquarter/MyHeadquarterInfo.vu
 const EditHeadquarter = () => import('@/views/headquarter/EditHeadquarter.vue')
 
 const StockOrder = () => import('@/views/stock/StockOrder.vue')
-const StockHistoryEdit = () => import('@/views/stock/StockHistoryEdit.vue')
+// const StockHistoryEdit = () => import('@/views/stock/StockHistoryEdit.vue')
 const FranchiseOrderList = () => import('@/views/stock/FranchiseOrderList.vue')
 const FranchiseStockList = () => import('@/views/stock/FranchiseStockList.vue')
 const HeadquarterStockList = () => import('@/views/stock/HeadquarterStockList.vue')
