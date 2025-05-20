@@ -20,7 +20,6 @@
   import apiClient from '@/api'
   
   const router = useRouter()
-  const headquarterId = 3 // 필요 시 props로 대체 가능
   
   const formRef = ref(null)
   
@@ -33,9 +32,9 @@
   
   const submitNotice = async () => {
     try {
-      const { data } = await apiClient.post(`/notice/${headquarterId}`, form.value)
+      const { data } = await apiClient.post(`/notice`, form.value)
       alert('공지 등록 완료!')
-      router.push(`/headquarters/${headquarterId}/notices/${data.noticeId}`)
+      router.push(`/headquarters/notices/${data.noticeId}`)
     } catch (e) {
       console.error('❌ 등록 실패', e)
       alert('공지 등록 중 오류 발생')

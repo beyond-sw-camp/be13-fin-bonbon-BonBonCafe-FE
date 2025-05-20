@@ -1,18 +1,45 @@
 <template>
-    <div id="map" style="width:100%; height:400px;"></div>
-  </template>
-  
-  <script setup>
-//   import { onMounted } from 'vue'
-  
-//   onMounted(() => {
-//     const mapContainer = document.getElementById('map'); // 지도를 표시할 div
-//     const mapOption = {
-//       center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-//       level: 3 // 지도의 확대 레벨
-//     };
-  
-//     const map = new kakao.maps.Map(mapContainer, mapOption); // 지도 생성
-//   });
-  </script>
-  
+  <v-container>
+      <v-col>
+        <h2>ddddddddd</h2>
+      </v-col>
+      <v-col>
+        <FranchiseForm />
+      </v-col>
+      <v-col class="btnBox">
+        <v-btn  
+          rounded="xl" 
+          color="#D8DBBD"
+          size="small" 
+          width="100px"
+          class="mt-8"
+        >
+          등록
+        </v-btn>
+        <v-btn  
+          rounded="xl" 
+          color="#efefef"
+          size="small" 
+          width="100px"
+          class="mt-8"
+        >
+          뒤로가기
+        </v-btn>
+      </v-col>
+  </v-container>    
+    
+
+
+</template>
+
+<script setup>
+import FranchiseForm from '@/components/franchise/FranchiseForm.vue';
+
+</script>
+
+<style scoped>
+.btnBox{
+  display: flex;
+}
+</style>
+

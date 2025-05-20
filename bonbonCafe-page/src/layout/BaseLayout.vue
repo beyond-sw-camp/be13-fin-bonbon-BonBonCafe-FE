@@ -1,16 +1,21 @@
 <template>
-  <v-layout class="rounded rounded-md border">
-    <Sidebar />
+  <v-layout class="rounded rounded-md border" >
+    <Sidebar/>
+    
+    <Header/>
+    
+      <v-main class="d-flex align-center justify-center main-bg" height="100%">
+      <!-- <v-main class="d-flex flex-column main-bg"  style="width: 100%; height: 130vh;"> -->
 
-    <v-main class="d-flex align-center justify-center main-bg" height="100%">
-      <Header />
-
-      <v-container>
-        <RouterView/>
-      </v-container>
-    </v-main>
-
-    <Footer />
+        <v-container
+          class="pa-0"
+          >
+          <RouterView/>
+        </v-container>
+        
+      </v-main>
+      
+      <Footer />
   </v-layout>
 </template>
 
@@ -23,8 +28,9 @@ import Sidebar from '@/components/common/Sidebar.vue';
 
 <style scoped>
 .main-bg {
-  background-color: #fffff4;
-  min-height: 100vh;
-  padding-top: 70px;
+  background-color: #f5f5f5;
+  /* min-height: 100vh; */
+  /* padding-top: 70px; */
+  
 }
 </style>

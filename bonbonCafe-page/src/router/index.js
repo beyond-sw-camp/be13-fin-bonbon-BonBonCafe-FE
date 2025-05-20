@@ -13,18 +13,41 @@ const MainView = () => import('@/views/MainView.vue')
 const FranchiseeAccount = () => import('@/views/accounts/FranchiseeAccount.vue')
 const ManagerAccounts = () => import('@/views/accounts/ManagerAccount.vue')
 
+const FranchiseListForMenu = () => import('@/views/franchise/FranchiseListForMenu.vue')
+const FranchiseMenuList = () => import('@/views/menu/FranchiseMenuList.vue')
 const MenuList = () => import('@/views/menu/MenuList.vue')
 const MenuRegister = () => import('@/views/menu/MenuRegister.vue')
+const MenuDetail = () => import('@/views/menu/MenuDetail.vue')
+const MenuEdit = () => import('@/views/menu/MenuEdit.vue')
+const FranchiseMenuById = () => import('@/views/menu/FranchiseMenuById.vue')
+
+const MyHeadquarterInfo = () => import('@/views/headquarter/MyHeadquarterInfo.vue')
+const EditHeadquarter = () => import('@/views/headquarter/EditHeadquarter.vue')
+
+const StockOrder = () => import('@/views/stock/StockOrder.vue')
+const StockHistoryEdit = () => import('@/views/stock/StockHistoryEdit.vue')
+const FranchiseOrderList = () => import('@/views/stock/FranchiseOrderList.vue')
+const FranchiseStockList = () => import('@/views/stock/FranchiseStockList.vue')
+const HeadquarterStockList = () => import('@/views/stock/HeadquarterStockList.vue')
+const StockOrderHistory = () => import('@/views/stock/StockOrderHistory.vue')
+const StockHistoryDetail = () => import('@/views/stock/StockHistoryDetail.vue')
+const HeadquarterStockRegister = () => import('@/views/stock/HeadquarterStockRegister.vue')
+const HeadquarterStockDetail = () => import('@/views/stock/HeadquarterStockDetail.vue')
+const HeadquarterStockEdit = () => import('@/views/stock/HeadquarterStockEdit.vue')
 
 const FranchiseList = () => import('@/views/franchise/FranchiseList.vue')
 const FranchiseRegister = () => import('@/views/franchise/FranchiseRegister.vue')
+const MapView = () => import('@/views/franchise/MapView.vue')
 
 const SalesAnalysis = () => import('@/views/sales/SalesAnalysis.vue')
 const SalesForecast = () => import('@/views/sales/SalesForecast.vue')
 
 const NoticeList = () => import('@/views/board/NoticeList.vue')
+const NoticeRegister = () => import('@/views/board/NoticeRegister.vue')
+const NoticeDetail = () => import('@/views/board/NoticeDetail.vue')
 const EventList = () => import('@/views/board/EventList.vue')
-
+const EventRegister = () => import('@/views/board/EventRegister.vue')
+const EventDetail = () => import('@/views/board/EventDetail.vue')
 const NoticeEdit = () => import('@/views/board/NoticeEdit.vue')
 
 // createRouter : Vue Router 설정 함수 
@@ -67,19 +90,34 @@ const router = createRouter({
           component: ManagerAccounts,
         },
         {
-          path: 'headquarters/:headquarterId/menus',
+          path: 'franchise-menu-list',
+          name: 'franchise-menu-list',
+          component: FranchiseMenuList,
+        },
+        {
+          path: '/headquarters/info',
+          name: 'headquarter-info',
+          component: MyHeadquarterInfo
+        },
+        {
+          path: '/headquarters/edit',
+          name: 'headquarter-edit',
+          component: EditHeadquarter
+        },
+        {
+          path: 'headquarters/menus',
           name: 'menu-list',
           component: MenuList,
         },
         {
-          path: 'headquarters/:headquarterId/menus/:menuId',
+          path: 'headquarters/menus/:menuId',
           name: 'menu-detail',
-          component: () => import('@/views/menu/MenuDetail.vue')
+          component: MenuDetail,
         },
         {
-          path: 'headquarters/:headquarterId/menus/:menuId/edit',
+          path: 'headquarters/menus/:menuId/edit',
           name: 'menu-edit',
-          component: () => import('@/views/menu/MenuEdit.vue')
+          component: MenuEdit,
         },
         {
           path:'menu-register',
@@ -87,14 +125,80 @@ const router = createRouter({
           component: MenuRegister,
         },
         {
+          path:'stock-order',
+          name: 'stock-order',
+          component: StockOrder,
+        },
+        {
+          path:'franchise-stock-list',
+          name: 'franchise-stock-list',
+          component: FranchiseStockList,
+        },
+        {
+          path: '/headquarters/stocks',
+          name: 'headquarter-stock-list',
+          component: HeadquarterStockList,
+        },
+        {
+          path:'stock-order-history',
+          name: 'stock-order-history',
+          component: StockOrderHistory,
+        },
+        {
+          path: '/stocks/:historyId/detail',          
+          name: 'stock-history-detail',
+          component: StockHistoryDetail,
+        },
+        {
+          path: 'headquarter-stock-register',
+          name: 'headquarter-stock-register',
+          component: HeadquarterStockRegister
+        },
+        {
+          path: 'headquarter-stocks/:headquarterStockId',
+          name: 'headquarter-stock-detail',
+          component: HeadquarterStockDetail,
+        },
+        {
+          path: 'headquarter-stocks/:headquarterStockId/edit',
+          name: 'headquarter-stock-edit',
+          component: HeadquarterStockEdit,
+        },
+        {
+          path: '',
+          // path: '/headquarters/:headquarterId/franchise/:franchiseId/stocks/:historyId/edit',
+          name: 'stock-history-edit',
+          component: StockHistoryEdit,
+        },
+        {
           path:'franchise-register',
           name: 'franchise-register',
           component: FranchiseRegister,
         },
         {
+          path: 'headquarters/franchise-order-list',
+          name: 'franchise-order-list',
+          component: FranchiseOrderList,
+        },
+        {
           path:'franchise-list',
           name: 'franchise-list',
           component: FranchiseList,
+        },
+        {
+          path: '/headquarters/franchise-menu-list',
+          name: 'franchise-menu-franchise-list',
+          component: FranchiseListForMenu,
+        },
+        {
+          path: '/headquarters/franchise-menu-list/:franchiseId',
+          name: 'franchise-menu-by-id',
+          component: FranchiseMenuById,
+        },
+        {
+          path:'kakao-map',
+          name: 'kakao-map',
+          component: MapView,
         },
         {
           path:'sales-analysis',
@@ -112,7 +216,7 @@ const router = createRouter({
           component: NoticeList,
         },
         {
-          path: 'headquarters/:headquarterId/notices/:noticeId/edit',
+          path: 'notices/:noticeId/edit',
           name: 'notice-edit',
           component: NoticeEdit,
         },
@@ -124,25 +228,27 @@ const router = createRouter({
         {
           path: 'notice-register',
           name: 'notice-register',
-          component: () => import('@/views/board/NoticeRegister.vue')
+          component: NoticeRegister,
         },
         {
           path: 'event-register',
           name: 'event-register',
-          component: () => import('@/views/board/EventRegister.vue')
+          component: EventRegister,
         },
         {
-          path: '/headquarters/:headquarterId/events/:noticeId/edit',
+          path: '/events/:noticeId/edit',
           name: 'event-edit',
-          component: () => import('@/views/board/NoticeEdit.vue')
+          component: NoticeEdit,
         },
         {
-          path: '/headquarters/:headquarterId/notices/:noticeId',
-          component: () => import('@/views/board/NoticeDetail.vue')
+          path: '/headquarters/notices/:noticeId',
+          name: 'notice-detail',
+          component: NoticeDetail
         },
         {
-          path: '/headquarters/:headquarterId/events/:noticeId',
-          component: () => import('@/views/board/EventDetail.vue')
+          path: '/headquarters/events/:noticeId',
+          name: 'event-detail',
+          component: EventDetail
         }
       ]
     },

@@ -37,7 +37,7 @@
 <style scoped>
 
 .transparent-app-bar {
-  background-color: transparent !important;
+  /* background-color: transparent !important; */
   box-shadow: none !important;
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
   z-index: 2000 !important; /* Vuetify 기준 상위 우선순위 */
