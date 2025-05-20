@@ -4,9 +4,8 @@
         <v-text-field v-model="postcode" label="우편번호" readonly class="mr-2"/>
         <v-btn @click="execDaumPostcode" color="error" class="mb-4">우편번호 찾기</v-btn>
     </div>
-        <v-text-field v-model="address" label="주소" readonly />
-        <v-text-field v-model="detailAddress" label="상세주소" />
-        <v-text-field v-model="extraAddress" label="참고항목" readonly />
+    <v-text-field v-model="address" label="주소" readonly />
+    <v-text-field v-model="detailAddress" label="상세주소" />
 
     <!-- 카카오 주소 검색 레이어 -->
     <div id="layer" style="display:none;position:fixed;overflow:hidden;z-index:999;-webkit-overflow-scrolling:touch;">
@@ -27,7 +26,6 @@ import { ref, onMounted } from 'vue'
 const postcode = ref('')
 const address = ref('')
 const detailAddress = ref('')
-const extraAddress = ref('')
 
 let element_layer = null
 
@@ -45,27 +43,11 @@ function execDaumPostcode() {
   new window.daum.Postcode({
     oncomplete: function (data) {
       let addr = ''
-      let extra = ''
 
       if (data.userSelectedType === 'R') {
         addr = data.roadAddress
       } else {
         addr = data.jibunAddress
-      }
-
-      if (data.userSelectedType === 'R') {
-        if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
-          extra += data.bname
-        }
-        if (data.buildingName !== '' && data.apartment === 'Y') {
-          extra += (extra !== '' ? ', ' + data.buildingName : data.buildingName)
-        }
-        if (extra !== '') {
-          extra = ` (${extra})`
-        }
-        extraAddress.value = extra
-      } else {
-        extraAddress.value = ''
       }
 
       postcode.value = data.zonecode
