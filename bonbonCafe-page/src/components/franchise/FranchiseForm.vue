@@ -1,163 +1,242 @@
- <template>
-    <form @submit.prevent="handleSubmit">
-        <v-table class="pa-0 d-flex">
-        <tbody>
-          <tr>
-            <td class=" thead-title tb-bg"><span class="required">* </span> 가맹점 이름</td>
-            <td class=""><input type="text"/></td>
-            <td class=" thead-title"><span class="required">* </span> 점주 이름</td>
-            <td class=""><input type="text"/></td>
-          </tr>
-          <tr>
-            <td class=" thead-title "><span class="required">* </span> 가맹점 사진</td>
-              <td colspan="1">
-                <div class="ma-5 upload-box">사진 올리기</div>
-                <input type="file" class="file-input" />
-              </td>
-            <td class=" thead-title"><span class="required">* </span> 점주 사진</td>
-            <td colspan="1">
-                <div class="upload-box">사진 올리기</div>
-                <input type="file" class="file-input" />
-              </td>
-          </tr>
-          <tr>
-            <td class=" thead-title"><span class="required">* </span> 가맹점 전화번호</td>
-            <td class=""><input type="tel"/></td>
-            <td class=" thead-title"><span class="required">* </span> 담당자</td>
-            <td>
-              <select>
-                <option disabled selected>선택</option>
-                <option>홍길동</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td class="thead-title"><span class="required">* </span>우편 번호</td>
-            <td>
-              <input type="text" />
-              <button class="search-btn">🔍</button>
-            </td>
-            <td class="thead-title">주차 가능</td>
-            <td>
-              <label><input type="checkbox" /> 가능</label>
-              <label><input type="checkbox" /> 불가</label>
-            </td>
-          </tr>
-          <tr>
-            <td class=" thead-title"></td>
-            <td class=" thead-title"><span class="required">* </span> 운영상태</td>
-            <td class="">ddd</td>
-          </tr>
-          <tr>
-            <td class=" thead-title"></td>
-            <td class="">ddd</td>
-            <td class=" thead-title"><span class="required">* </span> 운영 시간</td>
-            <td class="">ddd</td>
-          </tr>
-          <tr>
-            <td class=" thead-title"><span class="required">* </span> 개업 일자 </td>
-            <td class="">ddd</td>
-            <td class=" thead-title"> 좌석수</td>
-            <td class="">ddd</td>
-          </tr>
-        </tbody>
-        </v-table>
-    </form>
+
+<template>
+  <v-container class="pa-0">
+    <v-table class="franchise-register">
+      <tbody>
+        <tr>
+          <td class="title"><span class="required">*</span> 가맹점 이름</td>
+          <td>
+            <v-text-field 
+              density="comfortable"
+              variant="outlined"
+              class="textBox"
+            />
+          </td>
+          <td class="title"><span class="required">*</span> 점주 이름</td>
+          <td>
+            <v-text-field 
+              density="comfortable"
+              variant="outlined"
+              class="textBox"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td class="title"><span class="required">*</span> 매장 사진</td>
+          <td><v-file-input prepend-icon="mdi-camera" dense></v-file-input></td>
+          <td class="title"><span class="required">*</span> 점주 사진</td>
+          <td><v-file-input prepend-icon="mdi-camera" dense></v-file-input></td>
+        </tr>
+        <tr>
+          <td class="title"><span class="required">*</span> 매장 전화번호</td>
+          <td>
+            <v-text-field
+              type="tel"
+              density="comfortable"
+              variant="outlined"
+              class=" textBox"
+            />
+          </td>
+          <td class="title"><span class="required">*</span> 담당자</td>
+          <td>
+            <v-select
+              :items="['홍길동']"
+              placeholder="선택"
+              density="comfortable"
+              variant="outlined"
+              class=" textBox"
+            ></v-select>
+          </td>
+        </tr>
+        <tr>
+          <td class="title" ><span class="required">*</span> 주소</td>
+          <td colspan="" >
+            <KakaoAPI/>
+          </td>
+          <td class="title"><span class="required">*</span> 운영 시간</td>
+          <td colspan="3">
+            <div class="d-flex align-center">
+              <v-text-field 
+                type="time" 
+                density="comfortable"
+                variant="outlined"
+                class="mr-2 textBox"
+              />
+              <span class="mx-2">~</span>
+              <v-text-field
+                type="time" 
+                density="comfortable"
+                variant="outlined"
+                class=" textBox"
+              />
+            </div>
+          </td>
+        </tr>
+      
+        <tr>
+          <td class="title"><span class="required">*</span> 주차 여부</td>
+          <td>
+            <v-row no-gutters>
+              <v-col cols="6"><v-checkbox label="가능" value="가능"/></v-col>
+              <v-col cols="6"><v-checkbox label="불가" value="불가"/></v-col>
+            </v-row>
+          </td>
+          <td class="title"><span class="required">*</span> 개업 일자</td>
+          <td>
+            <v-row no-gutters>
+              <v-col cols="3">
+                <v-select
+                  :items="['2023', '2024', '2025']" 
+                  label="년" 
+                  density="comfortable"
+                  variant="outlined"
+                  class=" textBox mr-2"
+
+                />
+              </v-col>
+              <v-col cols="3">
+                <v-select 
+                  :items="['01', '02', '03']" 
+                  label="월" 
+                  density="comfortable"
+                  variant="outlined"
+                  class=" textBox mr-2"
+
+              />
+              </v-col>
+              <v-col cols="3">
+                <v-select 
+                  :items="['01', '02', '03']" 
+                  label="일" 
+                  density="comfortable"
+                  variant="outlined"
+                  class=" textBox"
+
+                />
+              </v-col>
+            </v-row>
+          </td>
+        </tr>
+        <tr>
+          <td class="title"><span class="required">*</span> 운영 상태</td>
+          <td>
+            <v-row no-gutters>
+              <v-col cols="6"><v-checkbox label="운영 중" value="운영중" dense></v-checkbox></v-col>
+              <v-col cols="6"><v-checkbox label="운영 중단" value="중단" dense></v-checkbox></v-col>
+            </v-row>
+          </td>
+          <td class="title"><span class="required">*</span> 좌석수</td>
+          <td>
+            <v-text-field 
+              type="number"
+              density="comfortable"
+              variant="outlined"
+              class="mr-2 textBox"
+              dense
+            />
+          </td>
+        </tr>
+      </tbody>
+    </v-table>
+  </v-container>
 </template>
 
-
 <script setup>
+import KakaoAPI from './KakaoAPI.vue'
+import { ref, onMounted } from 'vue'
 
+// 주소 관련 변수들 선언
+const postcode = ref('')
+const address = ref('')
+const detailAddress = ref('')
+const extraAddress = ref('')
+const elementWrap = ref(null)
+
+// 페이지 마운트 후 스크립트 동적 삽입 (한 번만)
+onMounted(() => {
+  if (!window.daum?.Postcode) {
+    const script = document.createElement('script')
+    script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js'
+    script.async = true
+    document.head.appendChild(script)
+  }
+})
+
+function foldDaumPostcode() {
+  if (elementWrap.value) {
+    elementWrap.value.style.display = 'none'
+  }
+}
+
+function execDaumPostcode() {
+  const currentScroll = Math.max(document.body.scrollTop, document.documentElement.scrollTop)
+
+  new window.daum.Postcode({
+    oncomplete: function (data) {
+      let fullAddr = '' // 최종 주소
+      let extra = ''    // 참고항목
+
+      if (data.userSelectedType === 'R') {
+        fullAddr = data.roadAddress
+      } else {
+        fullAddr = data.jibunAddress
+      }
+
+      if (data.userSelectedType === 'R') {
+        if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+          extra += data.bname
+        }
+        if (data.buildingName !== '' && data.apartment === 'Y') {
+          extra += (extra !== '' ? ', ' + data.buildingName : data.buildingName)
+        }
+        if (extra !== '') {
+          extra = ' (' + extra + ')'
+        }
+      }
+
+      postcode.value = data.zonecode
+      address.value = fullAddr
+      extraAddress.value = extra
+      detailAddress.value = ''
+
+      elementWrap.value.style.display = 'none'
+      document.body.scrollTop = currentScroll
+    },
+    onresize: function (size) {
+      elementWrap.value.style.height = size.height + 'px'
+    },
+    width: '100%',
+    height: '100%'
+  }).embed(elementWrap.value)
+
+  elementWrap.value.style.display = 'block'
+}
 </script>
+
+
+
+
+
 <style scoped>
-.thead-title{
-  width: 120px; 
-  max-width: 150px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  background-color: #efefef;
-}
-
 .franchise-register {
-  background: #fdfcf6;
-  padding: 30px;
-  font-family: 'Pretendard', sans-serif;
+  background-color: #ffffff;
 }
-
-.title {
-  font-size: 24px;
-  font-weight: 800;
-  margin-bottom: 20px;
-  color: #1a1a1a;
-}
-
-.register-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 10px;
-}
-
-.register-table td {
-  padding: 10px;
-  vertical-align: middle;
-}
-
-.register-table input,
-.register-table select {
-  padding: 6px 10px;
-  width: 100%;
-  box-sizing: border-box;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-}
-
-.upload-box {
-  height: 200px;
-  border: 2px dashed #ccc;
-  text-align: center;
-  padding: 20px;
-  color: #aaa;
+.title{
   background-color: #efefef;
-  border-radius: 12px;
-  cursor: pointer;
+  width: 130px;
 }
 
 .required {
   color: red;
 }
+.textBox{
+  color: gray;
+  margin-top: 20px;
+  margin-bottom: 0px;
 
-.search-btn {
-  margin-left: 4px;
-  background: #f1f1f1;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 6px;
-  cursor: pointer;
 }
 
-.btn-wrap {
-  margin-top: 30px;
-  text-align: center;
+td {
+  vertical-align: middle;
 }
-
-.btn {
-  padding: 10px 30px;
-  margin: 0 10px;
-  font-weight: 600;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-}
-
-.submit {
-  background-color: #b59f78;
-  color: white;
-}
-
-.cancel {
-  background-color: #f1f1f1;
-  color: #333;
-}
-
 </style>

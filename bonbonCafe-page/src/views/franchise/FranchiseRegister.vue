@@ -1,5 +1,6 @@
 <template>
   <div class="ma-15 mt-4 pa-10">
+    <h2>가맹점 등록</h2>
     
     <div>
       <FranchiseForm />
