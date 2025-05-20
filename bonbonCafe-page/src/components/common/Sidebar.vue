@@ -40,7 +40,10 @@
 <script setup>
   import { ref } from 'vue'
   import { useRouter } from 'vue-router'
-
+  import { computed } from 'vue'
+  import { useAuthStore } from '@/stores/auth'
+  const authStore = useAuthStore()
+  const userRole = computed(() => authStore.userInfo.role)
   const router = useRouter()
   const drawer = ref(true)
   const opened = ref([])
@@ -56,12 +59,23 @@
     ],
   },
   {
+    title: '본사 정보',
+    icon: 'mdi-office-building',
+    items: userRole.value === 'ROLE_HEADQUARTER'
+      ? [
+          { title: '내 본사 정보' },
+          { title: '본사 정보 수정' }
+        ]
+      : [
+          { title: '내 본사 정보' }
+        ]
+  },
+  {
     title: '메뉴 관리',
     icon: 'mdi-silverware-fork-knife',
-    items: [
-      { title: '메뉴 조회' },
-      { title: '메뉴 등록' },
-    ],
+    items: userRole.value === 'ROLE_HEADQUARTER'
+      ? [ { title: '가맹점 메뉴 조회' }, { title: '메뉴 조회' }, { title: '메뉴 등록' } ]
+      : [ { title: '가맹점 메뉴 조회' }, { title: '메뉴 조회' } ]
   },
   {
     title: '재고 관리',
@@ -104,15 +118,22 @@
   const routeMap = {
     '가맹점주 관리': '/franchisee-accounts',
     '담당자 관리': '/manager-accounts',
-    '메뉴 조회': { name: 'menu-list', params: { headquarterId: 1 }}, // 하드코딩
+    '가맹점 메뉴 조회': computed(() =>
+    userRole.value === 'ROLE_HEADQUARTER'
+      ? { name: 'franchise-menu-franchise-list' }
+      : { name: 'franchise-menu-list' }
+  ).value,
+    '메뉴 조회': { name: 'menu-list' },
     '메뉴 등록': '/menu-register',
     '재고 조회': '/franchise-stock-list',
-    '본사 재고 조회': { name: 'headquarter-stock-list', params: { headquarterId: 1 } }, // 하드코딩
+    '본사 재고 조회': { name: 'headquarter-stock-list' },
     '재고 주문': '/stock-order',
     '재고 주문 내역': '/stock-order-history',
-    '가맹점들의 주문 내역': { name: 'franchise-order-list', params: { headquarterId: 1 } }, // 하드코딩
+    '가맹점들의 주문 내역': { name: 'franchise-order-list' },
     '가맹점 조회': '/franchise-list',
     '가맹점 등록': '/franchise-register',
+    '내 본사 정보': { name: 'headquarter-info' },
+    '본사 정보 수정': { name: 'headquarter-edit' },
     'kakao map': '/kakao-map',
     '매출 분석': '/sales-analysis',
     '매출 예측': '/sales-forecast',

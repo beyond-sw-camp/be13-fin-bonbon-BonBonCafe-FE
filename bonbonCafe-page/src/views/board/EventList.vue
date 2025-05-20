@@ -48,7 +48,6 @@ import { useRouter } from 'vue-router'
 import apiClient from '@/api'
 
 const router = useRouter()
-const headquarterId = 3 // 하드코딩
 
 const events = ref([])
 const page = ref(1)
@@ -58,7 +57,7 @@ const totalElements = ref(0)
 
 const fetchEvents = async () => {
   try {
-    const { data } = await apiClient.get(`/notice/${headquarterId}`, {
+    const { data } = await apiClient.get(`/notice`, {
       params: {
         page: page.value - 1,
         postType: 'EVENT'
@@ -73,7 +72,7 @@ const fetchEvents = async () => {
 }
 
 const goToDetail = (id) => {
-  router.push(`/headquarters/${headquarterId}/events/${id}`)
+  router.push(`/headquarters/events/${id}`)
 }
 
 const goToRegister = () => {

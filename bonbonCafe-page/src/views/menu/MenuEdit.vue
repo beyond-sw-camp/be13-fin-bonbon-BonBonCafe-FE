@@ -125,7 +125,7 @@
   }
   
   onMounted(async () => {
-    const { data } = await apiClient.get(`/headquarters/${headquarterId}/menus/${menuId}`)
+    const { data } = await apiClient.get(`/headquarters/menus/${menuId}`)
     menu.value = {
       name: data.name,
       price: data.price,
@@ -154,7 +154,7 @@
   })
   
   const submitUpdate = async () => {
-    await apiClient.put(`/headquarters/${headquarterId}/menus/${menuId}`, {
+    await apiClient.put(`/headquarters/menus/${menuId}`, {
       name: menu.value.name,
       price: menu.value.price,
       description: menu.value.description,
@@ -169,7 +169,7 @@
         }))
     })
     alert('수정되었습니다.')
-    router.push({ name: 'menu-detail', params: { headquarterId, menuId } })
+    router.push({ name: 'menu-detail', params: { menuId } })
   }
   
   const goBack = () => {
