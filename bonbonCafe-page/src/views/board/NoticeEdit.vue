@@ -30,7 +30,6 @@
   const route = useRoute()
   const router = useRouter()
   
-  const headquarterId = route.params.headquarterId
   const noticeId = route.params.noticeId
   
   const form = ref({
@@ -44,7 +43,7 @@
   
   const fetchNotice = async () => {
     try {
-      const { data } = await apiClient.get(`/notice/${noticeId}/${headquarterId}`)
+      const { data } = await apiClient.get(`/notice/${noticeId}`)
       form.value = {
         title: data.title,
         content: data.content,
@@ -58,10 +57,10 @@
   
   const submitUpdate = async () => {
     try {
-      await apiClient.put(`/notice/${noticeId}/${headquarterId}`, form.value)
+      await apiClient.put(`/notice/${noticeId}`, form.value)
       alert(`${form.value.postType === 'EVENT' ? '이벤트' : '공지사항'} 수정 완료!`)
       const target = form.value.postType === 'EVENT' ? 'events' : 'notices'
-      router.push(`/headquarters/${headquarterId}/${target}/${noticeId}`)
+      router.push(`/headquarters/${target}/${noticeId}`)
     } catch (e) {
       console.error('❌ 수정 실패', e)
       alert('수정 중 오류 발생')

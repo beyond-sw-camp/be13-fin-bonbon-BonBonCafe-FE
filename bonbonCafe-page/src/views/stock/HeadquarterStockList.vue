@@ -2,7 +2,7 @@
   <div>
     <h3>본사 재고 조회</h3>
 
-    <!-- 🔍 검색창 (재료명) -->
+    <!-- 탐색상 (재료명) -->
     <div class="d-flex mb-4" style="gap: 8px;">
       <v-text-field
         v-model="search"
@@ -11,9 +11,12 @@
         class="flex-grow-1"
         @keyup.enter="onSearch"
       />
+
+      <!-- ✔️ 재고 추가 버튼 -->
+      <v-btn color="primary" @click="goToRegister">재고 추가</v-btn>
     </div>
 
-    <!-- 📦 재고 카드 목록 -->
+    <!-- 포함 재고 카드 목록 -->
     <v-row>
       <v-col
         v-for="stock in stocks"
@@ -34,7 +37,7 @@
       </v-col>
     </v-row>
 
-    <!-- ✅ 페이징 -->
+    <!-- ✔️ 페이직 -->
     <v-pagination
       v-model="page"
       :length="totalPages"
@@ -46,22 +49,20 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import apiClient from '@/api'
 
-const route = useRoute()
 const router = useRouter()
-const headquarterId = route.params.headquarterId
 
 const stocks = ref([])
 const page = ref(1)
 const totalPages = ref(1)
 const search = ref('')
 
-// 📦 전체 재고 조회 (검색 포함)
+// 포함 전체 재고 조회 (검색 포함)
 const fetchStocks = async () => {
   try {
-    const { data } = await apiClient.get(`/headquarter-stocks/${headquarterId}`, {
+    const { data } = await apiClient.get(`/headquarter-stocks`, {
       params: {
         page: page.value - 1,
         search: search.value || null
@@ -74,7 +75,7 @@ const fetchStocks = async () => {
   }
 }
 
-// 🔍 검색 시 페이지 초기화
+// 🔍 검색 시 페이직 초기화
 const onSearch = () => {
   page.value = 1
   fetchStocks()
@@ -83,6 +84,11 @@ const onSearch = () => {
 // 📌 카드 클릭 시 재고 상세로 이동
 const goToStockDetail = (stockId) => {
   router.push({ name: 'headquarter-stock-detail', params: { headquarterStockId: stockId } })
+}
+
+// ➕ 재고 추가로 이동
+const goToRegister = () => {
+  router.push({ name: 'headquarter-stock-register' })
 }
 
 onMounted(fetchStocks)

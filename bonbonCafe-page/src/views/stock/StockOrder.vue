@@ -29,9 +29,6 @@ import apiClient from '@/api'
 const route = useRoute()
 const router = useRouter()
 
-const headquarterId = route.params.headquarterId || 1 // 본사 ID
-const franchiseId = route.params.franchiseId || 24    // 가맹점 ID
-
 const ingredients = ref([])
 const selectedIngredient = ref(null)
 const quantity = ref(0)
@@ -39,7 +36,7 @@ const quantity = ref(0)
 onMounted(async () => {
   try {
     // ✅ 본사에 등록된 재료만 조회
-    const res = await apiClient.get(`/headquarter-stocks/${headquarterId}/ingredients`)
+    const res = await apiClient.get(`/headquarter-stocks/ingredients`)
     ingredients.value = res.data
   } catch (e) {
     console.error('❌ 본사 재고 재료 조회 실패', e)
@@ -53,7 +50,7 @@ const submitRequest = async () => {
   }
 
   try {
-    await apiClient.post(`/franchiseOrder/${headquarterId}/${franchiseId}`, {
+    await apiClient.post(`/franchiseOrder`, {
       ingredientId: selectedIngredient.value,
       quantity: quantity.value,
       status: 'REQUESTED'

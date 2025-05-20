@@ -80,7 +80,6 @@
   import apiClient from '@/api'
   
   const router = useRouter()
-  const headquarterId = 1 // 하드코딩
   
   const formRef = ref(null)
   const menu = ref({
@@ -139,7 +138,7 @@
   })
   
   const submitMenu = async () => {
-    await apiClient.post(`/headquarters/${headquarterId}/menus`, {
+    await apiClient.post(`/headquarters/menus`, {
       name: menu.value.name,
       price: menu.value.price,
       description: menu.value.description,
@@ -152,7 +151,7 @@
     })
   
     alert('메뉴가 등록되었습니다.')
-    router.push({ name: 'menu-list', params: { headquarterId } })
+    router.push({ name: 'menu-list' })
   }
   
   const goBack = () => {

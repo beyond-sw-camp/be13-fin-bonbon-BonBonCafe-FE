@@ -56,7 +56,7 @@
   
   const fetchHistory = async () => {
     try {
-      const { data } = await apiClient.get(`/franchiseOrder/${franchiseId}/list`, {
+      const { data } = await apiClient.get(`/franchiseOrder/list`, {
         params: {
           page: page.value - 1
         }

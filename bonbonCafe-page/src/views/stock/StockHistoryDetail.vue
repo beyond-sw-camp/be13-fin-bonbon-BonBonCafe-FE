@@ -67,7 +67,7 @@ const statusOptions = [
 
 const fetchDetail = async () => {
   try {
-    const { data } = await apiClient.get(`/franchiseOrder/${franchiseId}/${historyId}`)
+    const { data } = await apiClient.get(`/franchiseOrder/history/${historyId}`)
     history.value = data
     editForm.value = {
       ingredientId: data.ingredientId,
@@ -91,7 +91,7 @@ const submitUpdate = async () => {
       status: editForm.value.status
     })
 
-    await apiClient.put(`/franchiseOrder/${headquarterId}/${franchiseId}/${historyId}`, {
+    await apiClient.put(`/franchiseOrder/${historyId}`, {
       ingredientId: editForm.value.ingredientId,
       quantity: editForm.value.quantity,
       status: editForm.value.status
@@ -117,9 +117,9 @@ const cancelEdit = () => {
 const deleteHistory = async () => {
   if (confirm('정말 삭제하시겠습니까?')) {
     try {
-      await apiClient.delete(`/franchiseOrder/${franchiseId}/${historyId}`)
+      await apiClient.delete(`/franchiseOrder/${historyId}`)
       alert('삭제되었습니다')
-      router.push({ name: 'stock-history-list', params: { franchiseId } })
+      router.push({ name: 'stock-order-history' })
     } catch (e) {
       console.error('❌ 삭제 실패', e)
       alert(`삭제 실패: ${e.response?.data?.message || e.message}`)
