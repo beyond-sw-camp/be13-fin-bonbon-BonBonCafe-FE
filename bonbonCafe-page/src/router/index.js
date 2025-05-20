@@ -164,12 +164,12 @@ const router = createRouter({
           name: 'headquarter-stock-edit',
           component: HeadquarterStockEdit,
         },
-        {
-          path: '',
-          // path: '/headquarters/:headquarterId/franchise/:franchiseId/stocks/:historyId/edit',
-          name: 'stock-history-edit',
-          component: StockHistoryEdit,
-        },
+        // {
+        //   path: '',
+        //   // path: '/headquarters/:headquarterId/franchise/:franchiseId/stocks/:historyId/edit',
+        //   name: 'stock-history-edit',
+        //   component: StockHistoryEdit,
+        // },
         {
           path:'franchise-register',
           name: 'franchise-register',
