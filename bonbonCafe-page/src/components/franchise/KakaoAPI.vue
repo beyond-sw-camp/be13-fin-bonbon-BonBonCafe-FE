@@ -1,11 +1,11 @@
 <template>
-  <v-container>
+  <div>
     <div class="d-flex">
-        <v-text-field v-model="postcode" label="우편번호" readonly class="mr-2"/>
-        <v-btn @click="execDaumPostcode" color="error" class="mb-4">우편번호 찾기</v-btn>
+        <v-text-field v-model="postcode" label="우편번호" readonly class="mr-2 textBox" density="comfortable" variant="outlined" width="50px"/>
+        <v-btn @click="execDaumPostcode" color="#efefef" class="mt-2">우편번호 찾기</v-btn>
     </div>
-    <v-text-field v-model="address" label="주소" readonly />
-    <v-text-field v-model="detailAddress" label="상세주소" />
+    <v-text-field v-model="address" label="주소" readonly density="comfortable" variant="outlined" class="textBox"/>
+    <v-text-field v-model="detailAddress" label="상세주소" density="comfortable" variant="outlined" class="textBox"/>
 
     <!-- 카카오 주소 검색 레이어 -->
     <div id="layer" style="display:none;position:fixed;overflow:hidden;z-index:999;-webkit-overflow-scrolling:touch;">
@@ -17,7 +17,7 @@
         alt="닫기 버튼"
       />
     </div>
-  </v-container>
+  </div>
 </template>
 
 <script setup>
@@ -84,5 +84,7 @@ function initLayerPosition() {
 </script>
 
 <style scoped>
-/* 필요 시 커스터마이징 가능 */
+.textBox{
+  color: gray;
+}
 </style>

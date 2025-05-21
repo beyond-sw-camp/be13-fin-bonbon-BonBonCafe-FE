@@ -1,7 +1,7 @@
 <template>
-  <v-container>
+  <v-container class="containerF">
       <v-col>
-        <h2>ddddddddd</h2>
+        <h2>가맹점 등록</h2>
       </v-col>
       <v-col>
         <FranchiseForm />
@@ -38,6 +38,7 @@ import FranchiseForm from '@/components/franchise/FranchiseForm.vue';
 </script>
 
 <style scoped>
+
 .btnBox{
   display: flex;
 }
