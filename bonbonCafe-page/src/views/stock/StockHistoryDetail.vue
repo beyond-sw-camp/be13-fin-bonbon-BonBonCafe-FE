@@ -1,20 +1,28 @@
 <template>
-  <div>
-    <h3>📄 재고 신청 상세</h3>
+  <div class="detail-wrapper ma-8 pa-8">
+    <h3 class="text-2xl font-semibold mb-6">📄 재고 신청 상세</h3>
 
-    <v-card class="pa-4 mb-4">
-      <div><strong>재료명:</strong> {{ history.ingredientName }}</div>
-      <div><strong>수량:</strong>
+    <v-card class="pa-6 mb-6 elevation-1">
+      <div class="mb-4"><strong>재료명:</strong> {{ history.ingredientName }}</div>
+
+      <div class="mb-4">
+        <strong>수량:</strong>
         <span v-if="!editMode">{{ history.quantity }}</span>
         <v-text-field
           v-else
           v-model="editForm.quantity"
           type="number"
-          dense
+          density="compact"
+          class="mt-2"
+          hide-details
+          style="max-width: 200px"
         />
       </div>
-      <div><strong>신청일:</strong> {{ formatDate(history.date) }}</div>
-      <div><strong>상태:</strong>
+
+      <div class="mb-4"><strong>신청일:</strong> {{ formatDate(history.date) }}</div>
+
+      <div class="mb-2">
+        <strong>상태:</strong>
         <span v-if="!editMode">{{ statusLabel(history.historyStatus) }}</span>
         <v-select
           v-else
@@ -22,15 +30,18 @@
           :items="statusOptions"
           item-title="label"
           item-value="value"
-          dense
+          density="compact"
+          class="mt-2"
+          hide-details
+          style="max-width: 200px"
         />
       </div>
     </v-card>
 
-    <div class="d-flex justify-end" style="gap: 8px">
+    <div class="d-flex justify-end" style="gap: 10px">
       <template v-if="editMode">
-        <v-btn color="primary" @click="submitUpdate">수정 완료</v-btn>
-        <v-btn @click="cancelEdit">취소</v-btn>
+        <v-btn color="#D8DBBD" variant="flat" @click="submitUpdate">수정 완료</v-btn>
+        <v-btn variant="outlined" @click="cancelEdit">취소</v-btn>
       </template>
       <template v-else>
         <v-btn color="primary" @click="editMode = true">수정</v-btn>
@@ -47,15 +58,12 @@ import apiClient from '@/api'
 
 const route = useRoute()
 const router = useRouter()
-const headquarterId = route.params.headquarterId || 1
-const franchiseId = route.params.franchiseId || 24
 const historyId = route.params.historyId
 
 const history = ref({})
 const editForm = ref({ ingredientId: null, quantity: 0, status: '' })
 const editMode = ref(false)
 
-// ✅ 한글 드롭다운용 상태 목록
 const statusOptions = [
   { value: 'REQUESTED', label: '신청됨' },
   { value: 'APPROVED', label: '승인됨' },
@@ -82,15 +90,6 @@ const fetchDetail = async () => {
 
 const submitUpdate = async () => {
   try {
-    console.log('📦 수정요청', {
-      headquarterId,
-      franchiseId,
-      historyId,
-      ingredientId: editForm.value.ingredientId,
-      quantity: editForm.value.quantity,
-      status: editForm.value.status
-    })
-
     await apiClient.put(`/franchiseOrder/${historyId}`, {
       ingredientId: editForm.value.ingredientId,
       quantity: editForm.value.quantity,
@@ -142,3 +141,9 @@ const statusLabel = (status) => {
 
 onMounted(fetchDetail)
 </script>
+
+<style scoped>
+.detail-wrapper {
+  background-color: #f5f5f5;
+}
+</style>

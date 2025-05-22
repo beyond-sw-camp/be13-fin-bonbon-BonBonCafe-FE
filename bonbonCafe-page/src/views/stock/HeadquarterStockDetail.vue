@@ -1,32 +1,35 @@
 <template>
-  <div>
-    <h3>본사 재고 상세</h3>
+  <div class="stock-detail-wrapper ma-10 pa-8">
+    <h3 class="text-2xl font-semibold mb-6">📦 본사 재고 상세</h3>
 
-    <v-card v-if="stock" class="pa-4 mt-4">
-      <v-card-title>{{ stock.ingredientName }}</v-card-title>
+    <v-card v-if="stock" class="stock-card elevation-1 pa-6">
+      <v-card-title class="text-xl font-semibold mb-4">
+        {{ stock.ingredientName }}
+      </v-card-title>
 
-      <v-card-text>
-        <div>
+      <v-card-text class="text-base">
+        <div class="mb-3">
           <strong>📦 수량:</strong>
           <span v-if="!editMode">{{ stock.quantity }} {{ stock.unit }}</span>
           <v-text-field
             v-else
             v-model="editForm.quantity"
             type="number"
-            dense
+            hide-details
+            density="compact"
+            class="mt-2"
           />
         </div>
-
-        <div><strong>💰 단가:</strong> {{ stock.unitPrice.toLocaleString() }}원</div>
-        <div><strong>🛒 소비자가:</strong> {{ stock.retailPrice.toLocaleString() }}원</div>
-        <div><strong>🏢 본사:</strong> {{ stock.headquarterName }}</div>
+        <div class="mb-2">💰 <strong>단가:</strong> {{ formatPrice(stock.unitPrice) }}원</div>
+        <div class="mb-2">🛒 <strong>소비자가:</strong> {{ formatPrice(stock.retailPrice) }}원</div>
+        <div class="mt-2 text-caption text-grey-darken-1">🏢 본사: {{ stock.headquarterName }}</div>
       </v-card-text>
 
-      <!-- ✅ 수정/삭제/취소 버튼 -->
-      <v-card-actions class="justify-end" style="gap: 8px;">
+      <!-- ✅ 버튼 영역 -->
+      <v-card-actions class="justify-end mt-4" style="gap: 8px;">
         <template v-if="editMode">
-          <v-btn color="primary" @click="submitUpdate">수정 완료</v-btn>
-          <v-btn @click="cancelEdit">취소</v-btn>
+          <v-btn color="#D8DBBD" variant="flat" @click="submitUpdate">수정 완료</v-btn>
+          <v-btn variant="text" @click="cancelEdit">취소</v-btn>
         </template>
         <template v-else>
           <v-btn color="primary" @click="editMode = true">수정</v-btn>
@@ -35,7 +38,7 @@
       </v-card-actions>
     </v-card>
 
-    <v-alert v-else type="warning" class="mt-4">
+    <v-alert v-else type="warning" class="mt-6" variant="outlined">
       재고 정보를 불러오지 못했습니다.
     </v-alert>
   </div>
@@ -89,10 +92,7 @@ const deleteStock = async () => {
     try {
       await apiClient.delete(`/headquarter-stocks/me/${headquarterStockId}`)
       alert('삭제되었습니다')
-      router.push({
-        name: 'headquarter-stock-list',
-        params: { headquarterId: stock.value.headquarterId }
-      })
+      router.push({ name: 'headquarter-stock-list', params: { headquarterId: stock.value.headquarterId } })
     } catch (e) {
       console.error('❌ 삭제 실패', e)
       alert('삭제 중 오류가 발생했습니다.')
@@ -100,12 +100,18 @@ const deleteStock = async () => {
   }
 }
 
+const formatPrice = (price) => price ? Number(price).toLocaleString() : '-'
+
 onMounted(fetchStock)
 </script>
 
 <style scoped>
-.v-card {
+.stock-detail-wrapper {
+  background-color: #f5f5f5;
+}
+.stock-card {
   max-width: 600px;
   margin: 0 auto;
+  border-radius: 12px;
 }
 </style>
