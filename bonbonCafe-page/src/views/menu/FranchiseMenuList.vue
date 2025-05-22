@@ -18,30 +18,7 @@
             </v-card-title>
             <v-card-subtitle>{{ menu.price }}원</v-card-subtitle>
             <v-card-text>
-              <div>{{ menu.description }}</div>
-  
-              <!-- 카테고리 출력 -->
-              <div v-if="menu.categories?.length" class="mt-2">
-                <v-chip
-                  v-for="cat in menu.categories"
-                  :key="cat.id"
-                  class="ma-1"
-                  color="indigo"
-                  text-color="white"
-                  small
-                >
-                  {{ cat.categoryName }}
-                </v-chip>
-              </div>
-  
-              <!-- 재료 출력 -->
-              <div v-if="menu.menuDetails?.length" class="mt-2 text-sm">
-                <ul class="list-disc ml-4">
-                  <li v-for="detail in menu.menuDetails" :key="detail.ingredientName">
-                    {{ detail.ingredientName }} - {{ detail.quantity }}g
-                  </li>
-                </ul>
-              </div>
+              {{ menu.description }}
             </v-card-text>
             <v-card-actions class="justify-end">
               <v-btn size="small" color="error" @click="deleteMenu(menu.menuId)">삭제</v-btn>
@@ -106,7 +83,7 @@
     const { data } = await apiClient.get('/headquarters/menus', {
       params: {
         page: 0,
-        size: 1000
+        size: 1000 // 충분히 크게 설정해서 전체 가져오기
       }
     })
     headquarterMenus.value = data.content || data
