@@ -69,13 +69,20 @@
 
       <!-- ☕ 메뉴 이미지 (오른쪽) -->
       <v-col cols="12" md="5">
-        <v-img
-          :src="menu.image"
-          height="320"
-          class="rounded-lg"
-          cover
-        />
-      </v-col>
+  <div class="image-wrapper">
+    <template v-if="menu.image && !imageError">
+      <v-img
+        :src="menu.image"
+        class="menu-img"
+        cover
+        @error="imageError = true"
+      />
+    </template>
+    <template v-else>
+      <div class="no-image">[ 이미지 없음 ]</div>
+    </template>
+  </div>
+</v-col>
     </v-row>
   </v-container>
 </template>
@@ -91,6 +98,7 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 const menu = ref({})
+const imageError = ref(false)
 const menuId = route.params.menuId
 const userRole = authStore.userInfo.role
 
@@ -134,5 +142,35 @@ onMounted(async () => {
   margin-bottom: 6px;
   padding-left: 4px;
   list-style: '🌿 ';
+}
+
+.image-wrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 100%; /* 1:1 비율 유지 */
+  border-radius: 12px;
+  background-color: #f5f5f5;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.no-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #888;
 }
 </style>
