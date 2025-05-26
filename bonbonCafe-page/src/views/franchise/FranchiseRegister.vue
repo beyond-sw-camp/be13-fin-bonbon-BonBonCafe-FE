@@ -6,7 +6,7 @@
       <v-col>
         <FranchiseForm ref="franchiseFormRef" @submit="onSubmitFranchise" />
       </v-col>
-      <v-col class="btnBox">
+      <!-- <v-col class="btnBox">
         <v-btn  
           rounded="xl" 
           color="#D8DBBD"
@@ -25,7 +25,7 @@
         >
           뒤로가기
         </v-btn>
-      </v-col>
+      </v-col> -->
   </v-container>    
     
 
@@ -55,6 +55,8 @@ const onSubmitFranchise = async (formData) => {
 const submitForm = () => {
   franchiseFormRef.value?.handleSubmit()
 }
+
+
 
 </script>
 
