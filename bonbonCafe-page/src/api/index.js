@@ -1,7 +1,6 @@
 import { useAuthStore } from "@/stores/auth";
 import axios from "axios";  // axios 라이브러리를 사용해 HTTP 통신 구현
 
-
 // 커스텀한 axios 인스턴스
 const apiClient = axios.create({
     // API 요청 기본 URL 설정
@@ -38,8 +37,7 @@ apiClient.interceptors.request.use(
     }
 );
 
-// 응답(response) 인터셉터
-//  - 서버에서 HTTP 응답이 도착한 후에 실행된다.
+// 서버에서 도착한 HTTP 응답(response) 인터셉터
 apiClient.interceptors.response.use(
     (response) => {
         // 평범한 response가 온 경우, 그냥 response 그대로 반환
@@ -47,29 +45,32 @@ apiClient.interceptors.response.use(
     },
     // 비동기 함수
     async (error) => {
-        // error가 발생한 경우, 
 
-        // 이전 요청에 대한 config 객체를 얻어온다.
+        // 이전 요청에 대한 config 객체
         const originalRequest = error.config;
 
+        if (
+            originalRequest.url === '/bonbon/user/refresh' // 이미 재시도 한 요청
+          ) {
+            const authStore = useAuthStore();
+            authStore.logout();
+            console.log("refreshToken도 만료 → 바로 로그아웃");
+            return;
+          }
 
-        // 토큰이 만료되어 401 에러가 발생한 경우
+        // 토큰이 만료되어 401 에러가 발생한 경우, retry 한 적이 없는 경우
         if (error.response.status === 401 && !originalRequest._retry) {
-            console.log(originalRequest._retry);
-            console.log("AccessToken 만료")
-            console.log("Error:", error);
-            console.log("Response:", error.response);
+
             // 무한 요청 재시도를 방지하기 위한 체크 변수
             originalRequest._retry = true;  // 객체에서 동적으로 추가된 변수 -> 응답 인터셉터 내에서 직접 추가됨
-            console.log(originalRequest._retry);
             try {
                 // localStorage에서 refreshToken을 가져옴
                 const refreshToken = localStorage.getItem('refreshToken');
-                console.log(refreshToken);
 
                 // refreshToken이 존재하지 않는 경우~~~~ -> 무한 루프 방지ㅎㅎ
                 if (!refreshToken) {
-                    console.log("리프레시 토큰이 존재하지 않습니다.");
+                    // const authStore = useAuthStore();
+                    // authStore.logout();
                     return Promise.reject(error);  // 리프레시 토큰이 없으면 바로 에러 반환
                 }
 
@@ -79,7 +80,7 @@ apiClient.interceptors.response.use(
                 // await : Promise가 해결될 때까지 기다리고, 값을 반환
                 //  -> refreshToken을 이용해 새로운 AccessToken을 얻기 위해 서버에 비동기 요청을 보냄
                 const response = await apiClient.post(
-                    '/user/refresh', // 해당 URL로 post 요청을 보낼거다  
+                    '/bonbon/user/refresh', // 해당 URL로 post 요청을 보낼거다  
                     null,   // 근데 Data는 없다
                     {   // config 설정은 이러하다. -> 헤더에 Bearer ${refreshToken} 형태로 토큰을 담아서 보낼 예정이다.
                         headers: {
@@ -91,39 +92,35 @@ apiClient.interceptors.response.use(
 
                 // 새로운 accessToken 받기
                 const accessToken = response.data.accessToken;
-                console.log("AccessToken 발급 완료 ")
-                console.log(accessToken);
-
                 // 새 액세스 토큰을 로컬 스토리지에 저장
                 localStorage.setItem('accessToken', accessToken);
-
                 const parsedToken = parseJwt(accessToken);
-                const authStore = useAuthStore();
 
+                const authStore = useAuthStore();
                 authStore.isLoggedIn = true;
                 authStore.userInfo.username = parsedToken.username;
                 authStore.userInfo.role = parsedToken.role;
 
-                const userNameResponse = await apiClient.get(
-                    '/user/user-name',
-                    {
-                        headers: { 
-                            'Authorization': `Bearer ${response.data.accessToken}` 
-                        }
-                    }
-                );
-                authStore.userInfo.name = userNameResponse.data;
+                // const userNameResponse = await apiClient.get(
+                //     '/user/user-name',
+                //     {
+                //         headers: { 
+                //             'Authorization': `Bearer ${response.data.accessToken}` 
+                //         }
+                //     }
+                // );
+                // authStore.userInfo.name = userNameResponse.data;
 
-                console.log("원래 요청 재시도")
                 // 원래 요청을 재시도
                 return apiClient(originalRequest);
+                
             } catch (error) {
                 // 리프레시 토큰이 만료된 경우, 로그아웃 처리
-                const authStore = useAuthStore();
+                // const authStore = useAuthStore();
 
+                const authStore = useAuthStore();
                 authStore.logout();
 
-                console.log("refreshToken 또한 만료됨ㅠ")
                 return Promise.reject(error);
             }
         }
@@ -134,3 +131,20 @@ apiClient.interceptors.response.use(
 
 // axios 객체로 apiClient 를 반환
 export default apiClient;
+
+
+const parseJwt = (token) => {
+    try {
+        const base64Url = token.split('.')[1];
+        // JWT의 페이로드 부분을 디코딩할 때 URL 안전한 Base64 문자열을 일반 Base64로 변환하는 작업을 한다.
+        //   - JWT 토큰은 Base64 URL 안전한 방식으로 인코딩된다.
+        //   - Base64 URL 안전 인코딩은 URL과 파일 경로에서 사용할 수 있도록 몇 가지 문자를 수정한 Base64 인코딩 방식이다.
+        //     (- 대신 +, _ 대신 /)
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        
+        return JSON.parse(jsonPayload)
+    } catch (e) {
+        return null
+    }
+};
