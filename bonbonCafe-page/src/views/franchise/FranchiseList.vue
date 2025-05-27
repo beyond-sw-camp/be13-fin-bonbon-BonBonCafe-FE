@@ -1,5 +1,5 @@
 <template>
-    <div class="ma-16 mt-4 pa-10 Tdiv ">
+    <div class=" Tdiv ">
         <div class="mb-16" id="div0">
             <div id="div1">
                 <SelectBox
@@ -86,6 +86,9 @@
 <style scoped>
     .Tdiv{
         background-color: #f5f5f5;
+        margin: 16px 64px 64px;
+        padding: 70px;
+
     }
     #div0 {
         display: flex;
@@ -107,7 +110,7 @@
         width: 150px;
     }
     .search-input {
-        margin-left: 750px;
+        /* margin-left: 750px; */
         height: 48px; 
         background-color: white;
     }

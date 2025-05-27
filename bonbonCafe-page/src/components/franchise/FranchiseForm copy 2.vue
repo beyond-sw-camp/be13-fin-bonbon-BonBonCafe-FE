@@ -1,174 +1,146 @@
 <template>
-  <form @submit.prevent="SubmitEvent">
-    <v-container class="container">
-      <div class="franchiseTable">
-        <div class="cell headerC" style="height: 70px;"><strong><span class="requierd">*</span>가맹점 이름</strong></div>
-        <div class="cell"  style="height: 70px;">
-          <v-text-field 
-              v-model="form.name"
-              density="comfortable"
-              variant="outlined"
-              class="textBox"
-            />
-        </div>
-        <div class="cell headerC" style="height: 70px;"><strong><span class="requierd">*</span>점주 이름</strong></div>
-        <div class="cell" style="height: 70px;">
-          <v-text-field 
-              v-model="form.franchiseeName"
-              density="comfortable"
-              variant="outlined"
-              class="textBox"
-            />
-        </div>
+  <v-form ref="formRef" @submit.prevent="SubmitEvent">
+    <v-container class="py-8">
+      <v-card elevation="2" class="pa-6 rounded-xl" style="border: 1px solid #ccc;">
+        <!-- 기본 정보 -->
+        <v-row dense>
+          <v-col cols="12" md="6">
+            <v-row class="align-center mb-3">
+              <v-col cols="4"><label>* 가맹점 이름</label></v-col>
+              <v-col cols="8">
+                <v-text-field v-model="form.name" :readonly="props.readonly" :rules="props.readonly ? [] : [v => !!v || '가맹점 이름은 필수입니다']" density="compact" variant="outlined" hide-details />
+              </v-col>
+            </v-row>
 
-        <div class="cell headerC" style="height: 300px;"><strong><span class="requierd">*</span>가맹점 사진</strong></div>
-        <div class="cell">
-          <v-file-input
-            class="image"
-            accept="image/*"
-            label="이미지 업로드"
-            @change="onFranchiseImageChange"
-          />
-          
-                  
-          <!-- 이미지 미리보기 추가 -->
-          <img
-            v-if="franchiseImageUrl"
-            :src="franchiseImageUrl"
-            alt="가맹점 이미지 미리보기"
-            class="preview-img"
-          />
-        </div>
-        <div class="cell headerC"><strong><span class="requierd">*</span>점주 사진</strong></div>
-        <div class="cell">
-          <v-file-input
-            class="image"
-            accept="image/*"
-            label="이미지 업로드"
-          />
-        </div>
+            <v-row class="align-center mb-3">
+              <v-col cols="4"><label>* 가맹점 연락처</label></v-col>
+              <v-col cols="8">
+                <v-text-field v-model="form.franchiseTel" type="tel" :readonly="props.readonly" :rules="props.readonly ? [] : [v => !!v || '연락처는 필수입니다']" density="compact" variant="outlined" hide-details />
+              </v-col>
+            </v-row>
 
-        <div class="cell headerC"  style="height: 70px;"><strong><span class="requierd">*</span>가맹점 연락처</strong></div>
-        <div class="cell" style="height: 70px;">
-          <v-text-field v-model="form.franchiseTel" type="tel" density="comfortable" variant="outlined" class=" textBox" />
-        </div>
-        <div class="cell headerC" style="height: 70px;"><strong><span class="requierd">*</span>담당자</strong></div>
-        <div class="cell" style="height: 70px;">
-          <v-select
-              :items="['홍길동']"
-              placeholder="선택"
-              density="comfortable"
-              variant="outlined"
-              class=" textBox"
-            ></v-select>
-        </div>
+            <v-row class="align-center mb-1">
+              <v-col cols="4"><label>* 주소</label></v-col>
+              <v-col cols="8" class="pa-0">
+                <template v-if="!props.readonly">
+                  <KakaoAPI @address-selected="onAddressSelected" @update-detail-address="receiveDetailAddress" />
+                </template>
+                <template v-else>
+                  <v-text-field v-model="form.roadAddress" label="주소" readonly density="compact" variant="outlined" hide-details class="mb-2" :rules="[v => !!v || '주소는 필수입니다']" />
+                  <v-text-field v-model="form.detailAddress" label="상세주소" readonly density="compact" variant="outlined" hide-details />
+                </template>
+              </v-col>
+            </v-row>
+          </v-col>
 
-        <div class="cell headerC" style="height: 210px;"><strong><span class="requierd">*</span>주소</strong></div>
-        <div class="cell"  style="height: 210px;">
-          <KakaoAPI @address-selected="onAddressSelected" @update-detail-address="receiveDetailAddress"/>
-        </div>
-        <div class="cell3 " style="height: 210px;">
-          <div class="ma-0 pa-0">
-            <div style="height: 70px; border: 1px solid #ccc; background-color: #efefef; color: gray; padding: 8px;">
-              <strong><span class="requierd">*</span>개업 일자</strong>
-            </div>
-            <div style="height: 70px; border: 1px solid #ccc; background-color: #efefef; color: gray; padding: 8px;">
-              <strong><span class="requierd">*</span>운영 상태</strong>
-            </div>
-            <div style="height: 70px; border: 1px solid #ccc; background-color: #efefef; color: gray; padding: 8px;">
-              <strong><span class="requierd">*</span>운영 시간</strong>
-            </div>
-          </div>
-        </div>
-        <div class="cel3">
-          <div>
-            <div class="d-flex align-center" style="height: 70px; border: 1px solid #ccc; padding: 8px; padding-top: 30px;">
-              <v-select
-                :items="['2023', '2024', '2025']" 
-                label="년" 
-                v-model="form.openYear"
-                density="comfortable"
-                variant="outlined"
-                class="textBox mr-2"
-              />
-              <v-select 
-                :items="['01','02','03','04','05','06','07','08','09','10','11','12']" 
-                label="월" 
-                v-model="form.openMonth"
-                density="comfortable"
-                variant="outlined"
-                class="textBox mr-2"
-              />
-              <v-select 
-                :items="Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, '0'))" 
-                label="일" 
-                v-model="form.openDay"
-                density="comfortable"
-                variant="outlined"
-                class="textBox"
-              />
+          <v-col cols="12" md="6" class="d-flex flex-column align-center justify-center">
+            <v-avatar size="120" class="mb-3">
+              <v-img :src="franchiseImageUrl || defaultImage" cover />
+            </v-avatar>
+            <v-btn v-if="!props.readonly" color="grey" size="small" outlined @click="$refs.fileInput.click()">이미지 업로드</v-btn>
+            <input ref="fileInput" type="file" accept="image/*" style="display:none" @change="onFranchiseImageChange($event.target.files)" />
+          </v-col>
+        </v-row>
 
-            </div>
-            <div class="d-flex align-center"  style="height: 70px; border: 1px solid #ccc; padding: 8px; padding-top: 30px">
-              <!-- <v-checkbox v-model="form.status" label="운영 중" value="운영중" dense class="checkbox"></v-checkbox>
-              <v-checkbox v-model="form.status" label="운영 중단" value="중단" dense class="checkbox"></v-checkbox> -->
-              <v-radio-group v-model="form.status" inline>
-                <v-radio label="정상 운영" value="OPERATING"></v-radio>
-                <v-radio label="휴점" value="PAUSED"></v-radio>
-                <v-radio label="폐점" value="CLOSED"></v-radio>
-              </v-radio-group>
-            </div>
-            <div class="d-flex align-center" style="height: 70px; border: 1px solid #ccc; padding: 8px; padding-top: 30px">
-                  <v-text-field 
-                    v-model="form.openTime"
-                    type="time" 
-                    density="comfortable"
-                    variant="outlined"
-                    class="mr-2 textBox"
-                  />
-                  <span class="mx-2">~</span>
-                  <v-text-field
-                    v-model="form.closeTime"
-                    type="time" 
-                    density="comfortable"
-                    variant="outlined"
-                    class="textBox"
-                  />
-            </div>
-          </div>
-        </div>
+        <!-- 하단 정보 -->
+        <v-row dense>
+          <v-col cols="12" md="4">
+            <label>* 매장 평수</label>
+            <v-text-field v-model="form.storeSize" type="number" :readonly="props.readonly" :rules="props.readonly ? [] : [v => !!v || '매장 평수는 필수입니다']" density="compact" variant="outlined" hide-details />
+          </v-col>
+          <v-col cols="12" md="4">
+            <label>* 좌석수</label>
+            <v-text-field v-model="form.seatingCapacity" type="number" :readonly="props.readonly" :rules="props.readonly ? [] : [v => !!v || '좌석 수는 필수입니다']" density="compact" variant="outlined" hide-details />
+          </v-col>
 
-        <div class="cell headerC" style="height: 70px;"><strong><span class="requierd">*</span>주차 여부</strong></div>
-        <div class="cell d-flex align-center" style="height: 70px;">
-          <!-- <v-checkbox v-model="form.parkingAvailability" label="가능" value="가능" class="checkbox"/>
-          <v-checkbox v-model="form.parkingAvailability" label="불가" value="불가" class="checkbox"/> -->
-          <v-radio-group v-model="form.parkingAvailability" inline>
-            <v-radio label="가능" :value="true" />
-            <v-radio label="불가" :value="false" />
-          </v-radio-group>
-        </div>
-        <div class="cell headerC" style="height: 70px;"><strong><span class="requierd">*</span>좌석수</strong></div>
-        <div class="cell" style="height: 70px;">
-          <v-text-field 
-              v-model="form.seatingCapacity"
-              type="number"
-              density="comfortable"
-              variant="outlined"
-              class="textBox"
-              dense
-            />      
-        </div>
-      </div>
+          <v-col cols="12" md="4">
+            <label>* 주차 여부</label>
+            <v-radio-group v-model="form.parkingAvailability" row :disabled="props.readonly">
+              <v-radio label="가능" :value="true" />
+              <v-radio label="불가" :value="false" />
+            </v-radio-group>
+          </v-col>
+
+          <v-col cols="12" md="4">
+            <label>* 개업 일자</label>
+            <template v-if="!props.readonly">
+              <v-row dense>
+                <v-col cols="4">
+                  <v-select :items="years" v-model="form.openYear" label="년" density="compact" variant="outlined" :rules="[v => !!v || '년 선택']" />
+                </v-col>
+                <v-col cols="4">
+                  <v-select :items="months" v-model="form.openMonth" label="월" density="compact" variant="outlined" :rules="[v => !!v || '월 선택']" />
+                </v-col>
+                <v-col cols="4">
+                  <v-select :items="days" v-model="form.openDay" label="일" density="compact" variant="outlined" :rules="[v => !!v || '일 선택']" />
+                </v-col>
+              </v-row>
+            </template>
+            <template v-else>
+              <div>{{ form.openDate }}</div>
+            </template>
+          </v-col>
+
+          <v-col cols="12" md="4">
+            <label>* 운영 상태</label>
+            <v-radio-group v-model="form.status" row :disabled="props.readonly">
+              <v-radio label="정상 운영" value="OPERATING" />
+              <v-radio label="휴점" value="PAUSED" />
+              <v-radio label="폐점" value="CLOSED" />
+            </v-radio-group>
+          </v-col>
+
+          <v-col cols="12" md="4">
+            <label>* 운영 시간</label>
+            <template v-if="!props.readonly">
+              <v-row dense>
+                <v-col cols="5">
+                  <v-text-field v-model="form.openTime" type="time" density="compact" variant="outlined" :rules="[v => !!v || '시작 시간 필수']" />
+                </v-col>
+                <v-col cols="2" class="d-flex align-center justify-center"><span>~</span></v-col>
+                <v-col cols="5">
+                  <v-text-field v-model="form.closeTime" type="time" density="compact" variant="outlined" :rules="[v => !!v || '종료 시간 필수']" />
+                </v-col>
+              </v-row>
+            </template>
+            <template v-else>
+              <div>{{ form.openHours }}</div>
+            </template>
+          </v-col>
+        </v-row>
+
+        <v-row justify="center" v-if="props.submitVisible">
+          <v-btn type="submit" color="primary" class="mt-6" size="large" rounded>제출</v-btn>
+          <v-btn color="grey" class="mt-6 mx-2" size="large" rounded @click="emit('back')">뒤로가기</v-btn>
+        </v-row>
+        <!-- 읽기 전용일 때 하단 버튼 -->
+        <v-row justify="center" v-if="props.readonly">
+          <v-btn color="primary" class="mt-6 mx-2" size="large" rounded @click="emit('edit')">수정</v-btn>
+          <v-btn color="error" class="mt-6 mx-2" size="large" rounded @click="emit('delete')">삭제</v-btn>
+          <v-btn color="grey" class="mt-6 mx-2" size="large" rounded @click="emit('back')">뒤로가기</v-btn>
+        </v-row>
+
+      </v-card>
     </v-container>
-    <v-btn type="submit">제출</v-btn>
-  </form>
+  </v-form>
 </template>
 
 <script setup>
-import KakaoAPI from './KakaoAPI.vue';
-import { ref,reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
+import KakaoAPI from './KakaoAPI.vue'
 
-// const managerName = ref({});
+const props = defineProps({
+  initialFormData: Object,
+  franchiseId: { type: [String, Number], required: false },  // 추가
+  submitVisible: { type: Boolean, default: true },
+  readonly: { type: Boolean, default: false },
+})
+const emit = defineEmits(['submit', 'edit', 'delete', 'back'])
+
+const defaultImage = 'https://bonbon-file-bucket.s3.ap-northeast-2.amazonaws.com/profile-default.jpg'
+const franchiseImageUrl = ref(null)
+const fileInput = ref(null)
+const formRef = ref(null)
 
 const form = reactive({
   name: '',
@@ -188,95 +160,60 @@ const form = reactive({
   seatingCapacity: 0,
   parkingAvailability: false,
   status: 'OPERATING',
-});
+})
 
+const years = ['2023', '2024', '2025']
+const months = ['01','02','03','04','05','06','07','08','09','10','11','12']
+const days = Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, '0'))
 
-const emit = defineEmits(['submit']);
+watch(() => props.initialFormData, (newVal) => {
+  if (newVal) {
+    Object.assign(form, newVal)
+    franchiseImageUrl.value = newVal.franchiseImageUrl || null
+  }
+}, { immediate: true })
 
 function SubmitEvent() {
-  form.openDate = `${form.openYear}-${form.openMonth}-${form.openDay}`;
-  form.openHours = `${form.openTime}~${form.closeTime}`;
+  if (props.readonly) return
+  formRef.value.validate().then(success => {
+    // if (success) {
+    //   form.openDate = `${form.openYear}-${form.openMonth.padStart(2, '0')}-${form.openDay.padStart(2, '0')}`
+    //   form.openHours = `${form.openTime}~${form.closeTime}`
+    //   emit('submit', { ...form })
+    // }
 
-  
+     const updatedata = {
+        franchiseTel: form.franchiseTel,
+        storeSize: form.storeSize,
+        seatingCapacity: form.seatingCapacity,
+        parkingAvailability: form.parkingAvailability,
+        // openTime: form.openTime,
+        // closeTime: form.closeTime,
+        openHours: `${form.openTime}~${form.closeTime}`,
+        status: form.status
+      }
+            emit('submit', updatedata)
 
+  })
+}
 
-  emit('submit', form)
-};
-
-const franchiseImageUrl = ref(null);
-
-
-const onFranchiseImageChange = (fileList) => {
-  const file = fileList instanceof FileList ? fileList[0] : fileList;
+function onFranchiseImageChange(fileList) {
+  const file = fileList instanceof FileList ? fileList[0] : fileList
   if (file) {
-    franchiseImageUrl.value = URL.createObjectURL(file);  // 미리보기용
-    form.franchiseImage = file.name;                      // 이름만 저장
+    franchiseImageUrl.value = URL.createObjectURL(file)
+    form.franchiseImage = file.name
   } else {
-    franchiseImageUrl.value = null;
-    form.franchiseImage = '';
+    franchiseImageUrl.value = null
+    form.franchiseImage = ''
   }
-};
-
+}
 
 function onAddressSelected({ roadAddress, regionName }) {
-  
   form.roadAddress = roadAddress
   form.regionName = regionName
-};
+}
 
-const receiveDetailAddress = (detailAddress) => {
+function receiveDetailAddress(detailAddress) {
   form.detailAddress = detailAddress
-  console.log('부모가 받은 상세주소:', detailAddress)
 }
-
 </script>
-
-<style scoped>
-.container{
-  display: flex;
-  justify-content: center;
-}
-.franchiseTable {
-  display: grid;
-  grid-template-columns: 0.5fr 2fr 0.5fr 2fr; /* 6개의 열 */
-
-  width: 85%;
-  border: 1px solid #ccc;
-  background-color: white;
-}
-.headerC{
-  color: rgb(133, 132, 132);
-  background-color: #efefef;
-}
-.cell {
-  padding: 8px;
-  text-align: start;
-  border: 1px solid #ccc;
-}
-
-.requierd{
-  color: red;
-  margin-right: 2px;
-}
-/* .cell2{
-  display: grid;
-  grid-template-columns: repeat(1, 1fr);
-  text-align: start;
-} */
-
-.preview-img {
-  margin-top: 10px;
-  width: 150px;
-  height: auto;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-}
-.textBox{
-  color: gray;
-  /* margin-top: 20px; */
-  /* border-radius: 0%; */
-}
-.checkbox{
-  color: gray;
-}
-</style>
