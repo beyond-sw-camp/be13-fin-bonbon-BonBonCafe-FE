@@ -125,6 +125,3 @@ const fetchFranciseInfo = async (store) => {
 }
 </script>
 
-<style scoped>
-
-</style>
