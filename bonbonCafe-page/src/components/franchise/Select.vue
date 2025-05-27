@@ -1,14 +1,16 @@
 <template>
     <v-select
-    :placeholder="placeholder"
-    :items="items"
-    v-model="selected"
-    density="compact"
-    variant="solo"
-    return-object
-    item-title="label"
-    item-value="value"
-    @update:modelValue="onChange"
+      :placeholder="placeholder"
+      :items="items"
+      v-model="selected"
+      density="comfortable"
+      variant="outlined"
+      flat="false"
+      return-object
+      item-title="label"
+      item-value="value"
+      @update:modelValue="onChange"
+      class="selectBox"
     />
 </template>
 
@@ -39,5 +41,11 @@ function onChange(value) {
 </script>
 
 <style scoped>
+.selectBox{
+  background-color: white;
+  height: 48px;
+}
+
 
 </style>
+
