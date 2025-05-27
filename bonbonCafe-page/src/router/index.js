@@ -11,20 +11,30 @@ const NotFound = () => import('@/views/common/NotFound.vue');
 const MainView = () => import('@/views/MainView.vue')
 
 const FranchiseeAccount = () => import('@/views/accounts/FranchiseeAccount.vue')
+const FranchiseeAccountListView = () => import('@/views/accounts/FranchiseeAccountListView.vue')
 const ManagerAccounts = () => import('@/views/accounts/ManagerAccount.vue')
+const ManagerAccountListView = () => import('@/views/accounts/ManagerAccountListView.vue')
+const FranchiseeAccountEditView = () => import('@/views/accounts/FranchiseeAccountEditView.vue')
 
+const FranchiseListForMenu = () => import('@/views/franchise/FranchiseListForMenu.vue')
+const FranchiseMenuList = () => import('@/views/menu/FranchiseMenuList.vue')
 const MenuList = () => import('@/views/menu/MenuList.vue')
 const MenuRegister = () => import('@/views/menu/MenuRegister.vue')
 const MenuDetail = () => import('@/views/menu/MenuDetail.vue')
 const MenuEdit = () => import('@/views/menu/MenuEdit.vue')
+const FranchiseMenuById = () => import('@/views/menu/FranchiseMenuById.vue')
+
+const MyHeadquarterInfo = () => import('@/views/headquarter/MyHeadquarterInfo.vue')
+const EditHeadquarter = () => import('@/views/headquarter/EditHeadquarter.vue')
 
 const StockOrder = () => import('@/views/stock/StockOrder.vue')
-const StockHistoryEdit = () => import('@/views/stock/StockHistoryEdit.vue')
+// const StockHistoryEdit = () => import('@/views/stock/StockHistoryEdit.vue')
 const FranchiseOrderList = () => import('@/views/stock/FranchiseOrderList.vue')
 const FranchiseStockList = () => import('@/views/stock/FranchiseStockList.vue')
 const HeadquarterStockList = () => import('@/views/stock/HeadquarterStockList.vue')
 const StockOrderHistory = () => import('@/views/stock/StockOrderHistory.vue')
 const StockHistoryDetail = () => import('@/views/stock/StockHistoryDetail.vue')
+const HeadquarterStockRegister = () => import('@/views/stock/HeadquarterStockRegister.vue')
 const HeadquarterStockDetail = () => import('@/views/stock/HeadquarterStockDetail.vue')
 const HeadquarterStockEdit = () => import('@/views/stock/HeadquarterStockEdit.vue')
 
@@ -74,27 +84,58 @@ const router = createRouter({
           component: MainView,
         },
         {
-          path:'franchisee-accounts',
+          path:'franchisee-accounts/:userId',
           name: 'franchisee-accounts',
           component: FranchiseeAccount,
         },
         {
-          path:'manager-accounts',
+          path:'franchisee-accounts',
+          name: 'franchisee-accounts-list',
+          component: FranchiseeAccountListView,
+        },
+        {
+          path:'franchisee-accounts/:userId/edit',
+          name:'franchisee-accounts-edit',
+          component: FranchiseeAccountEditView
+        },
+        {
+          path:'manager-accounts/:managerId',
           name: 'manager-accounts',
           component: ManagerAccounts,
         },
         {
+          path:'manager-accounts',
+          name: 'manager-accounts-list',
+          component: ManagerAccountListView,
+        },
+        {
           path: 'headquarters/:headquarterId/menus',
+          path: 'franchise-menu-list',
+          name: 'franchise-menu-list',
+          component: FranchiseMenuList,
+        },
+        {
+          path: '/headquarters/info',
+          name: 'headquarter-info',
+          component: MyHeadquarterInfo
+        },
+        {
+          path: '/headquarters/edit',
+          name: 'headquarter-edit',
+          component: EditHeadquarter
+        },
+        {
+          path: 'headquarters/menus',
           name: 'menu-list',
           component: MenuList,
         },
         {
-          path: 'headquarters/:headquarterId/menus/:menuId',
+          path: 'headquarters/menus/:menuId',
           name: 'menu-detail',
           component: MenuDetail,
         },
         {
-          path: 'headquarters/:headquarterId/menus/:menuId/edit',
+          path: 'headquarters/menus/:menuId/edit',
           name: 'menu-edit',
           component: MenuEdit,
         },
@@ -114,7 +155,7 @@ const router = createRouter({
           component: FranchiseStockList,
         },
         {
-          path: '/headquarters/:headquarterId/stocks',
+          path: '/headquarters/stocks',
           name: 'headquarter-stock-list',
           component: HeadquarterStockList,
         },
@@ -124,9 +165,14 @@ const router = createRouter({
           component: StockOrderHistory,
         },
         {
-          path: '/headquarters/:headquarterId/franchise/:franchiseId/stocks/:historyId/detail',
+          path: '/stocks/:historyId/detail',          
           name: 'stock-history-detail',
           component: StockHistoryDetail,
+        },
+        {
+          path: 'headquarter-stock-register',
+          name: 'headquarter-stock-register',
+          component: HeadquarterStockRegister
         },
         {
           path: 'headquarter-stocks/:headquarterStockId',
@@ -138,18 +184,19 @@ const router = createRouter({
           name: 'headquarter-stock-edit',
           component: HeadquarterStockEdit,
         },
-        {
-          path: '',
-          name: 'stock-history-edit',
-          component: StockHistoryEdit,
-        },
+        // {
+        //   path: '',
+        //   // path: '/headquarters/:headquarterId/franchise/:franchiseId/stocks/:historyId/edit',
+        //   name: 'stock-history-edit',
+        //   component: StockHistoryEdit,
+        // },
         {
           path:'franchise-register',
           name: 'franchise-register',
           component: FranchiseRegister,
         },
         {
-          path: 'headquarters/:headquarterId/franchise-order-list',
+          path: 'headquarters/franchise-order-list',
           name: 'franchise-order-list',
           component: FranchiseOrderList,
         },
@@ -157,6 +204,16 @@ const router = createRouter({
           path:'franchise-list',
           name: 'franchise-list',
           component: FranchiseList,
+        },
+        {
+          path: '/headquarters/franchise-menu-list',
+          name: 'franchise-menu-franchise-list',
+          component: FranchiseListForMenu,
+        },
+        {
+          path: '/headquarters/franchise-menu-list/:franchiseId',
+          name: 'franchise-menu-by-id',
+          component: FranchiseMenuById,
         },
         {
           path:'kakao-map',
@@ -184,7 +241,7 @@ const router = createRouter({
           component: NoticeList,
         },
         {
-          path: 'headquarters/:headquarterId/notices/:noticeId/edit',
+          path: 'notices/:noticeId/edit',
           name: 'notice-edit',
           component: NoticeEdit,
         },
@@ -204,17 +261,17 @@ const router = createRouter({
           component: EventRegister,
         },
         {
-          path: '/headquarters/:headquarterId/events/:noticeId/edit',
+          path: '/events/:noticeId/edit',
           name: 'event-edit',
           component: NoticeEdit,
         },
         {
-          path: '/headquarters/:headquarterId/notices/:noticeId',
+          path: '/headquarters/notices/:noticeId',
           name: 'notice-detail',
           component: NoticeDetail
         },
         {
-          path: '/headquarters/:headquarterId/events/:noticeId',
+          path: '/headquarters/events/:noticeId',
           name: 'event-detail',
           component: EventDetail
         }
@@ -256,7 +313,7 @@ router.beforeEach((to, from, next) => {
 
   // 로그인 페이지가 아니고, 로그인 상태가 아니면 로그인 페이지로 리다이렉트한다.
   // 로그인하지 않은 상태에서 로그인 페이지가 아닌 다른 페이지로 가는 경우, 로그인페이지로 리다이렉트 되도록
-  if(to.name !== 'login' && to.name !== 'main' && to.name !== 'join' && !authStore.isLoggedIn) {
+  if(to.name !== 'login' && !authStore.isLoggedIn) {
     next({name: 'login'});
   } else {
     next();

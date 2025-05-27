@@ -1,8 +1,9 @@
 <template>
-    <div>
-      <h3>📦 재고 신청 내역</h3>
-  
-      <v-table>
+  <div class="history-wrapper ma-16 mt-4 pa-10">
+    <h3 class="text-2xl font-semibold mb-6">📦 재고 신청 내역</h3>
+
+    <v-card class="rounded-header-card elevation-1">
+      <v-table class="rounded-header-table">
         <thead>
           <tr>
             <th>번호</th>
@@ -27,15 +28,16 @@
           </tr>
         </tbody>
       </v-table>
-  
-      <v-pagination
-        v-model="page"
-        :length="totalPages"
-        @input="fetchHistory"
-        class="mt-4"
-      />
-    </div>
-  </template>
+    </v-card>
+
+    <v-pagination
+      v-model="page"
+      :length="totalPages"
+      @input="fetchHistory"
+      class="mt-4"
+    />
+  </div>
+</template>
   
   <script setup>
   import { ref, onMounted, watch } from 'vue'
@@ -56,7 +58,7 @@
   
   const fetchHistory = async () => {
     try {
-      const { data } = await apiClient.get(`/franchiseOrder/${franchiseId}/list`, {
+      const { data } = await apiClient.get(`/franchiseOrder/list`, {
         params: {
           page: page.value - 1
         }
@@ -102,7 +104,26 @@
   </script>
   
   <style scoped>
-  h3 {
-    margin-bottom: 16px;
-  }
-  </style>
+.history-wrapper {
+  background-color: #f5f5f5;
+}
+
+/* 카드 전체 둥글게 */
+.rounded-header-card {
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
+}
+
+/* 헤더만 배경색 지정 */
+::v-deep(.rounded-header-table thead tr) {
+  background-color: #D8DBBD;
+}
+
+/* 헤더 윗부분만 둥글게 */
+::v-deep(.rounded-header-table thead tr:first-child th:first-child) {
+  border-top-left-radius: 12px;
+}
+::v-deep(.rounded-header-table thead tr:first-child th:last-child) {
+  border-top-right-radius: 12px;
+}
+</style>

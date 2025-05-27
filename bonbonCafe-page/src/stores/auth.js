@@ -16,7 +16,8 @@ export const useAuthStore = defineStore('auth', () => {
     // 사용자 정보 저장 -> reactive 객체
     const userInfo = reactive({
         username: '',   // 이메일
-        // name: '',   // 본명
+        name: '',   // 본명
+        userImage: '',
         role: ''    // 권한
     });
 
@@ -39,16 +40,15 @@ export const useAuthStore = defineStore('auth', () => {
             if(response.status === 200) {
                 console.log(response);
                 
-                // 사용자 이름 받아오기(이메일 x)
-                // const userNameResponse = await apiClient.get(
-                //     '/user/user-name',
-                //     {
-                //         headers: { 
-                //             'Authorization': `Bearer ${response.data.accessToken}` 
-                //         }
-                //     }
-                // );
-                // console.log(userNameResponse.data);
+                const userNameResponse = await apiClient.get(
+                    '/bonbon/user',
+                    {
+                        headers: { 
+                            'Authorization': `Bearer ${response.data.accessToken}` 
+                        }
+                    }
+                );
+                console.log(userNameResponse.data);
 
                 const parseToken = parseJwt(response.data.accessToken);
 
@@ -57,14 +57,15 @@ export const useAuthStore = defineStore('auth', () => {
                 localStorage.setItem('refreshToken', response.data.refreshToken);
                 localStorage.setItem('userInfo', JSON.stringify({
                     username: parseToken.username,
-                    // name: userNameResponse.data,
+                    name: userNameResponse.data.name,
+                    userImage: userNameResponse.data.userImage,
                     role: parseToken.role
                 }));
 
                 // userInfo 객체 업데이트
                 Object.assign(userInfo, JSON.parse(localStorage.getItem('userInfo')));
 
-                // console.log(userInfo.name);
+                console.log(userInfo.data);
 
                 // 로그인 상태 변경
                 isLoggedIn.value = true;
@@ -74,9 +75,6 @@ export const useAuthStore = defineStore('auth', () => {
             }
         } catch (error) {
             // 로그인 실패 처리 -> 에러 핸들링
-
-            // if (error.status === 401) {
-            // 인증 실패 시 -> message를 표시할 수 있도록 
             if (error.response.data.code === 400) {
                 alert(error.response.data.message);
             } else {
@@ -95,8 +93,9 @@ export const useAuthStore = defineStore('auth', () => {
             const savedUserInfo = JSON.parse(localStorage.getItem('userInfo'));
             
             userInfo.username = savedUserInfo.username;
-            // userInfo.name = savedUserInfo.name;
+            userInfo.name = savedUserInfo.name;
             userInfo.role = savedUserInfo.role;
+            userInfo.userImage = savedUserInfo.userImage;
 
             isLoggedIn.value = true;
         } else {
@@ -107,30 +106,43 @@ export const useAuthStore = defineStore('auth', () => {
 
     // 사용자 로그아웃 시
     const logout = async () => {
+        if(!isLoggedIn){
+            return;
+        }
+
         try {
             // localStorage에서 accessToken 먼저 가져오기
             const accessToken = localStorage.getItem('accessToken');
+            console.log(accessToken);
 
-            if (isInvalidAccessToken(accessToken)) {
-                // accessToken이 유효하지 않는 경우,
-                alert('다시 로그인해 주세요.');
-
-                logoutUser();
-
+            if (!accessToken || isInvalidAccessToken(accessToken)) {
+                // accessToken이 유효하지 않는 경우, 토큰이 존재하지 않는 경우
+                if(isLoggedIn.value){
+                    alert('다시 로그인해 주세요.');
+                    logoutUser();   
+                }
                 return;
             }
 
             // 토큰이 유효한 경우 -> 로그아웃 api 호출
-            const response = await apiClient.post('/bonbon/user/logout');
+            const response = await apiClient.post(
+                '/bonbon/user/logout',
+                null,
+                {  
+                     headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    _skipInterceptor: true
+                }
+              );
 
             // 로그아웃이 잘 된 경우,
             if (response.status === 204) {
                 logoutUser();
             }
-        } catch (error) {
-            console.log(error);
 
-            alert('에러가 발생했습니다.');
+        } catch (error) {
+            logoutUser();
         }
     };
 
@@ -144,8 +156,10 @@ export const useAuthStore = defineStore('auth', () => {
         isLoggedIn.value = false;
 
         // 사용자 정보를 지운다.
-        // userInfo.username = '';
-        // userInfo.role = '';
+        userInfo.username = '';
+        userInfo.role = '';
+        userInfo.name = '';
+        userInfo.userImage = '';
 
         // 로그인 페이지로 리다이렉트
         router.push({name: 'login'});
@@ -163,23 +177,23 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
-    // 전달된 JWT 토큰을 디코딩하는 함수
-    const parseJwt = (token) => {
-        try {
-            const base64Url = token.split('.')[1];
-            // JWT의 페이로드 부분을 디코딩할 때 URL 안전한 Base64 문자열을 일반 Base64로 변환하는 작업을 한다.
-            //   - JWT 토큰은 Base64 URL 안전한 방식으로 인코딩된다.
-            //   - Base64 URL 안전 인코딩은 URL과 파일 경로에서 사용할 수 있도록 몇 가지 문자를 수정한 Base64 인코딩 방식이다.
-            //     (- 대신 +, _ 대신 /)
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-            
-            return JSON.parse(jsonPayload)
-        } catch (e) {
-            return null
-        }
-    }
-
     // defineStore로 정의한 스토어가 외부에서 사용할 수 있도록 필요한 값들을 반환하는 방식
     return { isLoggedIn, userInfo, login, checkLogin, logout };
 });
+
+
+export const parseJwt = (token) => {
+    try {
+        const base64Url = token.split('.')[1];
+        // JWT의 페이로드 부분을 디코딩할 때 URL 안전한 Base64 문자열을 일반 Base64로 변환하는 작업을 한다.
+        //   - JWT 토큰은 Base64 URL 안전한 방식으로 인코딩된다.
+        //   - Base64 URL 안전 인코딩은 URL과 파일 경로에서 사용할 수 있도록 몇 가지 문자를 수정한 Base64 인코딩 방식이다.
+        //     (- 대신 +, _ 대신 /)
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        
+        return JSON.parse(jsonPayload)
+    } catch (e) {
+        return null
+    }
+};
