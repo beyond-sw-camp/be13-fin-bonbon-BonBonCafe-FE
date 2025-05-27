@@ -54,7 +54,7 @@ const chartData = computed(() => ({
   datasets: [{
     data: props.ranking.map(item => item.totalAmount),
     backgroundColor: [
-    '#2A3663', // 네이비
+    '#F98084', //
       '#F7CAC9', // 파스텔 핑크
       '#92A8D1', // 파스텔 블루
       '#BFD7B5', // 파스텔 민트
@@ -67,6 +67,7 @@ const chartData = computed(() => ({
 
 const chartOptions = {
   responsive: true,
+  cutout: '60%',
   plugins: { legend: { position: 'bottom' } }
 }
 </script>

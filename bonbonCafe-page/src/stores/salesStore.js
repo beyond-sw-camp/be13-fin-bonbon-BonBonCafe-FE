@@ -53,27 +53,35 @@ export const useSalesStore = defineStore('sales', {
         else alert('메뉴 랭킹 조회 중 오류가 발생했습니다.')
       }
     },
+
+    // 예상 매출 조회 로직
     async fetchWeeklyForecast({ expectationStartDate, periods = 7 }) {
       const { store } = this.filters
       if (!store || !expectationStartDate) return
 
-      try {
+      try { 
         const res = await apiClient.get(
           `/franchises/forecast/weekly/${store}`,
           { params: { expectationStartDate, periods } }
         )
-        this.forecast        = res.data
-        this.forecastLabels  = res.data.map(d => dayjs(d.salesDate).format('MM-DD'))
-        this.forecastYhat    = res.data.map(d => Math.round(d.yhat))
-        this.forecastLower   = res.data.map(d => Math.round(d.yhat_lower))
-        this.forecastUpper   = res.data.map(d => Math.round(d.yhat_upper))
-
+        // 1) API 응답을 data에 담기
+        const data = res.data
+      
+        // 2) 상태에 저장
+        this.forecast      = data
+        this.forecastLabels = data.map(item =>
+          dayjs(item.ds).format('MM-DD')
+        )
+        this.forecastYhat   = data.map(item => item.yhat)
+        this.forecastLower  = data.map(item => item.yhat_lower)
+        this.forecastUpper  = data.map(item => item.yhat_upper)
+      
       } catch (error) {
         const status  = error.response?.status
         const message = error.response?.data?.message
         if (status === 400 || status === 404) alert(message)
         else alert('예측 조회 중 오류가 발생했습니다.')
       }
-    }
+    }             
   }
 })

@@ -166,15 +166,17 @@ function initSalesChart() {
       datasets: [{
         label: '매출 (원)',
         data: salesStore.values,
-        backgroundColor: '#2A3663'
+        backgroundColor: '#7465DA'
       }]
     },
     options: { responsive: true, scales: { y: { beginAtZero: true } } }
   })
 }
+
 function initForecastChart() {
   if (!forecastChartRef.value) return
   if (forecastChart) forecastChart.destroy()
+
   const ctx = forecastChartRef.value.getContext('2d')
   forecastChart = new Chart(ctx, {
     type: 'line',
@@ -205,9 +207,28 @@ function initForecastChart() {
         }
       ]
     },
-    options: { responsive: true }
+    options: {
+      responsive: true,
+      scales: {
+        x: {
+          ticks: {
+            autoSkip: false,
+            maxRotation: 45,
+            minRotation: 45,
+          }
+        },
+        y: {
+          beginAtZero: true
+        }
+      },
+      plugins: {
+        legend: { display: true }
+      }
+    }
   })
 }
+
+
 
 watch(
   () => salesStore.labels,
@@ -222,15 +243,15 @@ watch(
 
 watch(
   () => salesStore.forecastLabels,
-  async () => {
-    if (salesStore.forecastLabels.length) {
+  async (labels) => {
+    if (labels.length) {
+      // 뷰 업데이트가 끝나길 기다린 뒤 차트 초기화
       await nextTick()
       initForecastChart()
     }
   },
   { deep: true }
 )
-
 
 // 뷰 조건
 const hasMenuData     = computed(() => salesStore.menuRanking.length > 0)
@@ -253,7 +274,7 @@ const hasForecastData = computed(() => salesStore.forecastLabels.length > 0)
 
 .chart-canvas {
   width: 100% !important;
-  height: 332px !important;
+  height: 365px !important;
 }
 
 /* date-input, select-box 여백이나 너비 조절하고 싶으면 아래를 조정하세요 */

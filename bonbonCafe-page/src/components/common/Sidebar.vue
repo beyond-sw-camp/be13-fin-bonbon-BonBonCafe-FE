@@ -75,7 +75,7 @@
     ],
   },
   {
-    title: '매출 분석',
+    title: '매출 관리',
     icon: 'mdi-chart-bar',
     items: [
       { title: '매출 분석' },

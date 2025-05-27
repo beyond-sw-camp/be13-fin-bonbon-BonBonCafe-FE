@@ -7,18 +7,18 @@
 
         <thead>
           <tr>
-            <th class="th-rank">순위</th>
-            <th class="th-name">가맹점명</th>
-            <th class="th-sales">총 매출</th>
+            <th class="text-center font-weight-bold">순위</th>
+            <th class="text-center font-weight-bold">가맹점명</th>
+            <th class="text-center font-weight-bold">총 매출</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(item, idx) in rankingList" :key="idx">
-            <td class="td-rank">
+            <td class="text-center">
               {{ (currentPage-1)*pageSize + idx + 1 }}
             </td>
-            <td class="td-name">{{ item.franchiseName }}</td>
-            <td class="td-sales">
+            <td class="text-center">{{ item.franchiseName }}</td>
+            <td class="text-center">
               {{ item.totalSales.toLocaleString() }}
             </td>
           </tr>
@@ -63,43 +63,38 @@ function onPageChange(page) {
 
 <style scoped>
 .table-wrapper {
-  /* width: 100%;          ★ 화면 가득 폭 사용 */
-  /* padding: 0 16px/;      모바일 여백만 살짝 */
+  overflow-x: auto;             /* 가로 스크롤 가능 */
+  padding: 0 16px;              /* 좌우 여백 */
 }
 
 .ranking-table {
-  width: 1000px;          /* 테이블도 100% 폭 */
-  table-layout: fixed;  /* colgroup 비율 준수 */
+  width: 100%;                  /* 가득 채우기 */
+  table-layout: fixed;          /* 고정된 컬럼 폭 */
   border-collapse: separate;
-  border-spacing: 0 6px;
-  margin: 0;            /* 중앙 정렬 X, 가득 채움 */
+  border-spacing: 0 6px;        /* 행 간격 */
 }
 
-/* 헤더/바디 동일 패딩 */
-/* .ranking-table thead th,
-.ranking-table tbody td {
-  padding: 12px 8px !important;
-  font-size: 14px;
-  border: none;
-} */
-
-/* 배경색 */
+/* 헤더 스타일 */
 .ranking-table thead th {
   background: #E0E8D0;
   font-weight: 600;
+  padding: 12px 8px;
+  font-size: 16px;
 }
+
+/* 바디 스타일 */
 .ranking-table tbody td {
   background: #FFF;
   vertical-align: middle;
+  padding: 12px 8px;
+  font-size: 13px;
+  font-weight: 500;
 }
+
+/* 짝수 행 배경 */
 .ranking-table tbody tr:nth-child(even) td {
   background: #FAFAFA;
 }
-
-/* 열별 정렬 */
-.th-rank, .td-rank   { text-align: center; }
-.th-name, .td-name   { text-align: left;   }
-.th-sales, .td-sales { text-align: right;  }
 
 /* 페이징 */
 .pagination-bar {
