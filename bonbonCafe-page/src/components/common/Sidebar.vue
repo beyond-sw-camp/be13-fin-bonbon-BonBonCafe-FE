@@ -7,11 +7,18 @@
       permanent
       name="drawer"
     >
-      <v-list-item
-        title="BonBon-Cafe"
-        subtitle="로그인 정보??"
-        prepend-avatar="https://cdn.vuetifyjs.com/images/john.jpg"
-      ></v-list-item>
+    
+    <div class="d-flex align-center pa-4">
+      <v-img
+        src="https://bonbon-file-bucket.s3.ap-northeast-2.amazonaws.com/bonbon-logo-banner(white).png"
+        alt="BonBon Cafe Logo"
+        max-width="150"
+        class="mr-3"
+      />
+    </div>
+
+
+
       <v-divider></v-divider>
   
       <v-list v-model:opened="opened">

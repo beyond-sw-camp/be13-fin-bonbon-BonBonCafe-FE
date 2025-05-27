@@ -1,11 +1,10 @@
 <template>
     <v-container>
-        <FranchiseeDetailForm />
+        <FranchiseeEditForm />
     </v-container>
 </template>
 
 <script setup>
-import FranchiseeDetailForm from '@/components/forms/userform/FranchiseeDetailForm.vue';
 import { reactive } from 'vue';
 import apiClient from '@/api';
 import { useRouter } from 'vue-router';
@@ -13,13 +12,7 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 import { defineProps } from 'vue';
-
-const props = defineProps({
-  id: {
-    type: String,
-    required: true
-  }
-});
+import FranchiseeEditForm from '@/components/forms/userform/FranchiseeEditForm.vue';
 
 </script>
 

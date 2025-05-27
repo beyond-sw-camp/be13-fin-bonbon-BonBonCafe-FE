@@ -11,7 +11,10 @@ const NotFound = () => import('@/views/common/NotFound.vue');
 const MainView = () => import('@/views/MainView.vue')
 
 const FranchiseeAccount = () => import('@/views/accounts/FranchiseeAccount.vue')
+const FranchiseeAccountListView = () => import('@/views/accounts/FranchiseeAccountListView.vue')
 const ManagerAccounts = () => import('@/views/accounts/ManagerAccount.vue')
+const ManagerAccountListView = () => import('@/views/accounts/ManagerAccountListView.vue')
+const FranchiseeAccountEditView = () => import('@/views/accounts/FranchiseeAccountEditView.vue')
 
 const MenuList = () => import('@/views/menu/MenuList.vue')
 const MenuRegister = () => import('@/views/menu/MenuRegister.vue')
@@ -73,14 +76,29 @@ const router = createRouter({
           component: MainView,
         },
         {
-          path:'franchisee-accounts',
+          path:'franchisee-accounts/:userId',
           name: 'franchisee-accounts',
           component: FranchiseeAccount,
         },
         {
-          path:'manager-accounts',
+          path:'franchisee-accounts',
+          name: 'franchisee-accounts-list',
+          component: FranchiseeAccountListView,
+        },
+        {
+          path:'franchisee-accounts/:userId/edit',
+          name:'franchisee-accounts-edit',
+          component: FranchiseeAccountEditView
+        },
+        {
+          path:'manager-accounts/:managerId',
           name: 'manager-accounts',
           component: ManagerAccounts,
+        },
+        {
+          path:'manager-accounts',
+          name: 'manager-accounts-list',
+          component: ManagerAccountListView,
         },
         {
           path: 'headquarters/:headquarterId/menus',
@@ -250,7 +268,7 @@ router.beforeEach((to, from, next) => {
 
   // 로그인 페이지가 아니고, 로그인 상태가 아니면 로그인 페이지로 리다이렉트한다.
   // 로그인하지 않은 상태에서 로그인 페이지가 아닌 다른 페이지로 가는 경우, 로그인페이지로 리다이렉트 되도록
-  if(to.name !== 'login' && to.name !== 'main' && to.name !== 'join' && !authStore.isLoggedIn) {
+  if(to.name !== 'login' && !authStore.isLoggedIn) {
     next({name: 'login'});
   } else {
     next();
