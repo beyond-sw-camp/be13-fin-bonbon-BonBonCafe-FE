@@ -1,32 +1,28 @@
 <template>
-    <div>
-      <h2>{{ notice.title }}</h2>
-  
-      <div class="mb-2 text-grey">
-        <span>작성자: {{ notice.author }}</span> |
-        <span>작성일: {{ formatDate(notice.createTime) }}</span>
-      </div>
-  
-      <v-card class="pa-4">
-        <div v-html="notice.content" />
-      </v-card>
-  
-      <!-- 전송 여부 안내 -->
-      <div class="mt-2" v-if="notice.sent">
-        <v-chip color="success" class="ma-1" text-color="white">✅ 문자 전송 완료</v-chip>
-      </div>
-  
-      <!-- 버튼 영역 -->
-      <div class="mt-4 d-flex justify-end" style="gap: 8px">
-        <v-btn :color="notice.sent ? 'grey' : 'secondary'" @click="sendSms">
-          문자 일괄 전송
-        </v-btn>
-        <v-btn color="warning" @click="goToEdit">수정</v-btn>
-        <v-btn color="error" @click="deleteNotice">삭제</v-btn>
-        <v-btn color="primary" @click="goBack">목록으로</v-btn>
-      </div>
+  <div class="notice-detail-wrapper ma-10 pa-8">
+    <h2 class="text-2xl font-bold mb-4">{{ notice.title }}</h2>
+
+    <div class="mb-4 text-grey-darken-1">
+      <span>작성자: {{ notice.author }}</span> |
+      <span>작성일: {{ formatDate(notice.createTime) }}</span>
     </div>
-  </template>
+
+    <v-card class="pa-6 mb-4 elevation-1 content-card">
+      <div v-html="notice.content" />
+    </v-card>
+
+    <div v-if="notice.sent" class="mb-4">
+      <v-chip color="success" text-color="white">✅ 문자 전송 완료</v-chip>
+    </div>
+
+    <div class="d-flex justify-end" style="gap: 10px;">
+      <v-btn :color="notice.sent ? 'grey' : 'secondary'" @click="sendSms">문자 일괄 전송</v-btn>
+      <v-btn color="warning" @click="goToEdit">수정</v-btn>
+      <v-btn color="error" @click="deleteNotice">삭제</v-btn>
+      <v-btn color="primary" @click="goBack">목록으로</v-btn>
+    </div>
+  </div>
+</template>
   
   <script setup>
   import { ref, onMounted } from 'vue'
@@ -42,13 +38,15 @@
   const notice = ref({})
   
   const fetchNotice = async () => {
-    try {
-      const { data } = await apiClient.get(`/notice/${noticeId}/${headquarterId}`)
-      notice.value = data
-    } catch (e) {
-      console.error('❌ 상세 조회 실패', e)
-    }
+  try {
+    const { data } = await apiClient.get(`/notice/${noticeId}`)
+    // 줄바꿈 처리
+    data.content = data.content?.replace(/\n/g, '<br/>')
+    notice.value = data
+  } catch (e) {
+    console.error('❌ 상세 조회 실패', e)
   }
+}
   
   const sendSms = async () => {
     if (notice.value.sent) {
@@ -67,7 +65,7 @@
   }
   
   const goToEdit = () => {
-    router.push(`/headquarters/${headquarterId}/notices/${noticeId}/edit`)
+    router.push(`/notices/${noticeId}/edit`)
   }
   
   const deleteNotice = async () => {
@@ -75,7 +73,7 @@
     if (!confirmed) return
   
     try {
-      await apiClient.delete(`/notice/${noticeId}/${headquarterId}`)
+      await apiClient.delete(`/notice/${noticeId}`)
       alert('삭제되었습니다.')
       router.push('/notice-list') // 그냥 문자열로 이동
     } catch (e) {
@@ -96,7 +94,15 @@
   </script>
   
   <style scoped>
-  h2 {
-    margin-bottom: 12px;
-  }
+.notice-detail-wrapper {
+  background-color: #f9f9f9;
+  border-radius: 12px;
+}
+
+.content-card {
+  border-radius: 12px;
+  background-color: #ffffff;
+  line-height: 1.6;
+  white-space: normal;
+}
   </style>

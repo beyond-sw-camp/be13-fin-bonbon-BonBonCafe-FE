@@ -1,16 +1,21 @@
 <template>
-  <div>
-    <h3>본사 재고 조회</h3>
+  <div class="stock-wrapper ma-10 pa-8">
+    <h3 class="text-2xl font-semibold mb-6">🏢 본사 재고 조회</h3>
 
-    <!-- 🔍 검색창 (재료명) -->
-    <div class="d-flex mb-4" style="gap: 8px;">
+    <!-- 🔍 검색 + 추가 버튼 -->
+    <div class="d-flex justify-between align-center mb-6 flex-wrap" style="gap: 12px;">
       <v-text-field
         v-model="search"
         label="재료명 검색"
         prepend-inner-icon="mdi-magnify"
+        variant="outlined"
+        density="comfortable"
+        hide-details
         class="flex-grow-1"
         @keyup.enter="onSearch"
       />
+
+      <v-btn color="#D8DBBD" variant="flat" @click="goToRegister">재고 추가</v-btn>
     </div>
 
     <!-- 📦 재고 카드 목록 -->
@@ -22,23 +27,30 @@
         sm="6"
         md="4"
       >
-        <v-card class="hoverable" @click="goToStockDetail(stock.stockId)">
-          <v-card-title>{{ stock.ingredientName }}</v-card-title>
-          <v-card-subtitle>{{ stock.quantity }} {{ stock.unit }}</v-card-subtitle>
-          <v-card-text>
-            <div>단가: {{ stock.unitPrice.toLocaleString() }}원</div>
-            <div>소비자가: {{ stock.retailPrice.toLocaleString() }}원</div>
-            <div class="mt-2 text-caption grey--text">본사: {{ stock.headquarterName }}</div>
+        <v-card class="stock-card hoverable" @click="goToStockDetail(stock.stockId)">
+          <v-card-title class="text-lg font-semibold">
+            {{ stock.ingredientName }}
+          </v-card-title>
+
+          <v-card-subtitle class="text-sm mb-2">
+            {{ stock.quantity }} {{ stock.unit }}
+          </v-card-subtitle>
+
+          <v-card-text class="text-sm">
+            <div>단가: {{ formatPrice(stock.unitPrice) }}원</div>
+            <div>소비자가: {{ formatPrice(stock.retailPrice) }}원</div>
+            <div class="mt-2 text-caption text-grey-darken-1">본사: {{ stock.headquarterName }}</div>
           </v-card-text>
         </v-card>
       </v-col>
     </v-row>
 
-    <!-- ✅ 페이징 -->
+    <!-- 📄 페이징 -->
     <v-pagination
       v-model="page"
       :length="totalPages"
-      class="mt-4"
+      class="mt-8"
+      color="primary"
       @input="fetchStocks"
     />
   </div>
@@ -46,22 +58,19 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import apiClient from '@/api'
 
-const route = useRoute()
 const router = useRouter()
-const headquarterId = route.params.headquarterId
 
 const stocks = ref([])
 const page = ref(1)
 const totalPages = ref(1)
 const search = ref('')
 
-// 📦 전체 재고 조회 (검색 포함)
 const fetchStocks = async () => {
   try {
-    const { data } = await apiClient.get(`/headquarter-stocks/${headquarterId}`, {
+    const { data } = await apiClient.get(`/headquarter-stocks`, {
       params: {
         page: page.value - 1,
         search: search.value || null
@@ -74,15 +83,21 @@ const fetchStocks = async () => {
   }
 }
 
-// 🔍 검색 시 페이지 초기화
 const onSearch = () => {
   page.value = 1
   fetchStocks()
 }
 
-// 📌 카드 클릭 시 재고 상세로 이동
 const goToStockDetail = (stockId) => {
   router.push({ name: 'headquarter-stock-detail', params: { headquarterStockId: stockId } })
+}
+
+const goToRegister = () => {
+  router.push({ name: 'headquarter-stock-register' })
+}
+
+const formatPrice = (price) => {
+  return price ? Number(price).toLocaleString() : '-'
 }
 
 onMounted(fetchStocks)
@@ -90,11 +105,22 @@ watch(page, fetchStocks)
 </script>
 
 <style scoped>
+.stock-wrapper {
+  background-color: #f5f5f5;
+}
+
 .hoverable {
   cursor: pointer;
   transition: transform 0.2s ease;
 }
 .hoverable:hover {
   transform: scale(1.02);
+}
+
+.stock-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 12px;
+  min-height: 160px;
 }
 </style>

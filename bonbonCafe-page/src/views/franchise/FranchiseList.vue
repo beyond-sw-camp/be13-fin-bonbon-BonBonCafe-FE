@@ -1,6 +1,6 @@
 <template>
-    <div class="pa-10">
-        <div id="div0">
+    <div class="ma-16 mt-4 pa-10 Tdiv ">
+        <div class="mb-16" id="div0">
             <div id="div1">
                 <SelectBox
                 class="select-region"
@@ -16,10 +16,12 @@
                 />
                 <v-text-field
                     class="search-input"
-                    density="compact"
+                    density="comfortable"
+                    variant="outlined"
+                    flat="false"
                     placeholder="Search here"
                     prepend-inner-icon="mdi-magnify"
-                    width="200"
+                    width="300px"
                 />
             </div>
         </div>
@@ -47,14 +49,14 @@
     const selectedDistrict = ref(null);
 
 
-    const header = [
-        { title: 'No.', align: 'start', key: 'franchiseId', class: 'header'},
-        { title: '가맹점 이름', align: 'start', key: 'name', class: 'header' },
-        { title: '가맹점 주소', align: 'start', key: 'roadAddress', class: 'header' },
-        { title: '담당자', align: 'start', key: 'managerName', class: 'header' },
-        { title: '가맹점 연락처', align: 'start', key: 'franchiseTel', class: 'header' },
-        { title: '등록일', align: 'start', key: 'openDate', class: 'header' }
-    ]
+    // const header = [
+    //     { title: 'No.', align: 'start', key: 'franchiseId', class: 'header'},
+    //     { title: '가맹점 이름', align: 'start', key: 'name', class: 'header' },
+    //     { title: '가맹점 주소', align: 'start', key: 'roadAddress', class: 'header' },
+    //     { title: '담당자', align: 'start', key: 'managerName', class: 'header' },
+    //     { title: '가맹점 연락처', align: 'start', key: 'franchiseTel', class: 'header' },
+    //     { title: '등록일', align: 'start', key: 'openDate', class: 'header' }
+    // ]
 
     const fetchFrancise = async(page)=>{
         try {
@@ -82,6 +84,9 @@
 </script>
 
 <style scoped>
+    .Tdiv{
+        background-color: #f5f5f5;
+    }
     #div0 {
         display: flex;
         flex-direction: row;
@@ -96,13 +101,14 @@
         
     }
     .select-region {
-    width: 200px;
+        width: 200px;
     }
     .select-district {
-    width: 150px;
+        width: 150px;
     }
     .search-input {
-    width: 300px;
-    margin-left: 50px; /* 여백 주고 싶다면 */
+        margin-left: 750px;
+        height: 48px; 
+        background-color: white;
     }
 </style>
