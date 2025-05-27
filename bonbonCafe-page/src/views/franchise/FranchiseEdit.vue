@@ -24,6 +24,9 @@ const router = useRouter()
 
 const formData = ref(null)
 
+const franchiseId = route.params.franchiseId
+
+
 const fetchFranchiseDetail = async (franchiseId) => {
   try {
     const response = await apiClient.get(`/franchise/${franchiseId}`)
@@ -34,16 +37,13 @@ const fetchFranchiseDetail = async (franchiseId) => {
 }
 
 onMounted(() => {
-  const franchiseId = route.params.franchiseId
   fetchFranchiseDetail(franchiseId)
 })
 
 const handleSubmit = async (updatedData) => {
-    console.log(updatedData, "===============");
+  console.log(updatedData, "===============");
   try {
     await apiClient.patch(`/franchise/${franchiseId}`, updatedData)
-
-    
     alert('수정이 완료되었습니다.')
     router.push(`/franchise-detail/${franchiseId}`)
   } catch (error) {

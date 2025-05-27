@@ -4,13 +4,20 @@
       <h2>가맹점 등록</h2>
     </v-col>
     <v-col>
-      <FranchiseForm 
+      <!-- <FranchiseForm 
         :readonly="false"
         :submitVisible="true"
-        @submit="onSubmitFranchise" />
+        @submit="onSubmitFranchise" 
+      /> -->
+      <FranchiseForm
+        :initialFormData="{}"
+        :readonly="false"
+        :submitVisible="true"
+        mode="create"
+        @submit="onSubmitFranchise"
+      />
     </v-col>
 
-    <!-- 확인용 다이얼로그 -->
     <v-dialog v-model="dialog" max-width="400">
       <v-card>
         <v-card-title class="text-h6">등록 확인</v-card-title>
@@ -43,9 +50,11 @@ const onSubmitFranchise = (formData) => {
 const confirmSubmit = async () => {
   try {
     const response = await apiClient.post('/franchise', pendingFormData.value)
+    
+    
     dialog.value = false
     alert('등록이 완료되었습니다.')
-    router.push(`/franchise-detail/${response.data.id}`) // 등록 후 상세 페이지 이동
+    router.push(`/franchise-list`) 
   } catch (error) {
     console.error('등록 실패:', error)
     alert('등록 중 오류가 발생했습니다.')
