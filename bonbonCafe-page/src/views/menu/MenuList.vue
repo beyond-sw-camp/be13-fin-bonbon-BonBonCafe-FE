@@ -17,7 +17,7 @@
       <v-sheet elevation="6" class="mb-4">
         <v-tabs
           v-model="selectedTab"
-          bg-color="indigo"
+          bg-color=#D8DBBD
           show-arrows
           next-icon="mdi-arrow-right-bold-box-outline"
           prev-icon="mdi-arrow-left-bold-box-outline"
@@ -40,10 +40,10 @@
           :key="menu.menuId"
           cols="12"
           sm="6"
-          md="4"
+          md="3"
         >
           <v-card class="hoverable" @click="goToDetail(menu.headquarterId, menu.menuId)">
-            <v-img :src="menu.image" height="150" cover />
+            <v-img :src="menu.image" aspect-ratio="1"  cover />
             <v-card-title>{{ menu.name }}</v-card-title>
             <v-card-subtitle>{{ menu.price }}원</v-card-subtitle>
             <v-card-text>
