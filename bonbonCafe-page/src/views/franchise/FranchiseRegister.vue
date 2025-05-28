@@ -43,6 +43,7 @@ const dialog = ref(false)
 const pendingFormData = ref({})
 
 const onSubmitFranchise = (formData) => {
+  
   pendingFormData.value = formData
   dialog.value = true
 }
@@ -51,6 +52,7 @@ const confirmSubmit = async () => {
   try {
     const response = await apiClient.post('/franchise', pendingFormData.value)
     
+    console.log(response);
     
     dialog.value = false
     alert('등록이 완료되었습니다.')

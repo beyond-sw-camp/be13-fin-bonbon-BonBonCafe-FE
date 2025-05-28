@@ -42,6 +42,7 @@ onMounted(() => {
 
 const handleSubmit = async (updatedData) => {
   console.log(updatedData, "===============");
+  console.log(franchiseId, "===============");
   try {
     await apiClient.patch(`/franchise/${franchiseId}`, updatedData)
     alert('수정이 완료되었습니다.')
