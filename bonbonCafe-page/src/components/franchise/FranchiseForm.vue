@@ -8,21 +8,21 @@
             <v-row class="align-center mb-3">
               <v-col cols="4"><label>* 가맹점 이름</label></v-col>
               <v-col cols="8">
-                <v-text-field v-model="form.name" :readonly="props.readonly" :rules="props.readonly ? [] : [v => !!v || '가맹점 이름은 필수입니다']" density="compact" variant="outlined" hide-details />
+                <v-text-field v-model="form.name" :readonly="props.readonly  || props.mode === 'edit'" :rules="props.readonly ? [] : [v => !!v || '가맹점 이름은 필수입니다']" density="compact" variant="outlined" hide-details />
               </v-col>
             </v-row>
 
             <v-row class="align-center mb-3">
               <v-col cols="4"><label>* 가맹점 연락처</label></v-col>
               <v-col cols="8">
-                <v-text-field v-model="form.franchiseTel" type="tel" :readonly="props.readonly" :rules="props.readonly ? [] : [v => !!v || '연락처는 필수입니다']" density="compact" variant="outlined" hide-details @input="onTelInput" />
+                <v-text-field v-model="form.franchiseTel" type="tel" :readonly="props.readonly || props.mode === 'edit'" :rules="props.readonly ? [] : [v => !!v || '연락처는 필수입니다']" density="compact" variant="outlined" hide-details @input="onTelInput" />
               </v-col>
             </v-row>
 
             <v-row class="align-center mb-1">
               <v-col cols="4"><label>* 주소</label></v-col>
               <v-col cols="8" class="pa-0">
-                <template v-if="!props.readonly">
+                <template v-if="!props.readonly && props.mode !== 'edit'">
                   <KakaoAPI @address-selected="onAddressSelected" @update-detail-address="receiveDetailAddress" class="tt"/>
                 </template>
                 <template v-else>
@@ -49,7 +49,7 @@
             <v-row class="align-center">
               <v-col cols="4"><label>* 개업일자</label></v-col>
               <v-col cols="8">
-                <template v-if="!props.readonly">
+                <template v-if="!props.readonly && props.mode !== 'edit'">
                   <v-row dense>
                     <v-col cols="4">
                       <v-select :items="years" v-model="form.openYear" label="년" density="compact" variant="outlined"
@@ -66,7 +66,12 @@
                   </v-row>
                 </template>
                 <template v-else>
-                  <div>{{ form.openDate }}</div>
+                   <v-text-field
+                    :model-value="form.openDate"
+                    readonly
+                    variant="outlined"
+                    density="compact"
+                  />
                 </template>
               </v-col>
             </v-row>
@@ -83,10 +88,10 @@
                       <v-radio label="정상 운영" value="OPERATING" />
                     </v-col>
                     <v-col cols="auto">
-                      <v-radio label="휴점" value="PAUSED" />
+                      <v-radio label="휴점" value="CLOSED_TEMP" />
                     </v-col>
                     <v-col cols="auto">
-                      <v-radio label="폐점" value="CLOSED" />
+                      <v-radio label="폐점" value="CLOSED_PERM" />
                     </v-col>
                   </v-row>
                 </v-radio-group>
@@ -113,7 +118,13 @@
                   </v-row>
                 </template>
                 <template v-else>
-                  <div>{{ form.openHours }}</div>
+                  <v-text-field
+                    v-if="props.readonly"
+                    :model-value="form.openHours"
+                    readonly
+                    variant="outlined"
+                    density="compact"
+                  />
                 </template>
               </v-col>
             </v-row>
@@ -185,10 +196,26 @@ import { ref, reactive, watch } from 'vue'
 import KakaoAPI from './KakaoAPI.vue'
 
 const props = defineProps({
-  initialFormData: Object,
-  franchiseId: { type: [String, Number], required: false },  // 추가
-  submitVisible: { type: Boolean, default: true },
-  readonly: { type: Boolean, default: false },
+  initialFormData: {
+    type: Object,
+    default: () => ({}),
+  },
+  franchiseId: { 
+    type: [String, Number], 
+    required: false 
+  },  // 추가
+  submitVisible: { 
+    type: Boolean, 
+    default: true 
+  },
+  readonly: { 
+    type: Boolean, 
+    default: false 
+  },
+  mode:{
+    type: String,
+    default:'create'
+  }
 })
 const emit = defineEmits(['submit', 'edit', 'delete', 'back'])
 
@@ -232,25 +259,30 @@ function SubmitEvent() {
   if (props.readonly) return
   formRef.value.validate().then(success => {
     if (success) {
-    //   form.openDate = `${form.openYear}-${form.openMonth.padStart(2, '0')}-${form.openDay.padStart(2, '0')}`
-    //   form.openHours = `${form.openTime}~${form.closeTime}`
-    //   emit('submit', { ...form })
-    // }
+      if(props.mode === 'create'){
+        form.openDate = `${form.openYear}-${form.openMonth.padStart(2, '0')}-${form.openDay.padStart(2, '0')}`
+        form.openHours = `${form.openTime}~${form.closeTime}`
+        emit('submit', { ...form })
 
-     const updatedata = {
-        franchiseTel: form.franchiseTel,
-        storeSize: form.storeSize,
-        seatingCapacity: form.seatingCapacity,
-        parkingAvailability: form.parkingAvailability,
-        openHours: `${form.openTime}~${form.closeTime}`,
-        status: form.status
+      }else if(props.mode === 'edit'){
+        const updatedata = {
+           franchiseTel: form.franchiseTel,
+           storeSize: form.storeSize,
+           franchiseImage: form.franchiseImage,
+           seatingCapacity: form.seatingCapacity,
+           parkingAvailability: form.parkingAvailability,
+           openHours: `${form.openTime}~${form.closeTime}`,
+           status: form.status
+      }
+      emit('submit', updatedata)
+    }
+
       }
       
-      emit('submit', updatedata)
 
     }
-  })
-}
+  )}
+
 
 
 function onFranchiseImageChange(fileList) {

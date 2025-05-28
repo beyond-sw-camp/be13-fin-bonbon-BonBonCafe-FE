@@ -28,6 +28,7 @@
         <div>
             <Table :header="header" :item="item"/>
         </div>
+
     </div>
 
 </template>
@@ -40,6 +41,7 @@
     import { ref, onMounted } from 'vue'
     import Table from '@/components/franchise/Table.vue'
     import SelectBox from '@/components/franchise/Select.vue'
+
     
     const item = ref([])
     const page = ref(1)
@@ -48,15 +50,6 @@
     const selectedRegion = ref(null);
     const selectedDistrict = ref(null);
 
-
-    // const header = [
-    //     { title: 'No.', align: 'start', key: 'franchiseId', class: 'header'},
-    //     { title: '가맹점 이름', align: 'start', key: 'name', class: 'header' },
-    //     { title: '가맹점 주소', align: 'start', key: 'roadAddress', class: 'header' },
-    //     { title: '담당자', align: 'start', key: 'managerName', class: 'header' },
-    //     { title: '가맹점 연락처', align: 'start', key: 'franchiseTel', class: 'header' },
-    //     { title: '등록일', align: 'start', key: 'openDate', class: 'header' }
-    // ]
 
     const fetchFrancise = async(page)=>{
         try {

@@ -1,14 +1,4 @@
 <template>
-    <!-- <v-data-table-virtual
-        class="rounded-t-lg border-opacity-30 border-surface-variant"
-        :headers="header"
-        :items="item"
-        height="600"
-        item-value="name"
-        fixed-header
-    >
-    </v-data-table-virtual> -->
-
     <v-table class=" rounded-t-xl">
         <thead class="theadColor">
             <tr>
@@ -31,12 +21,10 @@
             </tr>
         </tbody>
     </v-table>
-    <Pagination class="mt-10"/>
 </template>
 
 <script setup>
     import { useRouter } from 'vue-router'
-    import Pagination from '@/components/franchise/Pagination.vue'
 
     const props = defineProps({
         item:{

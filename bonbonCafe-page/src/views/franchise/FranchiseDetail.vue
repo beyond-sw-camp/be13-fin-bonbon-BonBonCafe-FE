@@ -83,16 +83,16 @@ function goToEdit() {
 
 function handleDelete() {
   const confirmed = confirm('정말로 삭제하시겠습니까?')
-//   if (!confirmed) return
+  if (!confirmed) return
 
-//   apiClient.delete(`/franchise/${franchiseId}`)
-//     .then(() => {
-//       alert('삭제되었습니다.')
-//       router.push('/franchise') // 목록 페이지 등으로 리디렉션
-//     })
-//     .catch(error => {
-//       console.error('삭제 실패', error)
-//     })
+  apiClient.delete(`/franchise/${franchiseId}`)
+    .then(() => {
+      alert('삭제되었습니다.')
+      router.push('/franchise-list') // 목록 페이지 등으로 리디렉션
+    })
+    .catch(error => {
+      console.error('삭제 실패', error)
+    })
 }
 </script>
 
