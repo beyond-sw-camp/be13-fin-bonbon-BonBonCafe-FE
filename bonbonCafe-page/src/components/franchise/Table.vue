@@ -21,7 +21,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr v-for="item in item" :key="item.name">
+            <tr v-for="item in item" :key="item.name" @click="goToDetail(item)" style="cursor: pointer;">
                 <td>{{ item.franchiseId }}</td>
                 <td>{{ item.name }}</td>
                 <td>{{ item.roadAddress }}</td>
@@ -35,13 +35,23 @@
 </template>
 
 <script setup>
+    import { useRouter } from 'vue-router'
     import Pagination from '@/components/franchise/Pagination.vue'
 
     const props = defineProps({
         item:{
             type: Array,
+            required: true
         },
-    })
+    });
+    const router = useRouter()
+
+    const goToDetail = (item) => {
+    router.push({
+        name: 'franchise-detail',
+        params: { franchiseId: item.franchiseId }
+    });
+    };
 
 </script>
 

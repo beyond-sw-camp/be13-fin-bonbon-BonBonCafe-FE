@@ -1,191 +1,312 @@
 <template>
-  <v-container class="franchise-register pa-8">
-    <v-row >
-      <v-col cols="2" class="headerCol border border-grey-lighten2"><span class="required">*</span> 가맹점 이름</v-col>
-      <v-col cols="4" class="bodyCol border border-grey-lighten2">
-        <v-text-field 
-          density="comfortable"
-          variant="outlined"
-          class="textBox"
-        />
-      </v-col>
-      <v-col cols="2" class="headerCol border border-grey-lighten2"><span class="required">*</span> 점주 이름</v-col>
-      <v-col cols="4" class="bodyCol border border-grey-lighten2">
-        <v-text-field 
-          density="comfortable"
-          variant="outlined"
-          class="textBox"
-        />
-      </v-col>
-    </v-row>
+  <v-form ref="formRef" @submit.prevent="SubmitEvent">
+    <v-container class="">
+      <v-card elevation="2" class="pa-6 rounded-lg" style="border: 1px solid #ccc;">
+        <!-- 기본 정보 -->
+        <v-row dense>
+          <v-col cols="12" md="6">
+            <v-row class="align-center mb-3">
+              <v-col cols="4"><label>* 가맹점 이름</label></v-col>
+              <v-col cols="8">
+                <v-text-field v-model="form.name" :readonly="props.readonly" :rules="props.readonly ? [] : [v => !!v || '가맹점 이름은 필수입니다']" density="compact" variant="outlined" hide-details />
+              </v-col>
+            </v-row>
 
+            <v-row class="align-center mb-3">
+              <v-col cols="4"><label>* 가맹점 연락처</label></v-col>
+              <v-col cols="8">
+                <v-text-field v-model="form.franchiseTel" type="tel" :readonly="props.readonly" :rules="props.readonly ? [] : [v => !!v || '연락처는 필수입니다']" density="compact" variant="outlined" hide-details @input="onTelInput" />
+              </v-col>
+            </v-row>
 
-    <v-row>
-      <v-col cols="2" class="headerCol border border-grey-lighten2"><span class="required">*</span> 매장 사진</v-col>
-      <v-col cols="4" class="bodyCol border border-grey-lighten2">
-        <v-file-input class="image"/>
-      </v-col>
-      <v-col cols="2" class="headerCol border border-grey-lighten2"><span class="required">*</span> 점주 사진</v-col>
-      <v-col  class="bodyCol border border-grey-lighten2">
-        <v-file-input class="image"/>
-      </v-col>
-    </v-row>
+            <v-row class="align-center mb-1">
+              <v-col cols="4"><label>* 주소</label></v-col>
+              <v-col cols="8" class="pa-0">
+                <template v-if="!props.readonly">
+                  <KakaoAPI @address-selected="onAddressSelected" @update-detail-address="receiveDetailAddress" class="tt"/>
+                </template>
+                <template v-else>
+                  <v-text-field v-model="form.roadAddress" label="주소" readonly density="compact" variant="outlined" hide-details class="mb-2" :rules="[v => !!v || '주소는 필수입니다']" />
+                  <v-text-field v-model="form.detailAddress" label="상세주소" readonly density="compact" variant="outlined" hide-details />
+                </template>
+              </v-col>
+            </v-row>
+          </v-col>
 
-
-
-
-    <v-row>
-      <v-col cols="2" class="headerCol border border-grey-lighten2"><span class="required">*</span> 매장 전화번호</v-col>
-      <v-col  class="bodyCol border border-grey-lighten2">
-        <v-text-field
-          type="tel"
-          density="comfortable"
-          variant="outlined"
-          class=" textBox"
-        />
-      </v-col>
-      <v-col cols="2" class="headerCol border border-grey-lighten2"><span class="required">*</span> 담당자</v-col>
-      <v-col  class="bodyCol border border-grey-lighten2">
-        <v-select
-          :items="['홍길동']"
-          placeholder="선택"
-          density="comfortable"
-          variant="outlined"
-          class=" textBox"
-        ></v-select>
-      </v-col>
-    </v-row>
-
-    
-    <v-row >
-      <v-col cols="2" class="headerCol border border-grey-lighten2" ><span class="required">*</span> 주소</v-col>
-      <v-col cols="4"  class="bodyCol border border-grey-lighten2">
-        <KakaoAPI/>
-      </v-col>
-
-      
-      <v-col  class="bodyCol  border border-grey-lighten2">
-        <v-row >
-          <v-col cols="4" class="headerCol  border border-grey-lighten2"><span class="required">*</span> 운영 시간</v-col>
-          <v-col cols="8" class=" border border-grey-lighten2" >
-            <div class="d-flex align-center">
-              <v-text-field 
-                type="time" 
-                density="comfortable"
-                variant="outlined"
-                class="mr-2 textBox"
-              />
-              <span class="mx-2">~</span>
-              <v-text-field
-                type="time" 
-                density="comfortable"
-                variant="outlined"
-                class=" textBox"
-              />
-            </div>
+          <v-col cols="12" md="6" class="d-flex flex-column align-center justify-center">
+            <v-avatar size="250" class="mb-3">
+              <v-img :src="franchiseImageUrl || defaultImage" cover />
+            </v-avatar>
+            <v-btn v-if="!props.readonly" color="grey" size="small" outlined @click="$refs.fileInput.click()">이미지 업로드</v-btn>
+            <input ref="fileInput" type="file" accept="image/*" style="display:none" @change="onFranchiseImageChange($event.target.files)" />
           </v-col>
         </v-row>
-        <v-row>
-          <v-col cols="4" class="headerCol  border border-grey-lighten2"><span class="required">*</span> 운영 상태</v-col>
-          <v-col  cols="8" class=" border border-grey-lighten2">
-            <v-row no-gutters>
-              <v-col cols="6"><v-checkbox label="운영 중" value="운영중" dense></v-checkbox></v-col>
-              <v-col cols="6"><v-checkbox label="운영 중단" value="중단" dense></v-checkbox></v-col>
+
+        <!-- 하단 정보 -->
+        <v-row dense>
+          <!-- 개업일자 -->
+          <v-col cols="6">
+            <v-row class="align-center">
+              <v-col cols="4"><label>* 개업일자</label></v-col>
+              <v-col cols="8">
+                <template v-if="!props.readonly">
+                  <v-row dense>
+                    <v-col cols="4">
+                      <v-select :items="years" v-model="form.openYear" label="년" density="compact" variant="outlined"
+                        :rules="[v => !!v || '년 선택']" />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-select :items="months" v-model="form.openMonth" label="월" density="compact" variant="outlined"
+                        :rules="[v => !!v || '월 선택']" />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-select :items="days" v-model="form.openDay" label="일" density="compact" variant="outlined"
+                        :rules="[v => !!v || '일 선택']" />
+                    </v-col>
+                  </v-row>
+                </template>
+                <template v-else>
+                  <div>{{ form.openDate }}</div>
+                </template>
+              </v-col>
+            </v-row>
+          </v-col>
+
+          <!-- 운영 상태 -->
+          <v-col cols="6" >
+            <v-row class="align-center">
+              <v-col cols="4" class=""><label>* 운영 상태</label></v-col>
+              <v-col cols="8">
+                <v-radio-group v-model="form.status" :disabled="props.readonly">
+                  <v-row no-gutters>
+                    <v-col cols="auto">
+                      <v-radio label="정상 운영" value="OPERATING" />
+                    </v-col>
+                    <v-col cols="auto">
+                      <v-radio label="휴점" value="PAUSED" />
+                    </v-col>
+                    <v-col cols="auto">
+                      <v-radio label="폐점" value="CLOSED" />
+                    </v-col>
+                  </v-row>
+                </v-radio-group>
+              </v-col>
+            </v-row>
+          </v-col>
+
+          <!-- 운영 시간 -->
+          <v-col cols="6">
+            <v-row class="align-center">
+              <v-col cols="4"><label>* 운영 시간</label></v-col>
+              <v-col cols="8">
+                <template v-if="!props.readonly">
+                  <v-row dense>
+                    <v-col cols="5">
+                      <v-text-field v-model="form.openTime" type="time" density="compact" variant="outlined"
+                        :rules="[v => !!v || '시작 시간 필수']" />
+                    </v-col>
+                    <v-col cols="2" class="d-flex align-center justify-center"><span>~</span></v-col>
+                    <v-col cols="5">
+                      <v-text-field v-model="form.closeTime" type="time" density="compact" variant="outlined"
+                        :rules="[v => !!v || '종료 시간 필수']" />
+                    </v-col>
+                  </v-row>
+                </template>
+                <template v-else>
+                  <div>{{ form.openHours }}</div>
+                </template>
+              </v-col>
+            </v-row>
+          </v-col>
+
+          <!-- 주차 여부 -->
+          <v-col cols="6">
+            <v-row class="align-center">
+              <v-col cols="4"><label>* 주차 여부</label></v-col>
+              <v-col cols="8">
+                 <v-radio-group v-model="form.parkingAvailability" :disabled="props.readonly">
+                  <v-row no-gutters>
+                    <v-col cols="auto">
+                      <v-radio label="가능" :value="true" />
+                    </v-col>
+                    <v-col cols="auto">
+                      <v-radio label="불가" :value="false" />
+                    </v-col>
+                  </v-row>
+                </v-radio-group>
+              </v-col>
+            </v-row>
+          </v-col>
+
+          <!-- 매장 평수 -->
+          <v-col cols="6">
+            <v-row class="align-center">
+              <v-col cols="4"><label>* 매장 평수</label></v-col>
+              <v-col cols="8">
+                <v-text-field v-model="form.storeSize" type="number" :readonly="props.readonly"
+                  :rules="props.readonly ? [] : [v => !!v || '매장 평수는 필수입니다']"
+                  density="compact" variant="outlined" hide-details />
+              </v-col>
+            </v-row>
+          </v-col>
+
+          <!-- 좌석 수 -->
+          <v-col cols="6">
+            <v-row class="align-center">
+              <v-col cols="4"><label>* 좌석 수</label></v-col>
+              <v-col cols="8">
+                <v-text-field v-model="form.seatingCapacity" type="number" :readonly="props.readonly"
+                  :rules="props.readonly ? [] : [v => !!v || '좌석 수는 필수입니다']"
+                  density="compact" variant="outlined" hide-details />
+              </v-col>
             </v-row>
           </v-col>
         </v-row>
 
-        <v-row>
-          <v-col cols="4" class="headerCol  border border-grey-lighten2 "><span class="required">*</span> 개업 일자</v-col>
-          <v-col  cols="8"  class="bodyCol  border border-grey-lighten2 ">
-            <v-row >
-              <v-col cols="3">
-                <v-select
-                  :items="['2023', '2024', '2025']" 
-                  label="년" 
-                  density="comfortable"
-                  variant="outlined"
-                  class=" textBox mr-2"
 
-                />
-              </v-col>
-              <v-col cols="3">
-                <v-select 
-                  :items="['01', '02', '03']" 
-                  label="월" 
-                  density="comfortable"
-                  variant="outlined"
-                  class=" textBox mr-2"
-
-              />
-              </v-col>
-              <v-col cols="3">
-                <v-select 
-                  :items="['01', '02', '03']" 
-                  label="일" 
-                  density="comfortable"
-                  variant="outlined"
-                  class=" textBox"
-                />
-              </v-col>
-            </v-row>
-          </v-col>
+        <v-row justify="center" v-if="props.submitVisible">
+          <v-btn type="submit" color="#D8DBBD" class="mt-6" size="large" style="color: #6F6F6F;" rounded>제출</v-btn>
+          <v-btn color="#efefef" class="mt-6 mx-2" size="large" rounded @click="emit('back')">뒤로가기</v-btn>
         </v-row>
-      </v-col>
-    </v-row>
-
-
-  
-    <v-row >
-      <v-col cols="2" class="headerCol  border border-grey-lighten2"><span class="required">*</span> 주차 여부</v-col>
-      <v-col cols="4" class="bodyCol  border border-grey-lighten2">
-        <v-row no-gutters>
-          <v-col cols="3"><v-checkbox label="가능" value="가능"/></v-col>
-          <v-col cols="3"><v-checkbox label="불가" value="불가"/></v-col>
+        <!-- 읽기 전용일 때 하단 버튼 -->
+        <v-row justify="center" v-if="props.readonly">
+          <v-btn color="#D8DBBD" class="mt-6 mx-2" size="large" style="color: #6F6F6F;" rounded @click="emit('edit')">수정</v-btn>
+          <v-btn color="#FC6161" class="mt-6 mx-2" size="large" style="color: #6F6F6F;" rounded @click="emit('delete')">삭제</v-btn>
+          <v-btn color="#efefef" class="mt-6 mx-2" size="large" style="color: #6F6F6F;" rounded @click="emit('back')">뒤로가기</v-btn>
         </v-row>
-      </v-col>
-      <v-col cols="2" class="headerCol  border border-grey-lighten2"><span class="required">*</span> 좌석수</v-col>
-      <v-col cols="4"  class="bodyCol  border border-grey-lighten2">
-        <v-text-field 
-          type="number"
-          density="comfortable"
-          variant="outlined"
-          class="textBox"
-          dense
-        />
-      </v-col>
-    </v-row>
-     
-      
-  </v-container>
+
+      </v-card>
+    </v-container>
+  </v-form>
 </template>
 
 <script setup>
+import { ref, reactive, watch } from 'vue'
 import KakaoAPI from './KakaoAPI.vue'
 
+const props = defineProps({
+  initialFormData: Object,
+  franchiseId: { type: [String, Number], required: false },  // 추가
+  submitVisible: { type: Boolean, default: true },
+  readonly: { type: Boolean, default: false },
+})
+const emit = defineEmits(['submit', 'edit', 'delete', 'back'])
+
+const defaultImage = 'https://bonbon-file-bucket.s3.ap-northeast-2.amazonaws.com/profile-default.jpg'
+const franchiseImageUrl = ref(null)
+const fileInput = ref(null)
+const formRef = ref(null)
+
+const form = reactive({
+  name: '',
+  regionName: '',
+  franchiseTel: '',
+  roadAddress: '',
+  detailAddress: '',
+  openDate: '',
+  openYear: '',
+  openMonth: '',
+  openDay: '',
+  openTime: '',
+  closeTime: '',
+  openHours: '',
+  franchiseImage: '',
+  storeSize: 0,
+  seatingCapacity: 0,
+  parkingAvailability: false,
+  status: 'OPERATING',
+})
+
+const years = ['2023', '2024', '2025']
+const months = ['01','02','03','04','05','06','07','08','09','10','11','12']
+const days = Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, '0'))
+
+watch(() => props.initialFormData, (newVal) => {
+  if (newVal) {
+    Object.assign(form, newVal)
+    franchiseImageUrl.value = newVal.franchiseImageUrl || null
+  }
+}, { immediate: true })
+
+function SubmitEvent() {
+  if (props.readonly) return
+  formRef.value.validate().then(success => {
+    if (success) {
+    //   form.openDate = `${form.openYear}-${form.openMonth.padStart(2, '0')}-${form.openDay.padStart(2, '0')}`
+    //   form.openHours = `${form.openTime}~${form.closeTime}`
+    //   emit('submit', { ...form })
+    // }
+
+     const updatedata = {
+        franchiseTel: form.franchiseTel,
+        storeSize: form.storeSize,
+        seatingCapacity: form.seatingCapacity,
+        parkingAvailability: form.parkingAvailability,
+        openHours: `${form.openTime}~${form.closeTime}`,
+        status: form.status
+      }
+      
+      emit('submit', updatedata)
+
+    }
+  })
+}
+
+
+function onFranchiseImageChange(fileList) {
+  const file = fileList instanceof FileList ? fileList[0] : fileList
+  if (file) {
+    franchiseImageUrl.value = URL.createObjectURL(file)
+    form.franchiseImage = file.name
+  } else {
+    franchiseImageUrl.value = null
+    form.franchiseImage = ''
+  }
+}
+
+function onAddressSelected({ roadAddress, regionName }) {
+  form.roadAddress = roadAddress
+  form.regionName = regionName
+}
+
+function receiveDetailAddress(detailAddress) {
+  form.detailAddress = detailAddress
+}
+
+
+function onTelInput(e) {
+
+  let value = e.target.value.replace(/\D/g, '')  // 숫자만 남기기
+
+  if (value.length <= 3) {
+    form.franchiseTel = value
+  } else if (value.length <= 7) {
+    form.franchiseTel = value.slice(0, 3) + '-' + value.slice(3)
+  } else if (value.length <= 11) {
+    form.franchiseTel = value.slice(0, 3) + '-' + value.slice(3, 7) + '-' + value.slice(7)
+  } else {
+    form.franchiseTel = value.slice(0, 3) + '-' + value.slice(3, 7) + '-' + value.slice(7, 11)
+  }
+}
 
 </script>
 
 <style scoped>
-
-.franchise-register{
-}
-.headerCol{
-  background-color: #efefef;
-  width: 130px;
-}
-.bodyCol{
-    background-color: #ffffff;
-
+/* .custom-height{
+  height: 47.99px;
+} */
+.tt{
+  margin-left: 10px;
+  margin-right: 8px;
 }
 
-.required {
-  color: red;
-}
-.textBox{
-  color: gray;
-  margin-top: 20px;
-  margin-bottom: 0px;
-}
+/* .v-input--density-compact{
+    --v-input-padding-top: 8px;
+ } */
 
-</style>
+
+ .v-input--density-compact {
+    --v-input-control-height: 47.99px;
+    --v-input-padding-top: 8px;
+}
+</style> 
