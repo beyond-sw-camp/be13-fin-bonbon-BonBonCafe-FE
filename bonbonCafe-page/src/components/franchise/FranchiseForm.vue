@@ -22,8 +22,7 @@
             <v-row class="align-center mb-1">
               <v-col cols="4"><label>* 주소</label></v-col>
               <v-col cols="8" class="pa-0">
-                <template v-if="!props.readonly && props.mode !== 'edit'">
-
+                <template v-if="!props.readonly">
                   <KakaoAPI @address-selected="onAddressSelected" @update-detail-address="receiveDetailAddress" class="tt"/>
                 </template>
                 <template v-else>
@@ -50,46 +49,24 @@
             <v-row class="align-center">
               <v-col cols="4"><label>* 개업일자</label></v-col>
               <v-col cols="8">
-                <template v-if="!props.readonly && props.mode !== 'edit'">
+                <template v-if="!props.readonly">
                   <v-row dense>
                     <v-col cols="4">
-                      <v-select 
-                        :items="years" 
-                        v-model="form.openYear" 
-                        label="년" 
-                        density="compact" 
-                        variant="outlined"
-                        :rules="[v => !!v || '년 선택']" 
-                      />
+                      <v-select :items="years" v-model="form.openYear" label="년" density="compact" variant="outlined"
+                        :rules="[v => !!v || '년 선택']" />
                     </v-col>
                     <v-col cols="4">
-                      <v-select 
-                        :items="months" 
-                        v-model="form.openMonth" 
-                        label="월" 
-                        density="compact" 
-                        variant="outlined"
+                      <v-select :items="months" v-model="form.openMonth" label="월" density="compact" variant="outlined"
                         :rules="[v => !!v || '월 선택']" />
                     </v-col>
                     <v-col cols="4">
-                      <v-select 
-                        :items="days" 
-                        v-model="form.openDay" 
-                        label="일" 
-                        density="compact" 
-                        variant="outlined"
+                      <v-select :items="days" v-model="form.openDay" label="일" density="compact" variant="outlined"
                         :rules="[v => !!v || '일 선택']" />
                     </v-col>
-                    
                   </v-row>
                 </template>
                 <template v-else>
-                  <v-text-field
-                    :model-value="form.openDate"
-                    readonly
-                    variant="outlined"
-                    density="compact"
-                  />
+                  <div>{{ form.openDate }}</div>
                 </template>
               </v-col>
             </v-row>
@@ -136,13 +113,7 @@
                   </v-row>
                 </template>
                 <template v-else>
-                  <v-text-field
-                    v-if="props.readonly"
-                    :model-value="form.openHours"
-                    readonly
-                    variant="outlined"
-                    density="compact"
-                  />
+                  <div>{{ form.openHours }}</div>
                 </template>
               </v-col>
             </v-row>
@@ -214,27 +185,12 @@ import { ref, reactive, watch } from 'vue'
 import KakaoAPI from './KakaoAPI.vue'
 
 const props = defineProps({
-  initialFormData: {
-    type: Object,
-    default: () => ({}),
-  },
+  initialFormData: Object,
   franchiseId: { type: [String, Number], required: false },  // 추가
-  submitVisible: { 
-    type: Boolean,
-    default: true 
-  },
-  readonly: { 
-    type: Boolean,
-    default: false 
-  },
-  mode:{
-    type: String,
-    default: 'create'
-  },
+  submitVisible: { type: Boolean, default: true },
+  readonly: { type: Boolean, default: false },
 })
-const emit = defineEmits(['create', 'edit', 'delete', 'back'])
-
-
+const emit = defineEmits(['submit', 'edit', 'delete', 'back'])
 
 const defaultImage = 'https://bonbon-file-bucket.s3.ap-northeast-2.amazonaws.com/profile-default.jpg'
 const franchiseImageUrl = ref(null)
@@ -273,33 +229,29 @@ watch(() => props.initialFormData, (newVal) => {
 }, { immediate: true })
 
 function SubmitEvent() {
-  if (props.readonly) return;
-
+  if (props.readonly) return
   formRef.value.validate().then(success => {
-    console.log('validate result:', success);
     if (success) {
-      if (props.mode === 'create') {
-        // 등록일 경우 모든 데이터 전달
-        form.openDate = `${form.openYear}-${form.openMonth.padStart(2, '0')}-${form.openDay.padStart(2, '0')}`;
-        form.openHours = `${form.openTime}~${form.closeTime}`;
-         console.log('create mode - emitting:', { ...form });
-        emit('submit', { ...form });
+    //   form.openDate = `${form.openYear}-${form.openMonth.padStart(2, '0')}-${form.openDay.padStart(2, '0')}`
+    //   form.openHours = `${form.openTime}~${form.closeTime}`
+    //   emit('submit', { ...form })
+    // }
 
-      } else if (props.mode === 'edit') {
-        // 수정일 경우 일부 데이터만 전달
-        const updatedata = {
-          franchiseTel: form.franchiseTel,
-          storeSize: form.storeSize,
-          seatingCapacity: form.seatingCapacity,
-          parkingAvailability: form.parkingAvailability,
-          openHours: `${form.openTime}~${form.closeTime}`,
-          status: form.status,
-        };
-        emit('submit', updatedata);
+     const updatedata = {
+        franchiseTel: form.franchiseTel,
+        storeSize: form.storeSize,
+        seatingCapacity: form.seatingCapacity,
+        parkingAvailability: form.parkingAvailability,
+        openHours: `${form.openTime}~${form.closeTime}`,
+        status: form.status
       }
+      
+      emit('submit', updatedata)
+
     }
-  });
+  })
 }
+
 
 function onFranchiseImageChange(fileList) {
   const file = fileList instanceof FileList ? fileList[0] : fileList
