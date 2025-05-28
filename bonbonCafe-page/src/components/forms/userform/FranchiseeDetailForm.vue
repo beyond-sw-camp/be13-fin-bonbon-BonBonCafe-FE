@@ -1,16 +1,24 @@
 <template>
   <v-container class="py-4" fluid>
     <!-- 상단 타이틀 -->
-    <div class="mb-4 text-subtitle-1 font-weight-medium">
-      계정 관리 /
-      <span class="text-primary font-weight-bold">가맹점주 관리</span>
-    </div>
+    
 
     <!-- 두 카드 나란히 배치 -->
     <v-row dense>
       <!-- 회원 정보 카드 -->
       <v-col cols="12" md="6">
-        <v-card class="pa-6" elevation="2" style="width: 100%; height: 590px;">
+        <v-card class="pa-6" elevation="2" style="width: 100%; height: 650px;">
+ 
+            <v-typography class="list"  align="center">
+            계정 관리 / 
+            </v-typography>
+            <v-typography class="title"  align="center">
+            가맹점주 정보 수정
+            </v-typography>
+            
+            <br>
+            <br>
+
           <div class="d-flex justify-center mb-6">
             <v-avatar size="120">
               <v-img :src="franchiseeInfo.userImage || 'https://bonbon-file-bucket.s3.ap-northeast-2.amazonaws.com/profile-default.jpg'"
@@ -47,6 +55,10 @@
               <div class="info-label">계정상태</div>
               <v-chip :color="getStatusColor(franchiseeInfo.status)" text-color="white" variant="elevated" size="small">{{ franchiseeInfo.status }}</v-chip>
             </v-col>
+
+            <br>
+            <v-divider></v-divider>
+
             <v-col cols="12" class="d-flex justify-end mt-4">
               <v-btn color="primary" @click="goToEdit">수정하기</v-btn>
             </v-col>
@@ -57,8 +69,12 @@
 
       <!-- 추가 카드 -->
       <v-col cols="12" md="6">
-        <v-card class="pa-6" elevation="2" style="width: 100%; height: 590px;">
-          <div class="text-subtitle-2 font-weight-bold mb-2">가맹점 위치 확인</div>
+        <v-card class="pa-6" elevation="2" style="width: 100%; height: 650px;">
+          <div>
+            <v-typography class="title2"  align="center">
+              가맹점 위치 확인
+            </v-typography>
+          </div>
           <KakaoMap class="kakao-map" />
         </v-card>
       </v-col>
@@ -169,6 +185,24 @@ onMounted(async () => {
 .kakao-map {
   height: 100% !important; /* 카드 높이에 맞춰서 크기 조정 */
   width: 100% !important;  /* 가로 폭을 카드 폭에 맞춰 조정 */
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #3f51b5;
+}
+
+.title2 {
+  font-size: 16px;
+  font-weight: 500;
+  color: black;
+}
+
+.list {
+  font-size: 16px;
+  font-weight: 600;
+  color: gray;
 }
 </style>
   

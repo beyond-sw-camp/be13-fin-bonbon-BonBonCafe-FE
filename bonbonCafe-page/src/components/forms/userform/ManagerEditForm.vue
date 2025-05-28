@@ -4,13 +4,13 @@
       <v-row dense>
         <!-- 수정 카드 -->
         <v-col cols="12" md="6">
-          <v-card class="pa-6" elevation="2" style="width: 100%; height: 760px;">
+          <v-card class="pa-6" elevation="2" style="width: 100%; height: 800px;">
 
             <v-typography class="list"  align="center">
             계정 관리 / 
             </v-typography>
             <v-typography class="title"  align="center">
-            가맹점주 수정
+            담당자 정보 수정
             </v-typography>
             
             <br>
@@ -34,7 +34,7 @@
               </v-btn>
 
               <v-btn
-                v-if="editedInfo.userImage"
+                v-if="editedInfo.userImage || profileFile"
                 color="error"
                 size="small"
                 @click="deleteImage"
@@ -51,8 +51,6 @@
                 @change="onFileChange($event.target.files)"
               />
             </div>
-
-
   
             <v-form @submit.prevent="submitEdit">
               <v-row dense>
@@ -66,25 +64,25 @@
                   <v-text-field v-model="editedInfo.phone" label="전화번호" @input="isDirty = true"/>
                 </v-col>
                 <v-col cols="12">
-                  <v-text-field v-model="editedInfo.franchiseName" label="가맹점" readOnly @click="dialogVisible = true"/>
+                  <v-text-field v-model="editedInfo.region" label="담당 지역구" readOnly @click="dialogVisible = true"/>
                   <v-btn
-                    v-if="editedInfo.franchiseName"
+                    v-if="editedInfo.region"
                     color="error"
                     size="small"
                     @click="deleteFranchise"
                   >
-                    가맹점 삭제
+                    지역구 삭제
                   </v-btn>
 
 
                   <v-dialog v-model="dialogVisible" max-width="600px" eager>
                     <v-card>
-                      <v-card-title class="text-h6">가맹점 선택</v-card-title>
+                      <v-card-title class="text-h6">지역구 선택</v-card-title>
                       <v-card-text>
                         <v-text-field
                           v-model="dialogSearch"
                           prepend-inner-icon="mdi-magnify"
-                          placeholder="가맹점명으로 검색"
+                          placeholder="지역명으로 검색"
                           clearable
                           density="compact"
                           variant="outlined"
@@ -97,7 +95,7 @@
                           :items-length="dialogTotalItems"
                           :items-per-page="dialogPageSize"
                           :page="dialogCurrentPage"
-                          @click:row="(event, item) => selectFranchise(item)"
+                          @click:row="(event, item) => selectRegion(item)"
                           @update:options="onDialogOptionsChange"
                           class="elevation-1"
                           hide-default-footer
@@ -108,23 +106,11 @@
                             <v-pagination
                               v-model="dialogCurrentPage"
                               :length="dialogTotalPages"
-                              :total-visible="4"
+                              :total-visible="3"
                               @input="onDialogPageChange"
                             />
                           </v-col>
                         </v-row>
-
-                        <!-- 페이지 사이즈 선택 -->
-                        <v-select
-                          v-model="dialogPageSize"
-                          :items="[5, 10, 20]"
-                          label="Rows per page"
-                          density="compact"
-                          variant="outlined"
-                          class="mt-2"
-                          hide-details
-                          @update:model-value="onDialogPageSizeChange"
-                        />
                       </v-card-text>
                       <v-card-actions>
                         <v-spacer />
@@ -155,7 +141,7 @@
 
                     <!-- 선택된 항목 표시 -->
                 <template #selection="{ item }">
-                  <v-icon :color="item.raw.color" size="12" class="mr-6">mdi-circle</v-icon>
+                  <v-icon :color="item.raw.color" size="10" class="mr-6">mdi-circle</v-icon>
                   <span>{{ item.raw.text }}</span>
                 </template>
               </v-select>
@@ -178,11 +164,56 @@
           </v-card>
         </v-col>
   
-        <!-- 지도 -->
         <v-col cols="12" md="6">
-          <v-card class="pa-6" elevation="2" style="width: 100%; height: 530px;">
+          <v-card class="pa-6" elevation="2" style="width: 100%; height: 800px;">
             <div class="text-subtitle-2 font-weight-bold mb-2">가맹점 위치 확인</div>
-            <KakaoMap class="kakao-map" />
+            <div>
+            <v-typography class="title2"  align="center">
+              {{ editedInfo.region }} 가맹점 목록
+            </v-typography>
+            </div>
+            <v-card-text>
+                <!-- 검색창 -->
+                <v-text-field
+                    v-model="search"
+                    prepend-inner-icon="mdi-magnify"
+                    placeholder="가맹점명으로 검색"
+                    clearable
+                    density="compact"
+                    variant="outlined"
+                />
+
+                <!-- 목록 -->
+                <v-data-table-server
+                    :headers="headers"
+                    :items="items"
+                    :items-length="totalItems"
+                    :items-per-page="pageSize"
+                    :page="currentPage"
+                    @click:row="(event, item) => selectRegion(item)"
+                    @update:options="onOptionsChange"
+                    class="elevation-1"
+                    hide-default-footer
+                >
+
+                <template #no-data>
+                <div class="text-center py-6">
+                    해당 지역구에 가맹점 데이터가 없습니다.
+                </div>
+                </template>
+                </v-data-table-server>
+                <!-- 페이지네이션 -->
+                <v-row class="mt-4" align="center" justify="center">
+                    <v-col cols="auto" class="text-center">
+                    <v-pagination
+                        v-model="currentPage"
+                        :length="totalPages"
+                        :total-visible="3"
+                        @input="onPageChange"
+                    />
+                    </v-col>
+                </v-row>
+                </v-card-text>
           </v-card>
         </v-col>
       </v-row>
@@ -192,7 +223,6 @@
   </template>
   
   <script setup>
-  import KakaoMap from '@/components/map/KakaoMap.vue';
   import { ref, onMounted, watch, nextTick } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import apiClient from '@/api';
@@ -205,7 +235,15 @@
   const isDirty = ref(false);
   const deletedImageFilename = ref(null);
   
-  const franchiseeInfo = ref({});
+  const visible = ref(false);
+  const items = ref([]);
+  const search = ref('');
+  const currentPage = ref(1);
+  const pageSize = ref(8);
+  const totalItems = ref(0);
+  const totalPages = ref(0);
+
+  const managerInfo = ref({});
   const editedInfo = ref({});
   const profileFile = ref(null);
   const previewImage = ref(null);
@@ -219,40 +257,39 @@
     { text: 'DELETED', value: 'DELETED', color: 'grey' }
   ];
 
-  const franchiseList = ref([]); 
-
-  // watch(editedInfo, () => {
-  //   isDirty.value = true;
-  // }, { deep: true });
-
   // 컴포넌트 마운트 시 -> API 호출, 사용자 정보 조회
   onMounted(async () => {
     try {
       const accessToken = localStorage.getItem('accessToken');
       // 해당 id의 사용자 정보 가져오기
-      const response = await apiClient.get(`/bonbon/user/franchisee/${userId}`, {
+      const response = await apiClient.get(`/bonbon/user/manager/${userId}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
   
-      franchiseeInfo.value = response.data;
+      managerInfo.value = response.data;
       editedInfo.value = { ...response.data };
-  
-      const mapEl = document.querySelector('.kakao-map');
-      if (mapEl && mapEl.parentElement) {
-        mapEl.style.height = `${mapEl.parentElement.clientHeight}px`;
-        mapEl.style.width = '100%';
-      }
+      console.log("managerInfo : " ,managerInfo.value);
+      console.log("editedInfo : ", editedInfo.value);
 
     } catch (error) {
       console.error('정보 불러오기 실패:', error);
     }
+
+    fetchFranchiseList(1, pageSize.value, search.value);
   });
 
   // 이미지 삭제 로직
   const deleteImage = async () => {
-    
+
+    if (profileFile.value) {
+        profileFile.value = null;
+        previewImage.value = null;
+        alert('업로드할 이미지 선택이 취소되었습니다.');
+        return;
+    }
+        
     if (!editedInfo.value.userImage) return;
 
     try {
@@ -315,7 +352,6 @@ const onFileChange = (files) => {
           },
         });
         editedInfo.value.userImage = uploadRes.data;
-
       }
 
       // 만약 이미지 삭제만인 경우
@@ -330,12 +366,11 @@ const onFileChange = (files) => {
   
       console.log(editedInfo.value);
       console.log("editedInfo : ", editedInfo.value);
-      console.log("franchiseeInfo : ", franchiseeInfo.value);
-      console.log("franchiseeInfo.franchiseeId : ", franchiseeInfo.value.franchiseeId);
+      console.log("managerInfo : ", managerInfo.value);
 
       // 최종 정보 수정
       await apiClient.post(
-        `/bonbon/user/franchisee-accounts/${franchiseeInfo.value.franchiseeId}`,
+        `/bonbon/user/manager-accounts/${managerInfo.value.managerId}`,
         editedInfo.value,
         {
           headers: {
@@ -345,7 +380,7 @@ const onFileChange = (files) => {
       );
   
       alert('가맹점주 정보가 성공적으로 수정되었습니다.');
-      router.push(`/franchisee-accounts/${userId}`);
+      router.push(`/manager-accounts/${userId}`);
     } catch (error) {
       console.error('수정 실패:', error);
       alert('수정 중 오류가 발생했습니다.');
@@ -360,9 +395,8 @@ const onFileChange = (files) => {
   };
 
   const dialogHeaders = [
-    { text: '가맹점명', align: 'center',value: 'name' },
-    { text: '전화번호', align: 'center', value: 'franchiseTel' },
-    { text: '도로명주소', align: 'center', value: 'roadAddress' },
+    { text: '지역코드', align: 'center',value: 'regionCode' },
+    { text: '지역명', align: 'center', value: 'regionName' },
   ];
 
 const dialogVisible = ref(false);
@@ -380,7 +414,7 @@ const fetchDialogFranchiseList = async (page, size, search = '') => {
     const accessToken = localStorage.getItem('accessToken');
 
     // 가맹점주가 지정되지 않은 가맹점 목록 출력
-    const res = await apiClient.get(`/bonbon/user/franchisee/without-owner`, {
+    const res = await apiClient.get(`/bonbon/user/region`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       },
@@ -390,6 +424,8 @@ const fetchDialogFranchiseList = async (page, size, search = '') => {
         keyword: search
       }
     });
+
+    console.log(res);
 
     dialogItems.value = res.data.content;
     console.log('dialogItems:', dialogItems.value);
@@ -401,18 +437,20 @@ const fetchDialogFranchiseList = async (page, size, search = '') => {
 };
 
 // 가맹점 선택 시 -> 수정 대상 정보 반영
-const selectFranchise = (item) => {
+const selectRegion = (item) => {
+  console.log("선택된 지역구:", item);
 
-  console.log("item: ", item.item.name);
+  editedInfo.value.region = item.item.regionName;
+  editedInfo.value.regionCode = item.item.regionCode;
 
-  editedInfo.value.franchiseName = item.item.name;
-  editedInfo.value.franchiseId = item.item.franchiseId;
-  console.log("selected Franchise : ", editedInfo.value);
   isDirty.value = true;
   dialogVisible.value = false;
 
-  alert(`"${item.item.name}" 가맹점을 선택했습니다.`);
+  alert(`"${item.item.regionName}" 지역구를 선택했습니다.`);
+
+  fetchFranchiseList(1, pageSize.value, search.value);
 };
+
 
 // 페이지 or 검색어 변경 감지 -> dialog가 열릴 때마다 최신 데이터 불러오는 트리거
 watch(dialogVisible, async (visible) => {
@@ -450,17 +488,70 @@ const onDialogOptionsChange = (options) => {
 
 
 const deleteFranchise = () => {
-  if (!editedInfo.value.franchiseId) return;
+//   if (!editedInfo.value.franchiseId) return;
 
   const confirmed = confirm('현재 등록된 가맹점을 삭제하시겠습니까?');
   if (!confirmed) return;
 
-  editedInfo.value.franchiseId = null;
-  editedInfo.value.franchiseName = '';
+//   editedInfo.value.franchiseId = null;
+//   editedInfo.value.franchiseName = '';
   isDirty.value = true;
 
   alert('가맹점이 삭제되었습니다.');
 };
+
+
+const fetchFranchiseList = async (page, size, search = '') => {
+    try {
+      console.log("editedInfo : ", editedInfo);
+      console.log("editedInfo : ", editedInfo.value.regionCode);
+
+      const accessToken = localStorage.getItem('accessToken');
+      const res = await apiClient.get('/bonbon/user/manager/franchises', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        },
+        params: {
+          regionCode: editedInfo.value.regionCode,
+          page: page - 1,
+          size,
+          keyword: search
+        }
+      });
+
+      console.log(res);
+  
+      items.value = res.data.content;
+      totalItems.value = res.data.totalElements;
+      totalPages.value = res.data.totalPages;
+      console.log(items);
+    } catch (error) {
+      console.error('가맹점 목록 조회 실패:', error);
+    }
+  };
+
+  watch(visible, async (visible) => {
+    if (visible) {
+      await nextTick();
+      fetchFranchiseList(currentPage.value, pageSize.value, search.value);
+    }
+  });
+  
+  watch(search, () => {
+    currentPage.value = 1;
+    fetchFranchiseList(1, pageSize.value, search.value);
+  });
+  
+  const onPageChange = (page) => {
+    currentPage.value = page;
+    fetchFranchiseList(page, pageSize.value, search.value);
+  };
+
+  const onOptionsChange = (options) => {
+    currentPage.value = options.page;
+    pageSize.value = options.itemsPerPage;
+    fetchFranchiseList(options.page, options.itemsPerPage, search.value);
+  };
 
 
 

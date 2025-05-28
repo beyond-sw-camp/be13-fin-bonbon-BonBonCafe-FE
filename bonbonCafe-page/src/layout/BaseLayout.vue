@@ -15,7 +15,7 @@
         
       </v-main>
       
-      <Footer />
+      <!-- <Footer /> -->
   </v-layout>
 </template>
 
