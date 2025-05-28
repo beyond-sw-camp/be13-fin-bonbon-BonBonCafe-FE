@@ -1,5 +1,5 @@
 <template>
-    <div class=" Tdiv ">
+    <v-card class=" Tdiv ">
         <div class="mb-16" id="div0">
             <div id="div1">
                 <SelectBox
@@ -29,7 +29,7 @@
             <Table :header="header" :item="item"/>
         </div>
 
-    </div>
+    </v-card>
 
 </template>
 
@@ -49,6 +49,16 @@
 
     const selectedRegion = ref(null);
     const selectedDistrict = ref(null);
+
+    const header = [
+        { title: '', align: 'start', key: 'franchiseImage', class: 'header'},
+        { title: '가맹점 이름', align: 'start', key: 'name', class: 'header' },
+        { title: '가맹점 주소', align: 'start', key: 'roadAddress', class: 'header' },
+        { title: '담당자', align: 'start', key: 'managerName', class: 'header' },
+        { title: '가맹점 연락처', align: 'start', key: 'franchiseTel', class: 'header' },
+        { title: '상태', align: 'center', key: 'status', class: 'header' },
+        { title: '등록일', align: 'center', key: 'openDate', class: 'header' }
+    ]
 
 
     const fetchFrancise = async(page)=>{
@@ -78,7 +88,7 @@
 
 <style scoped>
     .Tdiv{
-        background-color: #f5f5f5;
+        background-color: #ffffff;
         margin: 16px 64px 64px;
         padding: 70px;
 
