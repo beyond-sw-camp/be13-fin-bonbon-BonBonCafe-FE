@@ -26,8 +26,8 @@
                   <KakaoAPI @address-selected="onAddressSelected" @update-detail-address="receiveDetailAddress" class="tt"/>
                 </template>
                 <template v-else>
-                  <v-text-field v-model="form.roadAddress" label="주소" readonly density="compact" variant="outlined" hide-details class="mb-2" :rules="[v => !!v || '주소는 필수입니다']" />
-                  <v-text-field v-model="form.detailAddress" label="상세주소" readonly density="compact" variant="outlined" hide-details />
+                  <v-text-field v-model="form.roadAddress" label="주소" readonly density="compact" variant="outlined" hide-details class="mb-2 tt" :rules="[v => !!v || '주소는 필수입니다']" />
+                  <v-text-field v-model="form.detailAddress" label="상세주소" readonly density="compact" variant="outlined" hide-details  class="tt"/>
                 </template>
               </v-col>
             </v-row>

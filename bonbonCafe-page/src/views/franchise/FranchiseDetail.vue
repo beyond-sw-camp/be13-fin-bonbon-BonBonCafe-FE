@@ -15,8 +15,10 @@
         @delete="handleDelete"
         @back="router.back()"
         />
-
     </v-col>
+    <v-row>
+
+    </v-row>
   </v-container>
 </template>
 
@@ -35,30 +37,6 @@ const franchiseId = route.params.franchiseId // 👈 정확히 맞춰야 함
 
 const formData = ref(null)
 
-
-
-// onMounted(() => {
-//   const franchiseId = route.params.id
-//   fetchFranciseDetail(franchiseId)
-// })
-// const fetchFranciseDetail = async (franchiseId) => {
-// //    const franchiseId = route.params.id
-// //   console.log('franchiseId:', franchiseId) // 로그 확인
-
-//   if (!franchiseId || franchiseId === 'undefined') {
-//     console.error('유효하지 않은 franchiseId:', franchiseId)
-//     return
-//   }
-//   try {
-//     const response = await apiClient.get(`/franchise/${franchiseId}`)
-
-//     console.log("응답 객체",response.value);
-    
-//     formData.value = response.data
-//   } catch (error) {
-//     console.error('가맹점 정보 조회 실패:', error)
-//   }
-// };
 
 
 const fetchFranchiseDetail = async () => {
