@@ -42,11 +42,14 @@ const HeadquarterStockDetail = () => import('@/views/stock/HeadquarterStockDetai
 const HeadquarterStockEdit = () => import('@/views/stock/HeadquarterStockEdit.vue')
 
 const FranchiseList = () => import('@/views/franchise/FranchiseList.vue')
+const FranchiseDetail = () => import('@/views/franchise/FranchiseDetail.vue')
 const FranchiseRegister = () => import('@/views/franchise/FranchiseRegister.vue')
+const FranchiseEdit = () => import('@/views/franchise/FranchiseEdit.vue')
 const MapView = () => import('@/views/franchise/MapView.vue')
 
 const SalesAnalysis = () => import('@/views/sales/SalesAnalysis.vue')
 const SalesForecast = () => import('@/views/sales/SalesForecast.vue')
+const SalesRanking = () => import('@/views/sales/SalesRanking.vue')
 
 const NoticeList = () => import('@/views/board/NoticeList.vue')
 const NoticeRegister = () => import('@/views/board/NoticeRegister.vue')
@@ -223,6 +226,16 @@ const router = createRouter({
           component: FranchiseList,
         },
         {
+          path:'franchise-detail/:franchiseId',
+          name: 'franchise-detail',
+          component: FranchiseDetail,
+        },
+        {
+          path:'franchise-edit/:franchiseId',
+          name: 'franchise-edit',
+          component: FranchiseEdit,
+        },
+        {
           path: '/headquarters/franchise-menu-list',
           name: 'franchise-menu-franchise-list',
           component: FranchiseListForMenu,
@@ -246,6 +259,11 @@ const router = createRouter({
           path:'sales-forecast',
           name: 'sales-forecast',
           component: SalesForecast,
+        },
+        {
+          path:'sales-ranking',
+          name: 'sales-ranking',
+          component: SalesRanking,
         },
         {
           path:'notice-list',
