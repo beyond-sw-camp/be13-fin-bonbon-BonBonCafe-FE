@@ -1,12 +1,11 @@
 <template>
     <v-container>
-        <ManagerDetailForm/>
+        <ManagerEditForm />
     </v-container>
 </template>
 
 <script setup>
-import ManagerDetailForm from '@/components/forms/userform/ManagerDetailForm.vue';
-
+import ManagerEditForm from '@/components/forms/userform/ManagerEditForm.vue';
 
 </script>
 
