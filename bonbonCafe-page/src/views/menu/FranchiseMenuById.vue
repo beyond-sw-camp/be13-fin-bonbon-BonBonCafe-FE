@@ -5,16 +5,27 @@
     </h3>
     <v-card elevation="2" class="rounded-lg">
       <v-data-table
-        :headers="headers"
-        :items="menus"
-        class="custom-table"
-        density="comfortable"
-        hide-default-footer
-      >
-        <template #item.price="{ item }">
-          {{ formatPrice(item.price) }}
-        </template>
-      </v-data-table>
+  :headers="headers"
+  :items="menus"
+  class="custom-table"
+  density="comfortable"
+  hide-default-footer
+>
+  <template #item.price="{ item }">
+    {{ formatPrice(item.price) }}
+  </template>
+
+  <template #item.status="{ item }">
+    <v-chip
+      :color="item.status === 'ACTIVE' ? 'green' : 'red'"
+      text-color="white"
+      small
+      class="ma-1"
+    >
+      {{ item.status === 'ACTIVE' ? '활성화' : '비활성화' }}
+    </v-chip>
+  </template>
+</v-data-table>
     </v-card>
   </div>
 </template>
@@ -30,6 +41,7 @@ const menus = ref([])
 const headers = [
   { title: '메뉴명', key: 'name', align: 'start' },
   { title: '가격', key: 'price', align: 'end' },
+  { title: '활성화 여부', key: 'status', align: 'center' } ,
 ]
 
 const formatPrice = (price) => {

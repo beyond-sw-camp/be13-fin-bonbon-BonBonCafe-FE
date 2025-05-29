@@ -61,29 +61,38 @@
       </v-row>
 
       <!-- 재료 테이블 -->
-      <div class="mt-4">
-        <p><strong>재료 선택 및 수량 입력</strong></p>
-        <v-data-table
-          :headers="headers"
-          :items="ingredientInputs"
-          item-key="ingredientId"
-          class="elevation-1"
-          density="compact"
-        >
-          <template v-slot:item.quantity="{ item }">
-            {{ item.quantity }}
-          </template>
+<!-- 재료 테이블 -->
+<div class="mt-4">
+  <p><strong>재료 선택 및 수량 입력</strong></p>
+  <v-data-table
+    :headers="headers"
+    :items="currentIngredients"
+    item-key="ingredientId"
+    class="elevation-1"
+    density="compact"
+    :items-per-page="itemsPerPage"
+    hide-default-footer
+  >
+    <template v-slot:item.quantity="{ item }">
+      {{ item.quantity }}
+    </template>
+    <template v-slot:item.actions="{ item }">
+      <v-icon
+        color="primary"
+        icon="mdi-pencil"
+        size="small"
+        @click="openEditDialog(item)"
+      ></v-icon>
+    </template>
+  </v-data-table>
 
-          <template v-slot:item.actions="{ item }">
-            <v-icon
-              color="primary"
-              icon="mdi-pencil"
-              size="small"
-              @click="openEditDialog(item)"
-            ></v-icon>
-          </template>
-        </v-data-table>
-      </div>
+  <!-- ✅ 페이징 컴포넌트 -->
+  <v-pagination
+    v-model="page"
+    :length="totalPages"
+    class="mt-2"
+  />
+</div>
 
       <div class="d-flex justify-end mt-4" style="gap: 8px;">
         <v-btn color="primary" type="submit">수정 완료</v-btn>
@@ -115,7 +124,20 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import apiClient from '@/api'
+import { computed } from 'vue'
 
+const page = ref(1)
+const itemsPerPage = 10
+
+const totalPages = computed(() =>
+  Math.ceil(ingredientInputs.value.length / itemsPerPage)
+)
+
+const currentIngredients = computed(() => {
+  const start = (page.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return ingredientInputs.value.slice(start, end)
+})
 const route = useRoute()
 const router = useRouter()
 const menuId = route.params.menuId
@@ -209,22 +231,27 @@ onMounted(async () => {
 })
 
 const submitUpdate = async () => {
-  await apiClient.put(`/headquarters/menus/${menuId}`, {
-    name: menu.value.name,
-    price: menu.value.price,
-    description: menu.value.description,
-    status: menu.value.status,
-    image: menu.value.image,
-    categoryIds: selectedCategories.value.map(cat => cat.id),
-    menuDetails: ingredientInputs.value
-      .filter(item => item.quantity > 0)
-      .map(item => ({
-        ingredientId: item.ingredientId,
-        quantity: item.quantity
-      }))
-  })
-  alert('수정되었습니다.')
-  router.push({ name: 'menu-detail', params: { menuId } })
+  try {
+    await apiClient.put(`/headquarters/menus/${menuId}`, {
+      name: menu.value.name,
+      price: menu.value.price,
+      description: menu.value.description,
+      status: menu.value.status,
+      image: menu.value.image,
+      categoryIds: selectedCategories.value.map(cat => cat.id),
+      menuDetails: ingredientInputs.value
+        .filter(item => item.quantity > 0)
+        .map(item => ({
+          ingredientId: item.ingredientId,
+          quantity: item.quantity
+        }))
+    })
+    alert('수정되었습니다.')
+    router.push({ name: 'menu-detail', params: { menuId } })
+  } catch (e) {
+    const message = e.response?.data?.message || '수정 중 오류가 발생했습니다.'
+    alert(message)
+  }
 }
 
 const goBack = () => router.back()
