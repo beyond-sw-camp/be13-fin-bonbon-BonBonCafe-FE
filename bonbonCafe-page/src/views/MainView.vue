@@ -3,7 +3,7 @@
         
     <v-container>
         <div>
-            <h2>Project BonBon1 ver.1</h2>
+            <h2>Project BonBon1 ver.2</h2>
         </div>
         <v-row class="mainC ma-4">
             <v-col cols="6">
