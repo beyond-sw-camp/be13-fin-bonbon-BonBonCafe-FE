@@ -1,10 +1,25 @@
 <template>
-    <div>
-        <h3>가맹점주 등록</h3>
-    </div>
+    <v-container>
+        <FranchiseeDetailForm />
+    </v-container>
 </template>
 
-<script>
+<script setup>
+import FranchiseeDetailForm from '@/components/forms/userform/FranchiseeDetailForm.vue';
+import { reactive } from 'vue';
+import apiClient from '@/api';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+import { defineProps } from 'vue';
+
+const props = defineProps({
+  id: {
+    type: String,
+    required: true
+  }
+});
 
 </script>
 

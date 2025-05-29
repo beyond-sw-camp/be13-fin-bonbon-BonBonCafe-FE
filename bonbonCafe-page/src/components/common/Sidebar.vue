@@ -7,11 +7,18 @@
       permanent
       name="drawer"
     >
-      <v-list-item
-        title="BonBon-Cafe"
-        subtitle="로그인 정보??"
-        prepend-avatar="https://cdn.vuetifyjs.com/images/john.jpg"
-      ></v-list-item>
+    
+    <div class="d-flex align-center pa-4">
+      <v-img
+        src="https://bonbon-file-bucket.s3.ap-northeast-2.amazonaws.com/bonbon-logo-banner(white).png"
+        alt="BonBon Cafe Logo"
+        max-width="150"
+        class="mr-3"
+      />
+    </div>
+
+
+
       <v-divider></v-divider>
   
       <v-list v-model:opened="opened">
@@ -89,11 +96,12 @@
     ],
   },
   {
-    title: '매출 분석',
+    title: '매출 관리',
     icon: 'mdi-chart-bar',
     items: [
       { title: '매출 분석' },
       { title: '매출 예측' },
+      { title: '매출 순위' },
     ],
   },
   {
@@ -137,6 +145,7 @@
     'kakao map': '/kakao-map',
     '매출 분석': '/sales-analysis',
     '매출 예측': '/sales-forecast',
+    '매출 순위': '/sales-ranking',
     '공지사항': '/notice-list',
     '이벤트': '/event-list',
   }

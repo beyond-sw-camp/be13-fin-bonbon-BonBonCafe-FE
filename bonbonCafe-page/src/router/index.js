@@ -11,7 +11,13 @@ const NotFound = () => import('@/views/common/NotFound.vue');
 const MainView = () => import('@/views/MainView.vue')
 
 const FranchiseeAccount = () => import('@/views/accounts/FranchiseeAccount.vue')
-const ManagerAccounts = () => import('@/views/accounts/ManagerAccount.vue')
+const FranchiseeAccountListView = () => import('@/views/accounts/FranchiseeAccountListView.vue')
+const ManagerAccount = () => import('@/views/accounts/ManagerAccount.vue')
+const ManagerAccountListView = () => import('@/views/accounts/ManagerAccountListView.vue')
+const FranchiseeAccountEditView = () => import('@/views/accounts/FranchiseeAccountEditView.vue')
+const FranchiseeRegisterView = () => import('@/views/accounts/FranchiseeRegisterView.vue')
+const ManagerAccountEditView = () => import('@/views/accounts/ManagerAccountEditView.vue')
+const ManagerRegistView = () => import('@/views/accounts/ManagerRegistView.vue')
 
 const FranchiseListForMenu = () => import('@/views/franchise/FranchiseListForMenu.vue')
 const FranchiseMenuList = () => import('@/views/menu/FranchiseMenuList.vue')
@@ -36,11 +42,14 @@ const HeadquarterStockDetail = () => import('@/views/stock/HeadquarterStockDetai
 const HeadquarterStockEdit = () => import('@/views/stock/HeadquarterStockEdit.vue')
 
 const FranchiseList = () => import('@/views/franchise/FranchiseList.vue')
+const FranchiseDetail = () => import('@/views/franchise/FranchiseDetail.vue')
 const FranchiseRegister = () => import('@/views/franchise/FranchiseRegister.vue')
+const FranchiseEdit = () => import('@/views/franchise/FranchiseEdit.vue')
 const MapView = () => import('@/views/franchise/MapView.vue')
 
 const SalesAnalysis = () => import('@/views/sales/SalesAnalysis.vue')
 const SalesForecast = () => import('@/views/sales/SalesForecast.vue')
+const SalesRanking = () => import('@/views/sales/SalesRanking.vue')
 
 const NoticeList = () => import('@/views/board/NoticeList.vue')
 const NoticeRegister = () => import('@/views/board/NoticeRegister.vue')
@@ -80,16 +89,47 @@ const router = createRouter({
           component: MainView,
         },
         {
-          path:'franchisee-accounts',
+          path:'franchisee-accounts/:userId',
           name: 'franchisee-accounts',
           component: FranchiseeAccount,
         },
         {
-          path:'manager-accounts',
-          name: 'manager-accounts',
-          component: ManagerAccounts,
+          path:'franchisee-accounts',
+          name: 'franchisee-accounts-list',
+          component: FranchiseeAccountListView,
         },
         {
+          path:'franchisee-accounts/:userId/edit',
+          name:'franchisee-accounts-edit',
+          component: FranchiseeAccountEditView
+        },
+        {
+          path:'franchisee-accounts/regist',
+          name: 'franchisee-register',
+          component: FranchiseeRegisterView
+        },
+        {
+          path:'manager-accounts/:userId',
+          name: 'manager-accounts',
+          component: ManagerAccount,
+        },
+        {
+          path:'manager-accounts',
+          name: 'manager-accounts-list',
+          component: ManagerAccountListView,
+        },
+        {
+          path: 'manager-accounts/:userId/edit',
+          name: 'manager-account-edit',
+          component: ManagerAccountEditView
+        },
+        {
+          path:'manager-accounts/regist',
+          name: 'manager-regist',
+          component: ManagerRegistView
+        },
+        {
+          path: 'headquarters/:headquarterId/menus',
           path: 'franchise-menu-list',
           name: 'franchise-menu-list',
           component: FranchiseMenuList,
@@ -186,6 +226,16 @@ const router = createRouter({
           component: FranchiseList,
         },
         {
+          path:'franchise-detail/:franchiseId',
+          name: 'franchise-detail',
+          component: FranchiseDetail,
+        },
+        {
+          path:'franchise-edit/:franchiseId',
+          name: 'franchise-edit',
+          component: FranchiseEdit,
+        },
+        {
           path: '/headquarters/franchise-menu-list',
           name: 'franchise-menu-franchise-list',
           component: FranchiseListForMenu,
@@ -209,6 +259,11 @@ const router = createRouter({
           path:'sales-forecast',
           name: 'sales-forecast',
           component: SalesForecast,
+        },
+        {
+          path:'sales-ranking',
+          name: 'sales-ranking',
+          component: SalesRanking,
         },
         {
           path:'notice-list',
@@ -288,7 +343,7 @@ router.beforeEach((to, from, next) => {
 
   // 로그인 페이지가 아니고, 로그인 상태가 아니면 로그인 페이지로 리다이렉트한다.
   // 로그인하지 않은 상태에서 로그인 페이지가 아닌 다른 페이지로 가는 경우, 로그인페이지로 리다이렉트 되도록
-  if(to.name !== 'login' && to.name !== 'main' && to.name !== 'join' && !authStore.isLoggedIn) {
+  if(to.name !== 'login' && !authStore.isLoggedIn) {
     next({name: 'login'});
   } else {
     next();

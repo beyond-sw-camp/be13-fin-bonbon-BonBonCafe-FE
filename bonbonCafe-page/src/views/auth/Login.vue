@@ -9,7 +9,7 @@
 
 <script setup>
     // import '@/assets/css/auth/sign-in.css';
-    import LoginForm from '@/components/forms/LoginForm.vue';
+    import LoginForm from '@/components/forms/userform/LoginForm.vue';
     import { useAuthStore } from '@/stores/auth';
 
     const formSubmit = (formData) => {

@@ -1,25 +1,34 @@
 <template>
-  <div>
-    <h3>📦 가맹점 재고 목록</h3>
+  <div class="stock-wrapper ma-16 mt-4 pa-10">
+    <h3 class="text-2xl font-semibold mb-6">📦 가맹점 재고 목록</h3>
 
     <!-- 🔘 재고 주문 버튼 -->
     <div class="d-flex justify-end mb-4">
       <v-btn color="primary" @click="goToStockOrder">재고 주문</v-btn>
     </div>
 
-    <v-data-table :headers="headers" :items="stocks" :items-per-page="10" class="elevation-1">
-      <template v-slot:item.unitPrice="{ item }">
-        {{ formatPrice(item.unitPrice) }}원
-      </template>
+    <!-- 📋 테이블 (v-card로 감싸서 둥근 모서리 배경 유지) -->
+    <v-card class="rounded-table-card elevation-1">
+      <v-data-table
+        :headers="headers"
+        :items="stocks"
+        :items-per-page="10"
+        class="rounded-table"
+        density="comfortable"
+      >
+        <template #item.unitPrice="{ item }">
+          {{ formatPrice(item.unitPrice) }}원
+        </template>
 
-      <template v-slot:item.retailPrice="{ item }">
-        {{ formatPrice(item.retailPrice) }}원
-      </template>
+        <template #item.retailPrice="{ item }">
+          {{ formatPrice(item.retailPrice) }}원
+        </template>
 
-      <template v-slot:item.quantity="{ item }">
-        {{ item.quantity }} {{ item.unit }}
-      </template>
-    </v-data-table>
+        <template #item.quantity="{ item }">
+          {{ item.quantity }} {{ item.unit }}
+        </template>
+      </v-data-table>
+    </v-card>
   </div>
 </template>
 
@@ -45,9 +54,8 @@ const fetchFranchiseStocks = async () => {
   try {
     const res = await apiClient.get(`/franchise-stocks`)
     stocks.value = res.data.content
-    console.log(stocks.value)
   } catch (e) {
-    console.error('❌ 가맹점 재고 조회 실패', e,)
+    console.error('❌ 가맹점 재고 조회 실패', e)
     alert('가맹점 재고 목록을 불러오지 못했습니다.')
   }
 }
@@ -56,7 +64,6 @@ const formatPrice = (price) => {
   return price ? Number(price).toLocaleString() : '-'
 }
 
-// ✅ 단순히 이동만!
 const goToStockOrder = () => {
   router.push('/stock-Order')
 }
@@ -65,7 +72,17 @@ onMounted(fetchFranchiseStocks)
 </script>
 
 <style scoped>
-h3 {
-  margin-bottom: 20px;
+.stock-wrapper {
+  background-color: #f5f5f5;
+}
+
+.rounded-table-card {
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
+}
+
+/* 헤더 배경색 */
+::v-deep(.rounded-table thead) {
+  background-color: #D8DBBD;
 }
 </style>

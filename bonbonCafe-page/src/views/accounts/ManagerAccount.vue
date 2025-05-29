@@ -1,12 +1,12 @@
 <template>
-    <div>
-        <h3>
-            담당자 관리
-        </h3>
-    </div>
+    <v-container>
+        <ManagerDetailForm/>
+    </v-container>
 </template>
 
-<script>
+<script setup>
+import ManagerDetailForm from '@/components/forms/userform/ManagerDetailForm.vue';
+
 
 </script>
 

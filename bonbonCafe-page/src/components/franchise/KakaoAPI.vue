@@ -1,11 +1,27 @@
 <template>
-  <v-container>
+  <div>
     <div class="d-flex">
-        <v-text-field v-model="postcode" label="우편번호" readonly class="mr-2"/>
-        <v-btn @click="execDaumPostcode" color="error" class="mb-4">우편번호 찾기</v-btn>
+        <v-text-field v-model="postcode" label="우편번호" readonly class="mr-2 textBox" density="comfortable" variant="outlined" width="50px"/>
+        <v-btn @click="execDaumPostcode" color="#efefef" class="mt-2">우편번호 찾기</v-btn>
     </div>
-    <v-text-field v-model="address" label="주소" readonly />
-    <v-text-field v-model="detailAddress" label="상세주소" />
+    <v-text-field v-model="address" label="주소" readonly density="comfortable" variant="outlined" class="textBox"/>
+    <v-text-field 
+      v-model="detailAddress" 
+      @input="onDetailInput"
+      label="상세주소" 
+      density="comfortable" 
+      variant="outlined" 
+      class="textBox"
+    />
+    <!-- <v-text-field :value="props.modelValue" @input="onDetailAddressInput" label="상세주소" density="comfortable" variant="outlined" class="textBox" -->
+    <!-- <v-text-field 
+      v-model="detailAddress"
+      @blur="emitFullAddress"
+      label="상세주소"
+      density="comfortable"
+      variant="outlined"
+      class="textBox"
+    /> -->
 
     <!-- 카카오 주소 검색 레이어 -->
     <div id="layer" style="display:none;position:fixed;overflow:hidden;z-index:999;-webkit-overflow-scrolling:touch;">
@@ -17,11 +33,13 @@
         alt="닫기 버튼"
       />
     </div>
-  </v-container>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
+
+const emit = defineEmits(['address-selected' , 'update-detail-address'])
 
 const postcode = ref('')
 const address = ref('')
@@ -39,35 +57,48 @@ function closeDaumPostcode() {
   }
 }
 
-function execDaumPostcode() {
-  new window.daum.Postcode({
-    oncomplete: function (data) {
+
+// 주소 검색 창을 열고, 사용자가 주소를 선택했을 떄의 후속 처리를 정의
+function execDaumPostcode() {  
+  new window.daum.Postcode({  // 카카오에서 제공하는 주소 검색 팝업을 삽입하는 객체
+    oncomplete: function (data) { // 사용자가 주소를 선택했을 떄 자동으로 실행되는 콜백
       let addr = ''
 
       if (data.userSelectedType === 'R') {
-        addr = data.roadAddress
+        addr = data.roadAddress // 도로명 주소 선택 시
       } else {
-        addr = data.jibunAddress
+        addr = data.jibunAddress  // 지번 주소 선택 시
       }
 
-      postcode.value = data.zonecode
-      address.value = addr
-      detailAddress.value = ''
+      postcode.value = data.zonecode  // 우변번호
+      address.value = addr            // 선택된 주소 (도로명 또는 지번)
 
-      // 커서를 상세주소로 이동
+      
+      // 주소를 선택한 후 자동으로 상세주소 입력란에 커서를 위치시킵
       setTimeout(() => {
         document.querySelector('input[label="상세주소"]')?.focus()
       }, 0)
-
+      
+   
+      emit('address-selected', {
+        regionName: `${data.sido} ${data.sigungu}`,  // "서울특별시 동작구"
+        roadAddress: data.roadAddress,         // "보라매로 87"
+      })
+      
       element_layer.style.display = 'none'
     },
     width: '100%',
     height: '100%',
-    maxSuggestItems: 5
+    maxSuggestItems: 5,
+    shorthand: false
   }).embed(element_layer)
 
   element_layer.style.display = 'block'
   initLayerPosition()
+}
+
+const onDetailInput = () => {
+  emit('update-detail-address', detailAddress.value)
 }
 
 function initLayerPosition() {
@@ -84,5 +115,7 @@ function initLayerPosition() {
 </script>
 
 <style scoped>
-/* 필요 시 커스터마이징 가능 */
+.textBox{
+  color: gray;
+}
 </style>
