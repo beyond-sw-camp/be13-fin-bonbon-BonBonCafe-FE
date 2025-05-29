@@ -38,44 +38,65 @@
     />
   </div>
 </template>
-  
-  <script setup>
-  import { ref, onMounted, watch } from 'vue'
-  import { useRoute, useRouter } from 'vue-router'
-  import apiClient from '@/api'
-  
-  const route = useRoute()
-  const router = useRouter()
-  
-  const headquarterId = route.params.headquarterId || 1
-  const franchiseId = route.params.franchiseId || 24 // 하드코딩
-  
-  const page = ref(1)
-  const pageSize = 10
-  const totalPages = ref(1)
-  const totalElements = ref(0)
-  const histories = ref([])
-  
-  const fetchHistory = async () => {
-    try {
-      const { data } = await apiClient.get(`/franchiseOrder/list`, {
-        params: {
-          page: page.value - 1
-        }
-      })
-      histories.value = data.content
-      totalPages.value = data.totalPages
-      totalElements.value = data.totalElements
-    } catch (e) {
-      console.error('❌ 재고 신청 내역 조회 실패', e)
-    }
+
+<script setup>
+import { ref, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import apiClient from '@/api'
+
+const route = useRoute()
+const router = useRouter()
+
+const page = ref(1)
+const pageSize = 10
+const totalPages = ref(1)
+const totalElements = ref(0)
+const histories = ref([])
+
+const priceMap = ref({}) // ingredientName → unitPrice
+
+const unitPrice = (item) => {
+  return priceMap.value[item.ingredientName] || 0
+}
+
+const fetchFranchiseStocks = async () => {
+  try {
+    const res = await apiClient.get(`/franchise-stocks`)
+    priceMap.value = Object.fromEntries(
+      res.data.content.map(stock => [stock.ingredientName, stock.unitPrice])
+    )
+  } catch (e) {
+    console.error('❌ 단가 목록 불러오기 실패', e)
   }
-  
-  const formatDate = (dateStr) => {
-    return new Date(dateStr).toLocaleDateString()
+}
+
+const fetchHistory = async () => {
+  try {
+    const { data } = await apiClient.get(`/franchiseOrder/list`, {
+      params: {
+        page: page.value - 1
+      }
+    })
+    histories.value = data.content
+    totalPages.value = data.totalPages
+    totalElements.value = data.totalElements
+  } catch (e) {
+    console.error('❌ 재고 신청 내역 조회 실패', e)
   }
-  
-  const statusLabel = (status) => {
+}
+
+const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString()
+
+const formatPrice = (price) => {
+  return price ? Number(price).toLocaleString() + '원' : '-'
+}
+
+const totalPrice = (item) => {
+  const unitPrice = priceMap.value[item.ingredientName] || 0
+  return unitPrice * item.quantity
+}
+
+const statusLabel = (status) => {
   const map = {
     REQUESTED: '신청됨',
     APPROVED: '승인됨',
@@ -86,40 +107,38 @@
   }
   return map[status] || status
 }
-  
-  const goToDetail = (historyId) => {
-    if (!historyId) return
-    router.push({
-      name: 'stock-history-detail',
-      params: {
-        headquarterId,
-        franchiseId,
-        historyId
-      }
-    })
-  }
-  
-  onMounted(fetchHistory)
-  watch(page, fetchHistory)
-  </script>
-  
-  <style scoped>
+
+const goToDetail = (historyId) => {
+  if (!historyId) return
+  router.push({
+    name: 'stock-history-detail',
+    params: {
+      historyId
+    }
+  })
+}
+
+onMounted(() => {
+  fetchHistory()
+  fetchFranchiseStocks()
+})
+watch(page, fetchHistory)
+</script>
+
+<style scoped>
 .history-wrapper {
   background-color: #f5f5f5;
 }
 
-/* 카드 전체 둥글게 */
 .rounded-header-card {
   border-radius: 12px 12px 0 0;
   overflow: hidden;
 }
 
-/* 헤더만 배경색 지정 */
 ::v-deep(.rounded-header-table thead tr) {
   background-color: #D8DBBD;
 }
 
-/* 헤더 윗부분만 둥글게 */
 ::v-deep(.rounded-header-table thead tr:first-child th:first-child) {
   border-top-left-radius: 12px;
 }
