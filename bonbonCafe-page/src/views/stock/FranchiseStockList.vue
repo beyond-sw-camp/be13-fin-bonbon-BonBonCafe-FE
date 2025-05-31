@@ -4,17 +4,17 @@
 
     <!-- 🔘 재고 주문 버튼 -->
     <div class="d-flex justify-end mb-4">
-      <v-btn color="primary" @click="goToStockOrder">재고 주문</v-btn>
+      <v-btn color="#D8DBBD" variant="flat" @click="goToStockOrder">재고 주문</v-btn>
     </div>
 
-    <!-- 📋 테이블 (v-card로 감싸서 둥근 모서리 배경 유지) -->
+    <!-- 📋 테이블 -->
     <v-card class="rounded-table-card elevation-1">
       <v-data-table
         :headers="headers"
         :items="stocks"
-        :items-per-page="10"
         class="rounded-table"
         density="comfortable"
+        hide-default-footer
       >
         <template #item.unitPrice="{ item }">
           {{ formatPrice(item.unitPrice) }}원
@@ -29,21 +29,29 @@
         </template>
       </v-data-table>
     </v-card>
+
+    <!-- ✅ 사용자 정의 페이징 -->
+    <v-pagination
+      v-model="page"
+      :length="totalPages"
+      class="mt-4 custom-pagination"
+      @input="fetchFranchiseStocks"
+    />
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref, onMounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import apiClient from '@/api'
 
-const route = useRoute()
 const router = useRouter()
 
 const stocks = ref([])
+const page = ref(1)
+const totalPages = ref(1)
 
 const headers = [
-  { title: '가맹점명', key: 'franchiseName' },
   { title: '재료명', key: 'ingredientName' },
   { title: '수량', key: 'quantity' },
   { title: '단가', key: 'unitPrice' },
@@ -52,8 +60,13 @@ const headers = [
 
 const fetchFranchiseStocks = async () => {
   try {
-    const res = await apiClient.get(`/franchise-stocks`)
+    const res = await apiClient.get('/franchise-stocks', {
+      params: {
+        page: page.value - 1
+      }
+    })
     stocks.value = res.data.content
+    totalPages.value = res.data.totalPages
   } catch (e) {
     console.error('❌ 가맹점 재고 조회 실패', e)
     alert('가맹점 재고 목록을 불러오지 못했습니다.')
@@ -69,6 +82,7 @@ const goToStockOrder = () => {
 }
 
 onMounted(fetchFranchiseStocks)
+watch(page, fetchFranchiseStocks)
 </script>
 
 <style scoped>
@@ -81,8 +95,27 @@ onMounted(fetchFranchiseStocks)
   overflow: hidden;
 }
 
-/* 헤더 배경색 */
 ::v-deep(.rounded-table thead) {
   background-color: #D8DBBD;
+}
+
+.custom-pagination {
+  justify-content: center;
+}
+
+::v-deep(.v-pagination) {
+  gap: 4px;
+}
+
+::v-deep(.v-pagination .v-btn) {
+  min-width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+::v-deep(.v-pagination .v-btn.v-btn--active) {
+  background-color: #D8DBBD !important;
+  color: black !important;
 }
 </style>

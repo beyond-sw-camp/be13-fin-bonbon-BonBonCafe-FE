@@ -23,33 +23,38 @@
         <!-- 오른쪽 이미지 -->
         <v-col cols="12" md="4">
           <input type="file" ref="fileInput" accept="image/*" class="d-none" @change="onFileChange" />
-
           <div class="upload-box" @click="triggerFileInput">
             <v-img v-if="menu.image" :src="menu.image" aspect-ratio="1" cover class="rounded" />
             <div class="upload-label">
               <v-icon size="32" class="mb-1">mdi-camera</v-icon>
-              <div class="text-caption">이미지 등록</div>
+              <div class="text-caption">이미지</div>
             </div>
           </div>
         </v-col>
       </v-row>
 
-      <!-- 재료 테이블 -->
+      <!-- 재료 검색 및 테이블 -->
       <div class="mt-4">
         <p><strong>재료 선택 및 수량 입력</strong></p>
+
+        <!-- ✅ 검색창 -->
+        <v-text-field
+          v-model="search"
+          label="재료명 검색"
+          append-inner-icon="mdi-magnify"
+          class="mb-2"
+        />
 
         <v-data-table :headers="headers" :items="currentIngredients" item-key="ingredientId" class="elevation-1"
           density="compact" :items-per-page="itemsPerPage" hide-default-footer>
           <template v-slot:item.quantity="{ item }">
             {{ item.quantity }}
           </template>
-
           <template v-slot:item.actions="{ item }">
             <v-icon color="primary" icon="mdi-pencil" size="small" @click="openEditDialog(item)" />
           </template>
         </v-data-table>
 
-        <!-- ✅ 페이징 컴포넌트 -->
         <v-pagination v-model="page" :length="totalPages" class="mt-2" />
       </div>
 
@@ -77,16 +82,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { computed } from 'vue'
 import apiClient from '@/api'
 
-const page = ref(1)
-const itemsPerPage = 10
 const router = useRouter()
-
 const formRef = ref(null)
+
 const menu = ref({
   name: '',
   price: 0,
@@ -96,15 +98,9 @@ const menu = ref({
   menuDetails: []
 })
 
-const totalPages = computed(() =>
-  Math.ceil(ingredientInputs.value.length / itemsPerPage)
-)
-
-const currentIngredients = computed(() => {
-  const start = (page.value - 1) * itemsPerPage
-  const end = start + itemsPerPage
-  return ingredientInputs.value.slice(start, end)
-})
+const page = ref(1)
+const itemsPerPage = 10
+const search = ref('') // ✅ 검색어
 
 const selectedCategories = ref([])
 const allCategories = ref([])
@@ -159,6 +155,22 @@ const saveQuantity = () => {
   }
   dialog.value = false
 }
+
+const filteredIngredients = computed(() =>
+  ingredientInputs.value.filter(item =>
+    item.ingredientName.toLowerCase().includes(search.value.toLowerCase())
+  )
+)
+
+const currentIngredients = computed(() => {
+  const start = (page.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return filteredIngredients.value.slice(start, end)
+})
+
+const totalPages = computed(() =>
+  Math.ceil(filteredIngredients.value.length / itemsPerPage)
+)
 
 onMounted(async () => {
   const categoryRes = await apiClient.get('/categories')

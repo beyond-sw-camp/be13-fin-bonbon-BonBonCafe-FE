@@ -2,6 +2,7 @@
   <div class="table-wrapper ma-8 pa-8">
     <h3 class="text-2xl font-semibold mb-6">📦 가맹점 재고 신청 내역 (전체)</h3>
 
+    <!-- 🔍 가맹점명 검색 -->
     <v-text-field
       v-model="search"
       label="가맹점 이름 검색"
@@ -9,7 +10,19 @@
       @keyup.enter="fetchHistories"
     />
 
-    <!-- 💡 v-card로 테이블 감싸기 -->
+    <!-- 🔽 상태 필터 선택 -->
+    <v-select
+      v-model="selectedStatus"
+      :items="statusOptions"
+      label="신청 처리 현황"
+      item-title="label"
+      item-value="value"
+      class="mb-4"
+      clearable
+      @update:model-value="onStatusChange"
+    />
+
+    <!-- 💡 테이블 카드 -->
     <v-card class="rounded-table elevation-1">
       <v-table>
         <thead>
@@ -32,7 +45,7 @@
             <td>{{ totalElements - (page - 1) * pageSize - index }}</td>
             <td>{{ item.franchiseName }}</td>
             <td>{{ item.ingredientName }}</td>
-            <td>{{ item.quantity }}</td>
+            <td>{{ item.quantity }} {{ item.unit || '' }}</td>
             <td>{{ formatDate(item.date) }}</td>
             <td>{{ statusLabel(item.historyStatus) }}</td>
           </tr>
@@ -40,6 +53,7 @@
       </v-table>
     </v-card>
 
+    <!-- 📄 페이지네이션 -->
     <v-pagination
       v-model="page"
       :length="totalPages"
@@ -59,18 +73,29 @@ const router = useRouter()
 const histories = ref([])
 const loading = ref(false)
 const search = ref('')
+const selectedStatus = ref(null)
 
 const page = ref(1)
 const pageSize = 10
 const totalPages = ref(1)
 const totalElements = ref(0)
 
+const statusOptions = [
+  { value: 'REQUESTED', label: '신청 완료' },
+  { value: 'APPROVED', label: '승인 완료' },
+  { value: 'REJECTED', label: '승인 거부' },
+  { value: 'SHIPPED', label: '배송 진행 중' },
+  { value: 'DELIVERED', label: '배송 완료' },
+  { value: 'CANCELLED', label: '신청 취소' }
+]
+
 const fetchHistories = async () => {
   loading.value = true
   try {
     const { data } = await apiClient.get('/franchiseOrder/headquarter/franchise-history-list', {
       params: {
-        page: page.value - 1
+        page: page.value - 1,
+        status: selectedStatus.value || null
       }
     })
     histories.value = data.content || []
@@ -82,6 +107,11 @@ const fetchHistories = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const onStatusChange = () => {
+  page.value = 1
+  fetchHistories()
 }
 
 const filteredHistories = computed(() => {
@@ -97,12 +127,12 @@ const formatDate = (dateStr) => {
 
 const statusLabel = (status) => {
   const map = {
-    REQUESTED: '신청됨',
-    APPROVED: '승인됨',
-    REJECTED: '거절됨',
-    SHIPPED: '배송 중',
+    REQUESTED: '신청 완료',
+    APPROVED: '승인 완료',
+    REJECTED: '승인 거부',
+    SHIPPED: '배송 진행 중',
     DELIVERED: '배송 완료',
-    CANCELLED: '취소됨'
+    CANCELLED: '신청 취소'
   }
   return map[status] || status
 }
