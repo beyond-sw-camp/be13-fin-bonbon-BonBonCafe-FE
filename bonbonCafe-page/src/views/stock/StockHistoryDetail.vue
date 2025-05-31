@@ -6,36 +6,32 @@
       <div class="mb-4"><strong>재료명:</strong> {{ history.ingredientName }}</div>
 
       <div class="mb-4">
-        <strong>수량:</strong>
-        <span v-if="!editMode">{{ history.quantity }}</span>
-        <v-text-field
-          v-else
-          v-model="editForm.quantity"
-          type="number"
-          density="compact"
-          class="mt-2"
-          hide-details
-          style="max-width: 200px"
-        />
+        <strong>수량: </strong>
+        <span v-if="!editMode">{{ history.quantity }} {{ history.unit || '' }}</span>
+        <v-text-field v-else v-model="editForm.quantity" type="number" density="compact" class="mt-2" hide-details
+          style="max-width: 200px" />
       </div>
 
       <div class="mb-4"><strong>신청일:</strong> {{ formatDate(history.date) }}</div>
 
       <div class="mb-2">
-        <strong>상태:</strong>
-        <span v-if="!editMode">{{ statusLabel(history.historyStatus) }}</span>
-        <v-select
-          v-else
-          v-model="editForm.status"
-          :items="statusOptions"
-          item-title="label"
-          item-value="value"
-          density="compact"
-          class="mt-2"
-          hide-details
-          style="max-width: 200px"
-        />
-      </div>
+  <strong>상태: </strong>
+  <template v-if="editMode && userRole === 'ROLE_HEADQUARTER'">
+    <v-select
+      v-model="editForm.status"
+      :items="statusOptions"
+      item-title="label"
+      item-value="value"
+      density="compact"
+      class="mt-2"
+      hide-details
+      style="max-width: 200px"
+    />
+  </template>
+  <template v-else>
+    {{ statusLabel(history.historyStatus) }}
+  </template>
+</div>
     </v-card>
 
     <div class="d-flex justify-end" style="gap: 10px">
@@ -65,12 +61,12 @@ const editForm = ref({ ingredientId: null, quantity: 0, status: '' })
 const editMode = ref(false)
 
 const statusOptions = [
-  { value: 'REQUESTED', label: '신청됨' },
-  { value: 'APPROVED', label: '승인됨' },
-  { value: 'REJECTED', label: '거절됨' },
-  { value: 'SHIPPED', label: '배송 중' },
+{ value: 'REQUESTED', label: '신청 완료' },
+  { value: 'APPROVED', label: '승인 완료' },
+  { value: 'REJECTED', label: '승인 거부' },
+  { value: 'SHIPPED', label: '배송 진행 중' },
   { value: 'DELIVERED', label: '배송 완료' },
-  { value: 'CANCELLED', label: '취소됨' }
+  { value: 'CANCELLED', label: '신청 취소' }
 ]
 
 const fetchDetail = async () => {
@@ -129,12 +125,12 @@ const deleteHistory = async () => {
 const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString()
 const statusLabel = (status) => {
   const map = {
-    REQUESTED: '신청됨',
-    APPROVED: '승인됨',
-    REJECTED: '거절됨',
-    SHIPPED: '배송 중',
+    REQUESTED: '신청 완료',
+    APPROVED: '승인 완료',
+    REJECTED: '승인 거부',
+    SHIPPED: '배송 진행 중',
     DELIVERED: '배송 완료',
-    CANCELLED: '취소됨'
+    CANCELLED: '신청 취소'
   }
   return map[status] || status
 }

@@ -2,7 +2,12 @@
   <div class="event-wrapper ma-10 pa-8">
     <div class="d-flex justify-space-between align-center mb-6">
       <h2 class="text-2xl font-semibold">🎉 이벤트 게시판</h2>
-      <v-btn color="primary" @click="goToRegister" prepend-icon="mdi-plus">
+      <v-btn
+        v-if="userRole === 'ROLE_HEADQUARTER'"
+        color="primary"
+        @click="goToRegister"
+        prepend-icon="mdi-plus"
+      >
         이벤트 등록
       </v-btn>
     </div>
@@ -15,7 +20,7 @@
             <th>제목</th>
             <th>작성자</th>
             <th>작성일</th>
-            <th class="text-center">문자전송</th>
+            <th v-if="userRole === 'ROLE_HEADQUARTER'" class="text-center">문자전송</th>
           </tr>
         </thead>
         <tbody>
@@ -29,7 +34,12 @@
             <td>{{ event.title }}</td>
             <td>{{ event.author }}</td>
             <td>{{ formatDate(event.createTime) }}</td>
-            <td class="text-center">{{ event.sent ? '✅' : '❌' }}</td>
+            <td
+              v-if="userRole === 'ROLE_HEADQUARTER'"
+              class="text-center"
+            >
+              {{ event.sent ? '✅' : '❌' }}
+            </td>
           </tr>
         </tbody>
       </v-table>
@@ -45,11 +55,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 import apiClient from '@/api'
 
 const router = useRouter()
+const authStore = useAuthStore()
+const userRole = computed(() => authStore.userInfo.role)
 
 const events = ref([])
 const page = ref(1)
@@ -96,7 +109,7 @@ watch(page, fetchEvents)
 }
 
 .event-card {
-  border-radius: 12px 12px 0 0; /* 상단만 둥글게 */
+  border-radius: 12px 12px 0 0;
   overflow: hidden;
 }
 

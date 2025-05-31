@@ -31,10 +31,7 @@
           <div v-if="menu.menuDetails?.length" class="mt-6">
             <p><strong>재료:</strong></p>
             <ul class="ingredient-list">
-              <li
-                v-for="detail in menu.menuDetails"
-                :key="detail.ingredientName"
-              >
+              <li v-for="detail in menu.menuDetails" :key="detail.ingredientName">
                 {{ detail.ingredientName }} - {{ detail.quantity }}g
               </li>
             </ul>
@@ -42,25 +39,16 @@
 
           <!-- 버튼 -->
           <v-card-actions class="justify-end mt-6">
-            <v-btn
-              v-if="userRole === 'ROLE_HEADQUARTER'"
-              color="primary"
-              @click="goToEdit"
-            >
+            <v-btn v-if="userRole === 'ROLE_HEADQUARTER'" color="secondary" @click="dialog = true">
+              가맹점 목록 보기
+            </v-btn>
+            <v-btn v-if="userRole === 'ROLE_HEADQUARTER'" color="primary" @click="goToEdit">
               수정
             </v-btn>
-            <v-btn
-              v-if="userRole === 'ROLE_HEADQUARTER'"
-              color="error"
-              @click="deleteMenu"
-            >
+            <v-btn v-if="userRole === 'ROLE_HEADQUARTER'" color="error" @click="deleteMenu">
               삭제
             </v-btn>
-            <v-btn
-              v-if="userRole === 'ROLE_FRANCHISEE'"
-              color="primary"
-              @click="addMenu"
-            >
+            <v-btn v-if="userRole === 'ROLE_FRANCHISEE'" color="primary" @click="addMenu">
               가맹점에 추가
             </v-btn>
           </v-card-actions>
@@ -69,26 +57,47 @@
 
       <!-- ☕ 메뉴 이미지 (오른쪽) -->
       <v-col cols="12" md="5">
-  <div class="image-wrapper">
-    <template v-if="menu.image && !imageError">
-      <v-img
-        :src="menu.image"
-        class="menu-img"
-        cover
-        @error="imageError = true"
-      />
-    </template>
-    <template v-else>
-      <div class="no-image">[ 이미지 없음 ]</div>
-    </template>
-  </div>
-</v-col>
+        <div class="image-wrapper">
+          <template v-if="menu.image && !imageError">
+            <v-img :src="menu.image" class="menu-img" cover @error="imageError = true" />
+          </template>
+          <template v-else>
+            <div class="no-image">[ 이미지 없음 ]</div>
+          </template>
+        </div>
+      </v-col>
     </v-row>
+
+    <!-- 💬 가맹점 목록 다이얼로그 -->
+    <v-dialog v-model="dialog" max-width="800px">
+      <v-card>
+        <v-card-title class="text-h6">📋 가맹점 목록</v-card-title>
+        <v-card-text>
+          <v-table>
+            <thead>
+              <tr>
+                <th>가맹점명</th>
+                <th>주소</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="f in franchises" :key="f.franchiseId">
+                <td>{{ f.franchiseName }}</td>
+                <td>{{ f.roadAddress }} {{ f.detailAddress }}</td>
+              </tr>
+            </tbody>
+          </v-table>
+        </v-card-text>
+        <v-card-actions class="justify-end">
+          <v-btn text @click="dialog = false">닫기</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import apiClient from '@/api'
@@ -101,6 +110,9 @@ const menu = ref({})
 const imageError = ref(false)
 const menuId = route.params.menuId
 const userRole = authStore.userInfo.role
+
+const dialog = ref(false)
+const franchises = ref([])
 
 const goToEdit = () => {
   router.push(`/headquarters/menus/${menuId}/edit`)
@@ -129,6 +141,20 @@ onMounted(async () => {
   const { data } = await apiClient.get(`/headquarters/menus/${menuId}`)
   menu.value = data
 })
+
+// 다이얼로그 열릴 때 가맹점 목록 조회
+watch(dialog, async (isOpen) => {
+  if (isOpen) {
+    try {
+      const { data } = await apiClient.get(`/franchise-menus/menu/${menuId}/franchises`)
+      franchises.value = data
+    } catch (e) {
+      console.error('❌ 가맹점 목록 조회 실패', e)
+    }
+  }
+})
+
+const formatDate = (date) => new Date(date).toLocaleDateString()
 </script>
 
 <style scoped>
@@ -137,17 +163,15 @@ onMounted(async () => {
   margin-top: 8px;
   border-left: 3px solid #ccc;
 }
-
 .ingredient-list li {
   margin-bottom: 6px;
   padding-left: 4px;
   list-style: '🌿 ';
 }
-
 .image-wrapper {
   position: relative;
   width: 100%;
-  padding-top: 100%; /* 1:1 비율 유지 */
+  padding-top: 100%;
   border-radius: 12px;
   background-color: #f5f5f5;
   overflow: hidden;
@@ -155,7 +179,6 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
 }
-
 .menu-img {
   position: absolute;
   top: 0;
@@ -163,7 +186,6 @@ onMounted(async () => {
   width: 100%;
   height: 100%;
 }
-
 .no-image {
   position: absolute;
   top: 50%;
