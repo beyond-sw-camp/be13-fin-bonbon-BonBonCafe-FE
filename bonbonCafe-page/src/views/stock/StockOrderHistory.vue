@@ -64,7 +64,7 @@ const statusOptions = [
   { value: 'REJECTED', label: '승인 거부' },
   { value: 'SHIPPED', label: '배송 진행 중' },
   { value: 'DELIVERED', label: '배송 완료' },
-  { value: 'CANCELLED', label: '신청 취소' }
+  // { value: 'CANCELLED', label: '신청 취소' }
 ]
 
 const unitPrice = (item) => priceMap.value[item.ingredientName] || 0
@@ -114,7 +114,7 @@ const statusLabel = (status) => {
     REJECTED: '승인 거부',
     SHIPPED: '배송 진행 중',
     DELIVERED: '배송 완료',
-    CANCELLED: '신청 취소'
+    // CANCELLED: '신청 취소'
   }
   return map[status] || status
 }
