@@ -3,25 +3,45 @@
     v-model:items-per-page="itemsPerPage"
     :headers="header"
     :items="item"
-    :items-length="totalCount"
-    :loading="loading"
     class="rounded-b rounded-t"
-    item-value="franchiseId"
-    @update:options="onOptionsUpdate"
-    @click="goToDetail(item)"
-  >
-    <!-- "상태" 컬럼만 v-chip으로 렌더링 -->
+    @click="goToDetail"
+    >
+    <!-- @update:options="onOptionsUpdate" -->
+
     <template #item.status="{ item }">
       <v-chip variant="tonal" :color="getStatusColor(item.status)">
         {{ getStatusText(item.status) }}
       </v-chip>
     </template>
+
+
+     <template #body="{ items }">
+      <tbody>
+        <tr
+          v-for="item in items"
+          :key="item.franchiseId"
+          @click="goToDetail(item)"
+          style="cursor: pointer;"
+        >
+          <!-- <td v-for="header in header" :key="header.value"> -->
+            <!-- 각 칼럼 값 출력 -->
+            <!-- {{ item[header.value] }}
+          </td> -->
+        </tr>
+      </tbody>
+    </template>
     
-    <template #item.franchiseImage="{ item }">
+    <!-- <template #item.franchiseImage="{ item }">
       <v-avatar size="32">
         <v-img :src="item.franchiseImage"></v-img>
     </v-avatar>
-    </template>
+    </template> -->
+
+    <!-- <template #item.name="{ item }">
+      <span @click="goToDetail(item)" style="cursor: pointer; color: blue;">
+        {{ item.name }}
+      </span>
+    </template> -->
     
   </v-data-table-server>
 </template>
@@ -71,10 +91,8 @@
     const router = useRouter()
 
     const goToDetail = (item) => {
-    router.push({
-        name: 'franchise-detail',
-        params: { franchiseId: item.franchiseId }
-    });
+      
+      router.push(`/franchise/${item.franchiseId}`);
     };
 
 </script>

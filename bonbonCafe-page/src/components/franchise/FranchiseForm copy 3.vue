@@ -210,15 +210,10 @@
         </v-row>
 
         <!-- 버튼 영역 -->
-         <v-row justify="center" v-if="props.submitVisible">
-          <v-btn type="submit" color="primary" class="mt-6" size="large" rounded>제출</v-btn>
-          <v-btn color="grey" class="mt-6 mx-2" size="large" rounded @click="emit('back')">뒤로가기</v-btn>
-        </v-row>
-        <!-- 읽기 전용일 때 하단 버튼 -->
-        <v-row justify="center" v-if="props.readonly">
-          <v-btn color="primary" class="mt-6 mx-2" size="large" rounded @click="emit('edit')">수정</v-btn>
-          <v-btn color="error" class="mt-6 mx-2" size="large" rounded @click="emit('delete')">삭제</v-btn>
-          <v-btn color="grey" class="mt-6 mx-2" size="large" rounded @click="emit('back')">뒤로가기</v-btn>
+        <v-row justify="center" v-if="props.submitVisible">
+          <v-btn type="submit" color="#D8DBBD" class="mt-6" size="large" style="color: #6F5F4B;">
+            {{ props.submitLabel || '저장' }}
+          </v-btn>
         </v-row>
         
       </v-card>
@@ -228,9 +223,6 @@
 <script setup>
 import { ref, reactive, watch } from 'vue'
 import KakaoAPI from './KakaoAPI.vue'
-import apiClient from '@/api'
-
-
 
 const props = defineProps({
   initialFormData: {
@@ -324,38 +316,16 @@ function SubmitEvent() {
 
 
 
-// function onFranchiseImageChange(fileList) {
-//   const file = fileList instanceof FileList ? fileList[0] : fileList
-//   if (file) {
-//     franchiseImageUrl.value = URL.createObjectURL(file)
-//     form.franchiseImage = file.name
-//   } else {
-//     franchiseImageUrl.value = null
-//     form.franchiseImage = ''
-//   }
-// }
-
-const onFranchiseImageChange = async (fileList) => {
+function onFranchiseImageChange(fileList) {
   const file = fileList instanceof FileList ? fileList[0] : fileList
-  if (!file) return
-
-  const formData = new FormData()
-  formData.append('file', file)
-
-  try {
-    const response = await apiClient.post('/files/upload', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    })
-
-    const imageUrl = response.data // 서버에서 반환된 이미지 URL
-    franchiseImageUrl.value = imageUrl           // 미리보기
-    form.franchiseImage = imageUrl               // 저장용
-  } catch (e) {
-    alert('이미지 업로드 실패')
-    console.error(e)
+  if (file) {
+    franchiseImageUrl.value = URL.createObjectURL(file)
+    form.franchiseImage = file.name
+  } else {
+    franchiseImageUrl.value = null
+    form.franchiseImage = ''
   }
 }
-
 
 function onAddressSelected({ roadAddress, regionName }) {
   form.roadAddress = roadAddress
@@ -389,8 +359,8 @@ function onTelInput(e) {
   height: 47.99px;
 } */
 .tt{
-  margin-left: 4px;
-  margin-right: 4px;
+  margin-left: 10px;
+  margin-right: 8px;
 }
 
 /* .v-input--density-compact{

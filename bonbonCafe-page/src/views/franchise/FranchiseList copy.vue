@@ -1,5 +1,5 @@
 <template>
-    <v-card class=" franchise-card ">
+    <v-card class=" Tdiv ">
         <div class="mb-16" id="div0">
             <div id="div1">
                 <SelectBox
@@ -83,22 +83,12 @@
                     </tr>
                 </template>
             </v-data-table>
-                <v-pagination
-                v-model="currentPage"
-                :length="totalPages"
-                :total-visible="10"
-                 @input="onPageChange"
-                class="mt-4"
-                />
-                <v-select
-                v-model="pageSize"
-                :items="[5, 10, 20]"
-                density="compact"
-                variant="outlined"
-                hide-details
-                @update:model-value="onPageSizeChange"
-                class="custom-rows-per-page"
-                />
+            <v-pagination
+            v-model="currentPage"
+            :length="totalPages"
+            @update:modelValue="onPageChange"
+            class="mt-4"
+            />
         </div>
 
     </v-card>
@@ -110,7 +100,7 @@
 <script setup>
 
     import apiClient from '@/api';
-    import { ref, onMounted } from 'vue'
+    import { ref, onMounted, computed } from 'vue'
     // import Table from '@/components/franchise/Table.vue'
     import SelectBox from '@/components/franchise/Select.vue'
     import { useRouter } from 'vue-router'
@@ -120,9 +110,10 @@
     const item = ref([]);
     const currentPage = ref(1);
     const pageSize = ref(10);
-    const totalItems = ref(0);
-    const totalPages = ref(0);
-
+    const totalCount = ref(0);
+    const totalPages = computed(() => {
+        return Math.ceil(totalCount.value / pageSize.value);
+    });
 
 
 
@@ -137,16 +128,15 @@
         { title: '점주 이름', align: 'start', key: 'franchiseeName', class: 'header' },
         { title: '가맹점 연락처', align: 'start', key: 'franchiseTel', class: 'header' },
         { title: '상태', align: 'center', key: 'status', class: 'header' },
-        { title: '개점 일자', align: 'center', key: 'openDate', class: 'header' }
+        { title: '등록일', align: 'center', key: 'openDate', class: 'header' }
     ]
 
 
     const fetchFranchise = async (page, size) => {
         try {
-            const response = await apiClient.get(`/franchise?page=${page - 1}&size=${size}`);
-            item.value = response.data.content;
-            totalItems.value = response.data.totalElements;
-            totalPages.value = response.data.totalPages;
+        const response = await apiClient.get(`/franchise?page=${page - 1}&size=${size}`);
+            item.value = response.data.franchises;
+            totalCount.value = response.data.totalElements;
         } catch (error) {
             console.error("Error fetching boards:", error);
         } 
@@ -214,18 +204,11 @@
 </script>
 
 <style scoped>
-    /* .Tdiv{
+    .Tdiv{
         background-color: #ffffff;
         margin: 16px 64px 64px;
         padding: 70px;
 
-    } */
-    .franchise-card {
-        margin: 40px auto;
-        padding: 40px;
-        max-width: 1300px;
-        background-color: #fff;
-        border-radius: 16px;
     }
     #div0 {
         display: flex;
@@ -251,21 +234,13 @@
         height: 48px; 
         background-color: white;
     }
+    .v-data-table-server tbody tr:hover {
+    background-color: #f0f8ff; /* 연한 파란색 예시 */
+    cursor: pointer; /* 마우스 커서 포인터로 변경 */
+    }
     
     ::v-deep(.v-data-table__th) {
     background-color: #f2f5f8 !important;
-    }
-
-    ::v-deep(.v-data-table tbody tr:hover) {
-        background-color: #f4faff;
-        cursor: pointer;
-    }
-
-   
-    .custom-rows-per-page {
-    position: absolute;
-    bottom: 34px;  /* 하단에서 20px 위치 */
-    left: 24px;   /* 오른쪽에서 20px 위치 */
     }
 
 </style>

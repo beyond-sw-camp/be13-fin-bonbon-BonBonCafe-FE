@@ -1,24 +1,30 @@
 <template>
   <v-container class="">
     <v-col>
-      <h2>가맹점 상세 정보</h2>
+      <h2>가맹점 상세 정보{{ franchiseId }}</h2>
     </v-col>
     <v-col>
       <!-- FranchiseForm을 읽기 전용 모드로 -->
       <!-- <FranchiseForm :readonly="true" v-if="formData" :form="formData" /> -->
-       <FranchiseForm 
-        :readonly="true" 
-        v-if="formData" 
-        :initialFormData="formData" 
-        :submitVisible="false" 
-        @edit="goToEdit(item)"
-        @delete="handleDelete"
-        @back="router.back()"
-        />
+      <v-row>
+        <v-col>
+          <FranchiseForm 
+          :readonly="true" 
+          v-if="formData" 
+          :initialFormData="formData" 
+          :submitVisible="false" 
+          @edit="goToEdit(item)"
+          @delete="handleDelete"
+          @back="router.back()"
+          />
+        </v-col>
+        <v-col>
+          <FranchiseMenuById/>
+        </v-col>
+  
+        
+      </v-row>
     </v-col>
-    <v-row>
-
-    </v-row>
   </v-container>
 </template>
 
@@ -28,11 +34,12 @@ import apiClient from '@/api'
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter  } from 'vue-router'
 import FranchiseForm from '@/components/franchise/FranchiseForm.vue'
+import FranchiseMenuById from '@/views/menu/FranchiseMenuById.vue'
 
 const route = useRoute()
 const router = useRouter()
 
-const franchiseId = route.params.franchiseId // 👈 정확히 맞춰야 함
+const franchiseId = route.params.franchiseId 
 
 
 const formData = ref(null)
