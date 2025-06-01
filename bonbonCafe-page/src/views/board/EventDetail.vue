@@ -11,35 +11,40 @@
       <div v-html="notice.content" />
     </v-card>
 
-    <div v-if="notice.sent" class="mb-4">
+    <!-- ✅ 본사만 문자전송 상태 보여줌 -->
+    <div v-if="notice.sent && userRole === 'ROLE_HEADQUARTER'" class="mb-4">
       <v-chip color="success" text-color="white">✅ 문자 전송 완료</v-chip>
     </div>
 
+    <!-- ✅ 버튼 조건 처리 -->
     <div class="d-flex justify-end" style="gap: 10px;">
-      <v-btn :color="notice.sent ? 'grey' : 'secondary'" @click="sendSms">문자 일괄 전송</v-btn>
-      <v-btn color="warning" @click="goToEdit">수정</v-btn>
-      <v-btn color="error" @click="deleteNotice">삭제</v-btn>
+      <template v-if="userRole === 'ROLE_HEADQUARTER'">
+        <v-btn v-if="!notice.sent" color="secondary" @click="sendSms">문자 일괄 전송</v-btn>
+        <v-btn v-if="!notice.sent" color="warning" @click="goToEdit">수정</v-btn>
+        <v-btn color="error" @click="deleteNotice">삭제</v-btn>
+      </template>
       <v-btn color="primary" @click="goBack">목록으로</v-btn>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 import apiClient from '@/api'
 
 const route = useRoute()
 const router = useRouter()
+const authStore = useAuthStore()
+const userRole = computed(() => authStore.userInfo.role)
 
 const noticeId = route.params.noticeId
-
 const notice = ref({})
 
 const fetchNotice = async () => {
   try {
     const { data } = await apiClient.get(`/notice/${noticeId}`)
-    // 줄바꿈 처리
     data.content = data.content?.replace(/\n/g, '<br/>')
     notice.value = data
   } catch (e) {
@@ -48,10 +53,8 @@ const fetchNotice = async () => {
 }
 
 const sendSms = async () => {
-  if (notice.value.sent) {
-    const confirmed = confirm('이미 문자 보낸 적이 있습니다.\n다시 보내시겠습니까?')
-    if (!confirmed) return
-  }
+  const confirmed = confirm('문자를 전송하시겠습니까?')
+  if (!confirmed) return
 
   try {
     await apiClient.post(`/notice/${noticeId}/send-sms`)
@@ -97,7 +100,6 @@ onMounted(fetchNotice)
   background-color: #f9f9f9;
   border-radius: 12px;
 }
-
 .content-card {
   border-radius: 12px;
   background-color: #ffffff;

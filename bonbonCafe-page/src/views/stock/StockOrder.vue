@@ -6,13 +6,14 @@
       <v-select
         v-model="selectedIngredient"
         :items="ingredients"
-        item-title="ingredientName"
+        :item-title="ingredientTitle"
         item-value="ingredientId"
         label="재료 선택"
         variant="outlined"
         density="comfortable"
         required
       />
+
       <v-text-field
         v-model="quantity"
         type="number"
@@ -23,6 +24,7 @@
         @input="onQuantityInput"
         required
       />
+
       <div class="d-flex justify-end">
         <v-btn type="submit" class="submit-btn" elevation="0">등록</v-btn>
       </div>
@@ -42,9 +44,14 @@ const ingredients = ref([])
 const selectedIngredient = ref(null)
 const quantity = ref(0)
 
+const ingredientTitle = (item) => {
+  return `${item.ingredientName} (${item.unit || '-'})`
+}
+
 onMounted(async () => {
   try {
     const res = await apiClient.get(`/headquarter-stocks/ingredients`)
+    console.log('✅ 재료 응답:', res.data) // 🔍 단위 확인용 로그
     ingredients.value = res.data
   } catch (e) {
     console.error('❌ 본사 재고 재료 조회 실패', e)

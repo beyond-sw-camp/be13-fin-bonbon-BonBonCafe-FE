@@ -2,7 +2,7 @@
   <div class="notice-wrapper ma-10 pa-8">
     <div class="d-flex justify-space-between align-center mb-6">
       <h2 class="text-2xl font-semibold">📌 공지사항 목록</h2>
-      <v-btn color="primary" @click="goToRegister" prepend-icon="mdi-plus">
+      <v-btn v-if="userRole === 'ROLE_HEADQUARTER'" color="primary" @click="goToRegister" prepend-icon="mdi-plus">
         공지 등록
       </v-btn>
     </div>
@@ -15,41 +15,37 @@
             <th>제목</th>
             <th>작성자</th>
             <th>작성일</th>
-            <th class="text-center">문자전송</th>
+            <th v-if="userRole === 'ROLE_HEADQUARTER'" class="text-center">문자전송</th>
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="(notice, index) in notices"
-            :key="notice.noticeId"
-            @click="goToDetail(notice.noticeId)"
-            style="cursor: pointer"
-          >
+          <tr v-for="(notice, index) in notices" :key="notice.noticeId" @click="goToDetail(notice.noticeId)"
+            style="cursor: pointer">
             <td>{{ totalElements - (page - 1) * pageSize - index }}</td>
             <td>{{ notice.title }}</td>
             <td>{{ notice.author }}</td>
             <td>{{ formatDate(notice.createTime) }}</td>
-            <td class="text-center">{{ notice.sent ? '✅' : '❌' }}</td>
+            <td v-if="userRole === 'ROLE_HEADQUARTER'" class="text-center">
+              {{ notice.sent ? '✅' : '❌' }}
+            </td>
           </tr>
         </tbody>
       </v-table>
     </v-card>
 
-    <v-pagination
-      v-model="page"
-      :length="totalPages"
-      @input="fetchNotices"
-      class="mt-4"
-    />
+    <v-pagination v-model="page" :length="totalPages" @input="fetchNotices" class="mt-4" />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 import apiClient from '@/api'
 
 const router = useRouter()
+const authStore = useAuthStore()
+const userRole = computed(() => authStore.userInfo.role)
 
 const notices = ref([])
 const page = ref(1)
