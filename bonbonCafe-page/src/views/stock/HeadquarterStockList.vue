@@ -20,22 +20,22 @@
     <!-- 📋 재고 테이블 -->
     <v-card class="rounded-table-card elevation-1">
       <v-data-table
-        :headers="headers"
-        :items="stocks"
-        class="rounded-table"
-        density="comfortable"
-        hide-default-footer
-      >
-        <template #item.unitPrice="{ item }">
-          {{ formatPrice(item.unitPrice) }}원
-        </template>
-        <template #item.retailPrice="{ item }">
-          {{ formatPrice(item.retailPrice) }}원
-        </template>
-        <template #item.quantity="{ item }">
-          {{ item.quantity }} {{ item.unit }}
-        </template>
-      </v-data-table>
+  :headers="headers"
+  :items="stocks"
+  class="rounded-table"
+  density="comfortable"
+  hide-default-footer
+>
+  <template #item="{ item, index }">
+    <tr @click="goToStockDetail(item)" style="cursor: pointer;">
+      <!-- <td>{{ index + 1 }}</td> -->
+      <td>{{ item.ingredientName }}</td>
+      <td>{{ item.quantity }} {{ item.unit }}</td>
+      <td>{{ formatPrice(item.unitPrice) }}원</td>
+      <td>{{ formatPrice(item.retailPrice) }}원</td>
+    </tr>
+  </template>
+</v-data-table>
     </v-card>
 
     <!-- 📄 페이징 -->
@@ -88,9 +88,19 @@ const onSearch = () => {
   fetchStocks()
 }
 
-// const goToStockDetail = (item) => {
-//   router.push({ name: 'headquarter-stock-detail', params: { headquarterStockId: item.stockId } })
-// }
+const goToStockDetail = (item) => {
+  console.log('✅ 클릭된 row:', item)
+
+  if (!item?.stockId) {
+    alert('stockId가 없습니다.')
+    return
+  }
+
+  router.push({
+    name: 'headquarter-stock-detail',
+    params: { headquarterStockId: item.stockId }
+  })
+}
 
 const goToRegister = () => {
   router.push({ name: 'headquarter-stock-register' })
