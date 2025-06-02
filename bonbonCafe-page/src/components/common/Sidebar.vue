@@ -95,7 +95,6 @@ const menuGroups = [
     icon: 'mdi-chart-bar',
     items: [
       { title: '매출 분석' },
-      { title: '매출 예측' },
       { title: '매출 순위' },
     ],
   },
@@ -138,7 +137,6 @@ const routeMap = {
   '본사 정보 수정': { name: 'headquarter-edit' },
   'kakao map': '/kakao-map',
   '매출 분석': '/sales-analysis',
-  '매출 예측': '/sales-forecast',
   '매출 순위': '/sales-ranking',
   '공지사항': '/notice-list',
   '이벤트': '/event-list',

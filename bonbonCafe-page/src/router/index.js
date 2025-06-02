@@ -43,7 +43,8 @@ const FranchiseRegister = () => import('@/views/franchise/FranchiseRegister.vue'
 const MapView = () => import('@/views/franchise/MapView.vue')
 
 const SalesAnalysis = () => import('@/views/sales/SalesAnalysis.vue')
-const SalesForecast = () => import('@/views/sales/SalesForecast.vue')
+const SalesRanking = () => import('@/views/sales/SalesRanking.vue')
+
 
 const NoticeList = () => import('@/views/board/NoticeList.vue')
 const NoticeRegister = () => import('@/views/board/NoticeRegister.vue')
@@ -227,6 +228,11 @@ const router = createRouter({
           path:'sales-forecast',
           name: 'sales-forecast',
           component: SalesForecast,
+        },
+        {
+          path:'sales-ranking',
+          name: 'sales-ranking',
+          component: SalesRanking,
         },
         {
           path:'notice-list',
