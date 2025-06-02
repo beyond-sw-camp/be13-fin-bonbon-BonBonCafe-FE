@@ -225,11 +225,6 @@ const router = createRouter({
           component: SalesAnalysis,
         },
         {
-          path:'sales-forecast',
-          name: 'sales-forecast',
-          component: SalesForecast,
-        },
-        {
           path:'sales-ranking',
           name: 'sales-ranking',
           component: SalesRanking,
