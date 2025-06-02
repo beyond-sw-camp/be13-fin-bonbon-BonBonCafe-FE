@@ -3,9 +3,12 @@
     <SalesRankingForm />
 
     <div class="table-wrapper">
-      <v-table class="ranking-table" width=1000px>
+      <v-table
+        class="rounded-t-xl"
+        style="min-width: 1200px; width: 1200px;"
+      >
 
-        <thead>
+        <thead class="theadColor">
           <tr>
             <th class="text-center font-weight-bold">순위</th>
             <th class="text-center font-weight-bold">가맹점명</th>
@@ -63,23 +66,19 @@ function onPageChange(page) {
 
 <style scoped>
 .table-wrapper {
-  overflow-x: auto;             /* 가로 스크롤 가능 */
-  padding: 0 16px;              /* 좌우 여백 */
+  overflow-x: auto;
+  /* 가운데 정렬을 원하시면 이렇게 */
+  display: flex;
+  justify-content: center;
 }
-
-.ranking-table {
-  width: 100%;                  /* 가득 채우기 */
-  table-layout: fixed;          /* 고정된 컬럼 폭 */
-  border-collapse: separate;
-  border-spacing: 0 6px;        /* 행 간격 */
-}
-
 /* 헤더 스타일 */
 .ranking-table thead th {
   background: #E0E8D0;
   font-weight: 600;
   padding: 12px 8px;
   font-size: 16px;
+  min-width: 1500px;
+  width: 150%;
 }
 
 /* 바디 스타일 */
@@ -101,5 +100,9 @@ function onPageChange(page) {
   margin: 16px 0;
   display: flex;
   justify-content: center;
+}
+
+.theadColor{
+    background-color: #D8DBBD;
 }
 </style>
