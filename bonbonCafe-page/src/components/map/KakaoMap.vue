@@ -87,7 +87,6 @@
           // selectedStore.value = fetchFranciseInfo(store) // 가맹점 정보 저장
           // selectedStore.value = await fetchFranciseInfo(store); // 가맹점 정보 저장
           selectedStore.value = store; // 가맹점 정보 저장
-          
         })
 
         return marker
