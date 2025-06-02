@@ -15,10 +15,20 @@
   const mapContainer = ref(null);
   const selectedStore = ref(null); // 선택된 가맹점 정보
   
-  
+
   const fetchMarkers = async () => {
+    const start = performance.now();
     try {
-      const response = await apiClient.get('/franchise/locations') // 백엔드에 맞게 조정
+      const response = await apiClient.get('/franchise/locations')
+
+      const end = performance.now();
+      console.log(`마커 응답 시간: ${end - start}ms`);
+    
+      if (!response || !response.data) {
+        console.error("응답이 비어 있습니다.", response)
+        return []
+      }
+      console.log("마커 응답:", response.data)
       return response.data
     } catch (error) {
       console.error('마커 데이터 불러오기 실패:', error)
@@ -34,28 +44,30 @@
     script.onload = async () => {
       window.kakao.maps.load(async () => {
         const options = {
-          center: new window.kakao.maps.LatLng(37.4972146715141, 126.927607128836),
-          level: 12
+          center: new window.kakao.maps.LatLng( 37.53847885, 127.124794),
+          level: 6
         }
 
         const map = new window.kakao.maps.Map(container, options) // 지도 생성
 
-        const imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png'
+        const imageSrc = 'https://bonbon-file-bucket.s3.ap-northeast-2.amazonaws.com/profile-default.jpg'
         const imageSize = new kakao.maps.Size(40, 40)
         const imageOption = { offset: new kakao.maps.Point(27, 69) }
         const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption)
 
-        const markerList = await fetchMarkers()
-
+        
         // 클러스터러 생성
         const clusterer = new kakao.maps.MarkerClusterer({
           map: map,
           averageCenter: true,
-          minLevel: 10
+          minLevel: 8
         })
+        
+      const markerList = await fetchMarkers();
 
       const markers = markerList.map(store => {
-        const markerPosition = new kakao.maps.LatLng(store.latitude, store.longitude)
+
+        const markerPosition = new kakao.maps.LatLng(store.latitude, store.longitude) 
 
         const marker = new kakao.maps.Marker({
           position: markerPosition,
@@ -96,7 +108,7 @@
   //   }
   // }
 
-onMounted(() => {
+onMounted( () => {
   loadMap(mapContainer.value)
 })
 </script>

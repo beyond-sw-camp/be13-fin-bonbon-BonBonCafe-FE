@@ -46,7 +46,7 @@ const handleSubmit = async (updatedData) => {
   try {
     await apiClient.patch(`/franchise/${franchiseId}`, updatedData)
     alert('수정이 완료되었습니다.')
-    router.push(`/franchise-detail/${franchiseId}`)
+    router.push(`/franchise/${franchiseId}`)
   } catch (error) {
     console.error('수정 실패:', error)
     alert('수정 중 오류가 발생했습니다.')
