@@ -39,7 +39,6 @@
                 :headers="header"
                 :items="item"
                 class="rounded-b rounded-t"
-                :page="currentPage"
                 :items-length="totalItems"
                 :items-per-page="pageSize"
                 @update:page="onPageChange"
@@ -55,17 +54,18 @@
                 <template #item="{ item, columns }">
                     <tr @click="goToDetail(item)" style="cursor: pointer">
                         <td v-for="column in columns" :key="column.key">
-                            <!-- 이미지 컬럼 처리 -->
+                            <!-- 이미지 컬럼 렌더링 -->
                             <v-avatar
-                                v-if="column.key === 'franchiseeImage'"
-                                size="64"
+                                v-if="column.key === 'franchiseImage'"
+                                size="30"
                                 class="my-2"
                             >
                                 <v-img
-                                :src="item.franchiseeImage || defaultImage"
-                                cover
+                                    :src="isValidImageUrl(item.franchiseImage) ? item.franchiseImage : defaultImage"
+                                    cover
                                 />
                             </v-avatar>
+
                             <!-- 상태 칩인 경우만 따로 처리 -->
                             <v-chip
                             v-if="column.key === 'status'"
@@ -75,9 +75,9 @@
                             {{ getStatusText(item.status) }}
                             </v-chip>
 
-                            <!-- 그 외는 일반 텍스트로 렌더링 -->
-                            <span v-else>
-                            {{ item[column.key] }}
+                             <!-- 일반 텍스트는 항상 출력 -->
+                            <span v-if="column.key !== 'franchiseImage' && column.key !== 'status'">
+                                {{ item[column.key] }}
                             </span>
                         </td>
                     </tr>
@@ -87,8 +87,8 @@
                 v-model="currentPage"
                 :length="totalPages"
                 :total-visible="10"
-                 @input="onPageChange"
-                class="mt-4"
+                @update:model-value="onPageChange"
+                class="mt-4  custom-pagination"
                 />
                 <v-select
                 v-model="pageSize"
@@ -110,7 +110,7 @@
 <script setup>
 
     import apiClient from '@/api';
-    import { ref, onMounted } from 'vue'
+    import { ref, onMounted, watch } from 'vue'
     // import Table from '@/components/franchise/Table.vue'
     import SelectBox from '@/components/franchise/Select.vue'
     import { useRouter } from 'vue-router'
@@ -122,7 +122,11 @@
     const pageSize = ref(10);
     const totalItems = ref(0);
     const totalPages = ref(0);
+    const defaultImage = 'https://bonbon-file-bucket.s3.ap-northeast-2.amazonaws.com/profile-default.jpg'
 
+const isValidImageUrl = (url) => {
+  return typeof url === 'string' && url.startsWith('http');
+}
 
 
 
@@ -131,7 +135,7 @@
     const selectedDistrict = ref(null);
 
     const header = [
-        { title: '', align: 'start', key: 'franchiseeImage', class: 'header'},
+        { title: '', align: 'start', key: 'franchiseImage', class: 'header'},
         { title: '가맹점 이름', align: 'start', key: 'name', class: 'header' },
         { title: '가맹점 주소', align: 'start', key: 'roadAddress', class: 'header' },
         { title: '점주 이름', align: 'start', key: 'franchiseeName', class: 'header' },
@@ -144,6 +148,9 @@
     const fetchFranchise = async (page, size) => {
         try {
             const response = await apiClient.get(`/franchise?page=${page - 1}&size=${size}`);
+
+            console.log(response.data.content);
+            
             item.value = response.data.content;
             totalItems.value = response.data.totalElements;
             totalPages.value = response.data.totalPages;
@@ -208,6 +215,10 @@
         fetchFranchise(currentPage.value, pageSize.value); 
     });
 
+    // watch(currentPage, (newPage) => {
+    //     fetchFranchise(newPage, pageSize.value);
+    // });
+
 
 
 
@@ -220,6 +231,9 @@
         padding: 70px;
 
     } */
+     .v-data-table {
+        min-height: 400px; /* 원하는 높이로 조절 */
+    }
     .franchise-card {
         margin: 40px auto;
         padding: 40px;
@@ -266,6 +280,12 @@
     position: absolute;
     bottom: 34px;  /* 하단에서 20px 위치 */
     left: 24px;   /* 오른쪽에서 20px 위치 */
+    }
+    .custom-pagination >>> .v-pagination__item.v-pagination__item--is-active {
+    background-color: #caddf0 !important;
+    color: white !important;
+    font-weight: bold;
+    border-radius: 8px;
     }
 
 </style>

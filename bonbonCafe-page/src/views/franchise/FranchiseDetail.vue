@@ -51,6 +51,7 @@ const fetchFranchiseDetail = async () => {
 
   try {
     const response = await apiClient.get(`/franchise/${franchiseId}`)
+    
     formData.value = response.data
   } catch (error) {
     console.error('가맹점 정보 조회 실패:', error)
