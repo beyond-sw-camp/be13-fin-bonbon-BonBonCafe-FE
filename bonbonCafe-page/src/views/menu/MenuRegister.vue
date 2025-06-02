@@ -7,7 +7,7 @@
         <!-- 왼쪽 입력 -->
         <v-col cols="12" md="8">
           <v-text-field v-model="menu.name" label="메뉴 이름" required />
-          <v-text-field v-model="menu.price" label="가격" type="number" required />
+          <v-text-field v-model="menu.price" label="가격" type="number" step="50" required />
           <v-text-field v-model="menu.description" label="설명" />
           <v-row>
             <v-col cols="12" md="6">
@@ -38,12 +38,7 @@
         <p><strong>재료 선택 및 수량 입력</strong></p>
 
         <!-- ✅ 검색창 -->
-        <v-text-field
-          v-model="search"
-          label="재료명 검색"
-          append-inner-icon="mdi-magnify"
-          class="mb-2"
-        />
+        <v-text-field v-model="search" label="재료명 검색" append-inner-icon="mdi-magnify" class="mb-2" />
 
         <v-data-table :headers="headers" :items="currentIngredients" item-key="ingredientId" class="elevation-1"
           density="compact" :items-per-page="itemsPerPage" hide-default-footer>

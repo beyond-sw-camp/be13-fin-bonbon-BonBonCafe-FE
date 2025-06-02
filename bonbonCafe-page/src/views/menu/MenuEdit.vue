@@ -6,7 +6,7 @@
       <v-row>
         <v-col cols="12" md="8">
           <v-text-field v-model="menu.name" label="메뉴 이름" required />
-          <v-text-field v-model="menu.price" label="가격" type="number" required />
+          <v-text-field v-model="menu.price" label="가격" type="number"  step="50" required />
           <v-text-field v-model="menu.description" label="설명" />
           <v-row>
             <v-col cols="12" md="6">
