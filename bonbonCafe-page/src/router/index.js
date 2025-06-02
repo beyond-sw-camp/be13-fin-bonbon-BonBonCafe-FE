@@ -37,6 +37,8 @@ const HeadquarterStockDetail = () => import('@/views/stock/HeadquarterStockDetai
 const HeadquarterStockEdit = () => import('@/views/stock/HeadquarterStockEdit.vue')
 
 const FranchiseList = () => import('@/views/franchise/FranchiseList.vue')
+const FranchiseDetail = () => import('@/views/franchise/FranchiseDetail.vue')
+const FranchiseEdit = () => import('@/views/franchise/FranchiseEdit.vue')
 const FranchiseRegister = () => import('@/views/franchise/FranchiseRegister.vue')
 const MapView = () => import('@/views/franchise/MapView.vue')
 
@@ -180,6 +182,16 @@ const router = createRouter({
           path:'franchise-register',
           name: 'franchise-register',
           component: FranchiseRegister,
+        },
+        {
+          path:'franchise/:franchiseId',
+          name:'franchise-detail',
+          component: FranchiseDetail,
+        },
+        {
+          path:'franchise-edit/:franchiseId',
+          name:'franchise-edit',
+          component: FranchiseEdit,
         },
         {
           path: 'headquarters/franchise-order-list',
