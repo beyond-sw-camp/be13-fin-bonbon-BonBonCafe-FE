@@ -5,7 +5,7 @@ import axios from "axios";  // axios 라이브러리를 사용해 HTTP 통신 �
 const apiClient = axios.create({
     // API 요청 기본 URL 설정
     baseURL: 'http://localhost:8080',
-    timeout: 2000   // 2초를 넘기면 타임아웃 발생 
+    timeout: 20000   // 2초를 넘기면 타임아웃 발생 
 });
 
 

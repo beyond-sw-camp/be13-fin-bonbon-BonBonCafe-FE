@@ -70,7 +70,7 @@
     try {
       await apiClient.put('/headquarters', form.value)
       alert('본사 정보가 수정되었습니다.')
-      router.push('/')
+      router.push({ name: 'headquarter-info' })
     } catch (e) {
       alert('수정 실패')
       console.error(e)

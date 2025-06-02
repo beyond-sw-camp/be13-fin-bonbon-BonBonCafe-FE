@@ -71,7 +71,7 @@ const submitRequest = async () => {
       status: 'REQUESTED'
     })
     alert('신청 완료!')
-    router.back()
+    router.push({ name: 'stock-order-history' })
   } catch (error) {
     const message = error.response?.data?.message || '알 수 없는 오류가 발생했습니다.'
     alert(`❌ 신청 실패: ${message}`)

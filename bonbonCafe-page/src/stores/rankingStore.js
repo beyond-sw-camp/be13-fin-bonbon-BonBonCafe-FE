@@ -3,9 +3,8 @@ import apiClient from '@/api'
 
 export const useRankingStore = defineStore('ranking', {
   state: () => ({
-    // 백엔드 Page<SalesRankingDto> 전체
+
     rankingPage: null,
-    // 마지막 요청에 썼던 파라미터
     params: {
       regionCode: null,
       year:       null,
