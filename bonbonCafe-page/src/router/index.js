@@ -30,6 +30,7 @@ const MenuRegister = () => import('@/views/menu/MenuRegister.vue')
 const MenuDetail = () => import('@/views/menu/MenuDetail.vue')
 const MenuEdit = () => import('@/views/menu/MenuEdit.vue')
 const FranchiseMenuById = () => import('@/views/menu/FranchiseMenuById.vue')
+const FranchiseListByMenu = () => import('@/views/menu/FranchiseListByMenu.vue')
 
 const MyHeadquarterInfo = () => import('@/views/headquarter/MyHeadquarterInfo.vue')
 const EditHeadquarter = () => import('@/views/headquarter/EditHeadquarter.vue')
@@ -47,13 +48,13 @@ const HeadquarterStockEdit = () => import('@/views/stock/HeadquarterStockEdit.vu
 
 const FranchiseList = () => import('@/views/franchise/FranchiseList.vue')
 const FranchiseDetail = () => import('@/views/franchise/FranchiseDetail.vue')
-const FranchiseRegister = () => import('@/views/franchise/FranchiseRegister.vue')
 const FranchiseEdit = () => import('@/views/franchise/FranchiseEdit.vue')
+const FranchiseRegister = () => import('@/views/franchise/FranchiseRegister.vue')
 const MapView = () => import('@/views/franchise/MapView.vue')
 
 const SalesAnalysis = () => import('@/views/sales/SalesAnalysis.vue')
-const SalesForecast = () => import('@/views/sales/SalesForecast.vue')
 const SalesRanking = () => import('@/views/sales/SalesRanking.vue')
+
 
 const NoticeList = () => import('@/views/board/NoticeList.vue')
 const NoticeRegister = () => import('@/views/board/NoticeRegister.vue')
@@ -93,47 +94,16 @@ const router = createRouter({
           component: MainView,
         },
         {
-          path:'franchisee-accounts/:userId',
+          path:'franchisee-accounts',
           name: 'franchisee-accounts',
           component: FranchiseeAccount,
         },
         {
-          path:'franchisee-accounts',
-          name: 'franchisee-accounts-list',
-          component: FranchiseeAccountListView,
-        },
-        {
-          path:'franchisee-accounts/:userId/edit',
-          name:'franchisee-accounts-edit',
-          component: FranchiseeAccountEditView
-        },
-        {
-          path:'franchisee-accounts/regist',
-          name: 'franchisee-register',
-          component: FranchiseeRegisterView
-        },
-        {
-          path:'manager-accounts/:userId',
-          name: 'manager-accounts',
-          component: ManagerAccount,
-        },
-        {
           path:'manager-accounts',
-          name: 'manager-accounts-list',
-          component: ManagerAccountListView,
+          name: 'manager-accounts',
+          component: ManagerAccounts,
         },
         {
-          path: 'manager-accounts/:userId/edit',
-          name: 'manager-account-edit',
-          component: ManagerAccountEditView
-        },
-        {
-          path:'manager-accounts/regist',
-          name: 'manager-regist',
-          component: ManagerRegistView
-        },
-        {
-          path: 'headquarters/:headquarterId/menus',
           path: 'franchise-menu-list',
           name: 'franchise-menu-list',
           component: FranchiseMenuList,
@@ -157,6 +127,11 @@ const router = createRouter({
           path: 'headquarters/menus/:menuId',
           name: 'menu-detail',
           component: MenuDetail,
+        },
+        {
+          path: 'headquarters/menus/:menuId/franchises',
+          name: 'franchise-list-by-menu',
+          component: FranchiseListByMenu
         },
         {
           path: 'headquarters/menus/:menuId/edit',
@@ -220,6 +195,16 @@ const router = createRouter({
           component: FranchiseRegister,
         },
         {
+          path:'franchise/:franchiseId',
+          name:'franchise-detail',
+          component: FranchiseDetail,
+        },
+        {
+          path:'franchise-edit/:franchiseId',
+          name:'franchise-edit',
+          component: FranchiseEdit,
+        },
+        {
           path: 'headquarters/franchise-order-list',
           name: 'franchise-order-list',
           component: FranchiseOrderList,
@@ -228,16 +213,6 @@ const router = createRouter({
           path:'franchise-list',
           name: 'franchise-list',
           component: FranchiseList,
-        },
-        {
-          path:'franchise-detail/:franchiseId',
-          name: 'franchise-detail',
-          component: FranchiseDetail,
-        },
-        {
-          path:'franchise-edit/:franchiseId',
-          name: 'franchise-edit',
-          component: FranchiseEdit,
         },
         {
           path: '/headquarters/franchise-menu-list',
@@ -258,11 +233,6 @@ const router = createRouter({
           path:'sales-analysis',
           name: 'sales-analysis',
           component: SalesAnalysis,
-        },
-        {
-          path:'sales-forecast',
-          name: 'sales-forecast',
-          component: SalesForecast,
         },
         {
           path:'sales-ranking',

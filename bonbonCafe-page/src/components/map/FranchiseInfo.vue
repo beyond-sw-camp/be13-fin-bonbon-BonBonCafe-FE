@@ -12,18 +12,18 @@
                 </tr>
                 <tr>
                     <td>담당자</td>
-                    <td>{{data.managerName}}</td>
+                    <td>{{data.managerName || '담당자 미지정'}}</td>
                 </tr>
                 <tr>
                     <td>담당자 연락처</td>
-                    <td>{{data.managerTel}}</td>
+                    <td>{{data.managerTel || '담당자 미지정'}}</td>
                 </tr>
             </v-table>
         </v-card>
 
 
         <h4 class="pa-2 mt-2">매출 (지난 주)</h4>
-            <sales-forecast-form v-if="data.franchiseId" :store-id="data.franchiseId" />
+            <sales-forecast-form v-if="selectedStore.franchiseId" :store-id="selectedStore.franchiseId" />
             <v-card v-else>
                 <v-card-title>
                     데이터 없음
@@ -57,14 +57,10 @@
 <script setup>
 import SalesForecastForm from '@/components/forms/salesform/SalesForecastForm.vue'
 // import { onMounted, ref } from 'vue';
-import { watch, ref } from 'vue';
+import { watch, ref, onMounted } from 'vue';
 import apiClient from '@/api' ;
 
-const data = ref({
-    // franchiseTel: '',
-    // managerName: '',
-    // managerTel: '',
-});
+const data = ref({});
 
 const props = defineProps({
         selectedStore:{
@@ -104,9 +100,10 @@ const props = defineProps({
     // }
     // selectedStore가 바뀔 때마다 fetch
 watch(
-  () => props.selectedStore,
-  async (newStore) => {
-    if (newStore && newStore.name) {
+  () => props.selectedStore, async (newStore) => {
+    console.log(newStore);
+    
+    if (newStore && newStore.franchiseId) {
       const franchiseData = await fetchFranciseInfo(newStore);
       Object.assign(data.value, franchiseData); // 내부 데이터 갱신
     }
@@ -116,12 +113,22 @@ watch(
 
 const fetchFranciseInfo = async (store) => {
   try {
-    const response = await apiClient.get(`/franchise/summary/${store.name}`);
-    return response.data;
+    console.log(store);
+    
+    const response = await apiClient.get(`/franchise/summary/${store.franchiseId}`);
+    return data.value = response.data;
+    
   } catch (error) {
-    console.error('프랜차이즈 데이터 불러오기 실패:', error);
-    return {};
+    if (error.response && error.response.status === 404 && error.response.data.status === 'MANAGER_NOT_FOUND') {
+      console.warn('담당 매니저 없음: 기본값 반환');
+      
+    }
   }
 }
+
+// onMounted( () => {
+//   fetchFranciseInfo(selectedStore);
+// })
+
 </script>
 

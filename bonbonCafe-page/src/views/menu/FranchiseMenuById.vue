@@ -1,33 +1,38 @@
 <template>
-  <div class="pa-6 container">
+  <!-- <div class="pa-6 container">
     <h3 class="mb-4 text-h5 font-weight-bold">
       🍽️ 선택한 가맹점의 메뉴 (총 {{ menus.length }}개)
-    </h3>
-    <v-card elevation="2" class="rounded-lg">
+    </h3> -->
+    <v-container>
+      <v-card elevation="2" class="pa-6 rounded-lg" style="border: 1px solid #ccc;">
+         <h3 class="mb-4 text-h5 font-weight-bold">
+          🍽️ 선택한 가맹점의 메뉴 (총 {{ menus.length }}개)
+        </h3>
       <v-data-table
-  :headers="headers"
-  :items="menus"
-  class="custom-table"
-  density="comfortable"
-  hide-default-footer
->
-  <template #item.price="{ item }">
-    {{ formatPrice(item.price) }}
-  </template>
-
-  <template #item.status="{ item }">
-    <v-chip
-      :color="item.status === 'ACTIVE' ? 'green' : 'red'"
-      text-color="white"
-      small
-      class="ma-1"
+      :headers="headers"
+      :items="menus"
+      class="custom-table"
+      density="comfortable"
+      hide-default-footer
     >
-      {{ item.status === 'ACTIVE' ? '활성화' : '비활성화' }}
-    </v-chip>
-  </template>
-</v-data-table>
+      <template #item.price="{ item }">
+        {{ formatPrice(item.price) }}
+      </template>
+
+      <template #item.status="{ item }">
+        <v-chip
+          :color="item.status === 'ACTIVE' ? 'green' : 'red'"
+          text-color="white"
+          small
+          class="ma-1"
+        >
+          {{ item.status === 'ACTIVE' ? '활성화' : '비활성화' }}
+        </v-chip>
+      </template>
+    </v-data-table>
     </v-card>
-  </div>
+  </v-container>
+  <!-- </div> -->
 </template>
 
 <script setup>

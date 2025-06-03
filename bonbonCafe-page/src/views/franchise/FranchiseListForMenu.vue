@@ -34,7 +34,7 @@
           <th>NO.</th>
           <th>가맹점 이름</th>
           <th>가맹점 주소</th>
-          <th>담당자</th>
+          <!-- <th>담당자</th> -->
           <th>가맹점 연락처</th>
           <th>등록일</th>
         </tr>
@@ -49,7 +49,7 @@
           <td>{{ index + 1 }}</td>
           <td>{{ franchise.name }}</td>
           <td>{{ franchise.roadAddress }}</td>
-          <td>{{ franchise.managerName }}</td>
+          <!-- <td>{{ franchise.managerName }}</td> -->
           <td>{{ franchise.franchiseTel }}</td>
           <td>{{ franchise.openDate }}</td>
         </tr>

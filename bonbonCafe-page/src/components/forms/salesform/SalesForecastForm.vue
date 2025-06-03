@@ -44,6 +44,7 @@ const props = defineProps({
 // })
 
 watch(() => props.storeId, async (newStoreId) => {
+    
     if (newStoreId) {
         await salesStore.setFilters({
             region: null,
@@ -59,7 +60,7 @@ watch(() => props.storeId, async (newStoreId) => {
 
         updateChart()
     }
-})
+}, { immediate: true })
 
 // 차트 업데이트 함수
 function updateChart() {

@@ -9,7 +9,7 @@
 
       <v-card-text class="text-base">
         <div class="mb-3">
-          <strong>📦 수량:</strong>
+          <strong>📦 수량: </strong>
           <span v-if="!editMode">{{ stock.quantity }} {{ stock.unit }}</span>
           <v-text-field
             v-else
