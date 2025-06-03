@@ -7,7 +7,7 @@
       variant="outlined"
       flat="false"
       return-object
-      item-title="label"
+      item-title="title"
       item-value="value"
       @update:modelValue="onChange"
       class="selectBox"

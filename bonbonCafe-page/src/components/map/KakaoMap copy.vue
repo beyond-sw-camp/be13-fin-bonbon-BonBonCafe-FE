@@ -1,107 +1,100 @@
 <template>
     <div id="map-container">
         <div v-if="selectedStore" id="info">
-          <FranchiseInfo :selectedStore="selectedStore"/>
+          <FranchiseInfo :selectedStore="selectedStore"@focus-marker="handleFocusMarker"/>
         </div>
         <div id="maps" ref="mapContainer" style="width:100%;height:725px; "></div>
     </div>
 </template>
-
 <script setup>
-  import { onMounted, ref } from 'vue';
-  import apiClient from '@/api' ;
-  import FranchiseInfo from '@/components/map/FranchiseInfo.vue' ;
-  const {VITE_KAKAO_MAP_KEY} = import.meta.env;
-  const mapContainer = ref(null);
-  const selectedStore = ref(null); // 선택된 가맹점 정보
-  
-  
-  const fetchMarkers = async () => {
-    try {
-      const response = await apiClient.get('/franchise/locations')
-      if (!response || !response.data) {
-        console.error("응답이 비어 있습니다.", response)
-        return []
-      }
-      console.log("마커 응답:", response.data)
-      return response.data
-    } catch (error) {
-      console.error('마커 데이터 불러오기 실패:', error)
-      return []
-    }
+import { ref, onMounted } from 'vue'
+import apiClient from '@/api'
+import FranchiseInfo from '@/components/map/FranchiseInfo.vue'
+
+const { VITE_KAKAO_MAP_KEY } = import.meta.env
+
+const mapContainer = ref(null)
+const map = ref(null)
+const markers = ref([])  // 마커와 관련 데이터 담기
+const selectedStore = ref(null)
+
+const fetchMarkers = async () => {
+  try {
+    const response = await apiClient.get('/franchise/locations')
+    return response.data || []
+  } catch (error) {
+    console.error('마커 데이터 불러오기 실패:', error)
+    return []
   }
+}
 
-  const loadMap = async (container) => {
-    const script = document.createElement('script')
-    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${VITE_KAKAO_MAP_KEY}&autoload=false&libraries=clusterer`
-    document.head.appendChild(script)
+const loadMap = async (container) => {
+  const script = document.createElement('script')
+  script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${VITE_KAKAO_MAP_KEY}&autoload=false&libraries=clusterer`
+  document.head.appendChild(script)
 
-    script.onload = async () => {
-      window.kakao.maps.load(async () => {
-        const options = {
-          center: new window.kakao.maps.LatLng( 37.53847885, 127.124794),
-          level: 6
-        }
+  script.onload = () => {
+    window.kakao.maps.load(async () => {
+      const kakao = window.kakao
+      const options = {
+        center: new kakao.maps.LatLng(37.53847885, 127.124794),
+        level: 6,
+      }
+      map.value = new kakao.maps.Map(container, options)
 
-        const map = new window.kakao.maps.Map(container, options) // 지도 생성
+      const imageSrc = 'https://bonbon-file-bucket.s3.ap-northeast-2.amazonaws.com/f4ef9e77-3f9c-47a7-a5bd-628e9c6a9053_1495574607-map-location-solid-style-26_84557.png'
+      const imageSize = new kakao.maps.Size(40, 40)
+      const imageOption = { offset: new kakao.maps.Point(27, 69) }
+      const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption)
 
-        const imageSrc = 'https://bonbon-file-bucket.s3.ap-northeast-2.amazonaws.com/profile-default.jpg'
-        const imageSize = new kakao.maps.Size(40, 40)
-        const imageOption = { offset: new kakao.maps.Point(27, 69) }
-        const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption)
+      const clusterer = new kakao.maps.MarkerClusterer({
+        map: map.value,
+        averageCenter: true,
+        minLevel: 8,
+      })
 
-        
-        // 클러스터러 생성
-        const clusterer = new kakao.maps.MarkerClusterer({
-          map: map,
-          averageCenter: true,
-          minLevel: 8
-        })
-        
-      const markerList = await fetchMarkers();
-
-      const markers = markerList.map(store => {
-
-        const markerPosition = new kakao.maps.LatLng(store.latitude, store.longitude) 
-
+      const storeList = await fetchMarkers()
+      markers.value = storeList.map(store => {
+        const position = new kakao.maps.LatLng(store.latitude, store.longitude)
         const marker = new kakao.maps.Marker({
-          position: markerPosition,
+          map: map.value,
+          position,
           image: markerImage,
-          title: store.name
+          title: store.name,
         })
-
-        const iwContent = `<div style="padding:5px;"><span class="title">${store.name}</span></div>`
 
         const infowindow = new kakao.maps.InfoWindow({
-          content: iwContent,
-          removable: true
+          content: `<div style="padding:5px;"><span class="title">${store.name}</span></div>`,
+          removable: true,
         })
 
-        kakao.maps.event.addListener(marker, 'click', async function () {
-          infowindow.open(map, marker);
-          // selectedStore.value = fetchFranciseInfo(store) // 가맹점 정보 저장
-          // selectedStore.value = await fetchFranciseInfo(store); // 가맹점 정보 저장
-          selectedStore.value = store; // 가맹점 정보 저장
-          
+        kakao.maps.event.addListener(marker, 'click', () => {
+          infowindow.open(map.value, marker)
+          selectedStore.value = store
         })
 
-        return marker
+        return { marker, store, infowindow }
       })
-        // 마커들을 클러스터러에 추가
-        clusterer.addMarkers(markers)
-      })
-    }
+
+      clusterer.addMarkers(markers.value.map(m => m.marker))
+    })
   }
+}
 
-  // const fetchFranciseInfo = async (store) => {
-  //   try {
-  //     const response = await apiClient.get(`/franchise/summary/${store.name}`)
-      
-  //     return response.data
-  //   } catch (error) {
-  //     console.error('프랜차이즈 데이터 불러오기 실패:', error)
-  //   }
-  // }
+const handleFocusMarker = (franchiseId) => {
+  if (!map.value || markers.value.length === 0) return
+  const kakao = window.kakao
+
+  const target = markers.value.find(m => m.store.franchiseId === franchiseId)
+  if (target) {
+    const position = target.marker.getPosition()
+    map.value.setCenter(position)
+    map.value.setLevel(4)
+    kakao.maps.event.trigger(target.marker, 'click')
+  } else {
+    alert('해당 가맹점의 마커를 찾을 수 없습니다.')
+  }
+}
 
 onMounted(() => {
   loadMap(mapContainer.value)
@@ -128,4 +121,4 @@ onMounted(() => {
   border: 1px solid #ccc;
 }
 
-</style>
+</style> 적용시켜줭

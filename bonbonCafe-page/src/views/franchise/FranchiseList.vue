@@ -2,11 +2,12 @@
     <v-card class=" franchise-card ">
         <div class="mb-16" id="div0">
             <div id="div1">
+                
                 <SelectBox
-                class="select-region"
-                v-model="selectedRegion"
-                :placeholder="'지역 선택'"
-                :items="regionList"
+                    class="select-region"
+                    v-model="selectedRegion"
+                    :placeholder="'지역 선택'"
+                    :items="regionList"
                 />
                 <SelectBox
                     class="select-district"
@@ -15,16 +16,23 @@
                     :items="districtList"
                 />
                 <v-text-field
+                    v-model="searchKeyword"
                     class="search-input"
                     density="comfortable"
                     variant="outlined"
                     flat="false"
                     placeholder="Search here"
-                    prepend-inner-icon="mdi-magnify"
+                    append-inner-icon="mdi-magnify"
                     width="300px"
+                    @keydown.enter="onSearch"
+                    @click:append-inner="onSearch"
                 />
+                <v-btn variant="tonal" color="grey" @click="resetFilters">
+                    <v-icon start>mdi-close</v-icon>
+                    초기화
+                </v-btn>
                 <v-btn
-                    variant="outlined"
+                    variant="tonal" color="grey"
                     @click="goToRegister"
                 >
                     <v-icon start>mdi-plus</v-icon>
@@ -124,15 +132,31 @@
     const totalPages = ref(0);
     const defaultImage = 'https://bonbon-file-bucket.s3.ap-northeast-2.amazonaws.com/profile-default.jpg'
 
-const isValidImageUrl = (url) => {
-  return typeof url === 'string' && url.startsWith('http');
-}
+    const isValidImageUrl = (url) => {
+        return typeof url === 'string' && url.startsWith('http');
+    }
 
+    // 임시 더미 데이터
+    const regionList = ref([
+        { title: '서울특별시', value: '서울특별시' },
+        { title: '부산광역시', value: '부산광역시' },
+        { title: '대구광역시', value: '대구광역시' },
+    ])
+
+    const districtList = ref([
+        { title: '강동구', value: '강동구' },
+        { title: '광진구', value: '광진구' },
+        { title: '송파구', value: '송파구' },
+        { title: '종로구', value: '종로구' },
+        { title: '관악구', value: '관악구' },
+    ])
 
 
     // 선택된 지역/구
     const selectedRegion = ref(null);
     const selectedDistrict = ref(null);
+
+    const searchKeyword = ref('');
 
     const header = [
         { title: '', align: 'start', key: 'franchiseImage', class: 'header'},
@@ -145,18 +169,50 @@ const isValidImageUrl = (url) => {
     ]
 
 
+    // const fetchFranchise = async (page, size) => {
+    //     try {
+    //         const response = await apiClient.get(`/franchise?page=${page - 1}&size=${size}`);
+
+    //         console.log(response.data.content);
+            
+    //         item.value = response.data.content;
+    //         totalItems.value = response.data.totalElements;
+    //         totalPages.value = response.data.totalPages;
+    //     } catch (error) {
+    //         console.error("Error fetching boards:", error);
+    //     } 
+    // };
+
     const fetchFranchise = async (page, size) => {
         try {
-            const response = await apiClient.get(`/franchise?page=${page - 1}&size=${size}`);
+            const params = new URLSearchParams();
+            params.append('page', page - 1); // 서버는 0부터 시작
+            params.append('size', size);
+            if (selectedRegion.value) params.append('region', selectedRegion.value.value);
+            if (selectedDistrict.value) params.append('district', selectedDistrict.value.value);
+            if (searchKeyword.value) params.append('name', searchKeyword.value);
 
-            console.log(response.data.content);
-            
+            const response = await apiClient.get(`/franchise?${params.toString()}`);
+
             item.value = response.data.content;
             totalItems.value = response.data.totalElements;
             totalPages.value = response.data.totalPages;
         } catch (error) {
-            console.error("Error fetching boards:", error);
-        } 
+            console.error("Error fetching franchise list:", error);
+        }
+    };
+
+    const onSearch = () => {
+        currentPage.value = 1;
+        fetchFranchise(1, pageSize.value);
+    };
+
+    const resetFilters = () => {
+        selectedRegion.value = null;
+        selectedDistrict.value = null;
+        searchKeyword.value = '';
+        currentPage.value = 1;
+        fetchFranchise(1, pageSize.value);
     };
 
 
@@ -210,14 +266,14 @@ const isValidImageUrl = (url) => {
 
 
     
-    // 컴포넌트가 mount 될 때 실행
     onMounted(() => {
         fetchFranchise(currentPage.value, pageSize.value); 
     });
 
-    // watch(currentPage, (newPage) => {
-    //     fetchFranchise(newPage, pageSize.value);
-    // });
+    watch([selectedRegion, selectedDistrict], () => {
+        currentPage.value = 1;
+        fetchFranchise(1, pageSize.value);
+    });
 
 
 
