@@ -6,23 +6,18 @@
       <v-row>
         <v-col cols="12" md="8">
           <v-text-field v-model="menu.name" label="메뉴 이름" required />
-          <v-text-field v-model="menu.price" label="가격" type="number"  step="50" required />
+          <v-text-field v-model="menu.price" label="가격" type="number" step="50" required />
           <v-text-field v-model="menu.description" label="설명" />
           <v-row>
             <v-col cols="12" md="6">
-              <v-select v-model="menu.status" :items="['ACTIVE', 'INACTIVE']" label="상황" required />
+              <v-select v-model="menu.status" :items="[
+                { label: '활성화', value: 'ACTIVE' },
+                { label: '비활성화', value: 'INACTIVE' }
+              ]" label="상태" item-title="label" item-value="value" required />
             </v-col>
             <v-col cols="12" md="6">
-              <v-select
-                v-model="selectedCategories"
-                :items="allCategories"
-                label="카테고리"
-                item-title="categoryName"
-                item-value="id"
-                multiple
-                chips
-                return-object
-              />
+              <v-select v-model="selectedCategories" :items="allCategories" label="카테고리" item-title="categoryName"
+                item-value="id" multiple chips return-object />
             </v-col>
           </v-row>
         </v-col>
@@ -45,15 +40,8 @@
 
         <v-text-field v-model="searchKeyword" label="재료명 검색" append-inner-icon="mdi-magnify" class="mb-2" />
 
-        <v-data-table
-          :headers="headers"
-          :items="currentIngredients"
-          item-key="ingredientId"
-          class="elevation-1"
-          density="compact"
-          :items-per-page="itemsPerPage"
-          hide-default-footer
-        >
+        <v-data-table :headers="headers" :items="currentIngredients" item-key="ingredientId" class="elevation-1"
+          density="compact" :items-per-page="itemsPerPage" hide-default-footer>
           <template v-slot:item.quantity="{ item }">
             {{ item.quantity }}
           </template>
@@ -231,6 +219,7 @@ const goBack = () => router.back()
   cursor: pointer;
   overflow: hidden;
 }
+
 .upload-label {
   position: absolute;
   z-index: 2;

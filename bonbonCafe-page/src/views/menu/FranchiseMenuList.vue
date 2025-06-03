@@ -4,30 +4,16 @@
 
     <!-- 🔍 검색창 -->
     <div class="d-flex mb-4" style="gap: 8px;">
-      <v-text-field
-        v-model="search"
-        label="메뉴명 검색"
-        prepend-inner-icon="mdi-magnify"
-        class="flex-grow-1"
-        @keyup.enter="handleSearch"
-      />
+      <v-text-field v-model="search" label="메뉴명 검색" prepend-inner-icon="mdi-magnify" class="flex-grow-1"
+        @keyup.enter="handleSearch" />
     </div>
 
     <!-- 카테고리 탭 -->
     <v-sheet elevation="6" class="mb-4">
-      <v-tabs
-        v-model="selectedTab"
-        bg-color="#D8DBBD"
-        show-arrows
-        next-icon="mdi-arrow-right-bold-box-outline"
-        prev-icon="mdi-arrow-left-bold-box-outline"
-      >
+      <v-tabs v-model="selectedTab" bg-color="#D8DBBD" show-arrows next-icon="mdi-arrow-right-bold-box-outline"
+        prev-icon="mdi-arrow-left-bold-box-outline">
         <v-tab @click="fetchFranchiseMenus">전체</v-tab>
-        <v-tab
-          v-for="cat in allCategories"
-          :key="cat.id"
-          @click="fetchMenusByCategory(cat.id)"
-        >
+        <v-tab v-for="cat in allCategories" :key="cat.id" @click="fetchMenusByCategory(cat.id)">
           {{ cat.categoryName }}
         </v-tab>
       </v-tabs>
@@ -35,29 +21,20 @@
 
     <!-- 메뉴 카드 목록 -->
     <v-row>
-      <v-col
-        v-for="menu in franchiseMenus"
-        :key="menu.menuId"
-        cols="12"
-        sm="6"
-        md="3"
-      >
+      <v-col v-for="menu in franchiseMenus" :key="menu.menuId" cols="12" sm="6" md="3">
         <v-card class="hoverable" @click="goToDetail(menu.menuId)">
           <v-img :src="menu.image" aspect-ratio="1" cover />
-          <v-card-title>{{ menu.name }}</v-card-title>
-          <v-card-subtitle>{{ menu.price }}원</v-card-subtitle>
+          <v-card-title>
+            {{ menu.name }}
+            <v-chip class="ml-2" :color="menu.status === 'ACTIVE' ? 'green' : 'grey'" text-color="white" x-small>
+              {{ menu.status === 'ACTIVE' ? '활성화' : '비활성화' }}
+            </v-chip>
+          </v-card-title> <v-card-subtitle>{{ menu.price }}원</v-card-subtitle>
           <v-card-text>
             {{ menu.description }}
             <div v-if="menu.categories?.length" class="category-chip-container mt-2">
-              <v-chip
-                v-for="(cat, index) in menu.categories"
-                :key="index"
-                class="ma-1"
-                color="indigo"
-                text-color="white"
-                label
-                small
-              >
+              <v-chip v-for="(cat, index) in menu.categories" :key="index" class="ma-1" color="indigo"
+                text-color="white" label small>
                 {{ cat.categoryName }}
               </v-chip>
             </div>
@@ -67,13 +44,8 @@
     </v-row>
 
     <!-- ✅ 페이징 -->
-    <v-pagination
-      v-if="!selectedCategoryId"
-      v-model="page"
-      :length="totalPages"
-      @input="fetchFranchiseMenus"
-      class="mt-4"
-    />
+    <v-pagination v-if="!selectedCategoryId" v-model="page" :length="totalPages" @input="fetchFranchiseMenus"
+      class="mt-4" />
   </div>
 </template>
 
@@ -151,9 +123,11 @@ watch(page, () => {
   cursor: pointer;
   transition: transform 0.2s ease;
 }
+
 .hoverable:hover {
   transform: scale(1.02);
 }
+
 .category-chip-container {
   display: flex;
   flex-wrap: wrap;
