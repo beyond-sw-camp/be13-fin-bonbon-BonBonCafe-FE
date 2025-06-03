@@ -48,12 +48,12 @@
               <!-- 아이디/비밀번호 찾기 -->
               <div class="find-info">
                 <div class="find-links">
-                  <v-btn variant="text" class="text-caption px-1" @click="goToFindId">
-                    이메일 찾기
+                  <v-btn variant="text" class="text-caption px-1" @click="goToJoinFranchise">
+                    가맹점주 회원가입
                   </v-btn>
                   <span class="divider">|</span>
-                  <v-btn variant="text" class="text-caption px-1" @click="goToFindPassword">
-                    비밀번호 찾기
+                  <v-btn variant="text" class="text-caption px-1" @click="goToJoinManager">
+                    매니저 회원가입
                   </v-btn>
                 </div>
               </div>
@@ -73,6 +73,9 @@
 <script setup>
 import { reactive, ref, toRaw } from 'vue';
 const emit = defineEmits(['form-submit']);
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
 
 const formData = reactive({
   email: '',
@@ -85,6 +88,15 @@ const saveId = ref(false);
 const submitClick = () => {
   emit('form-submit', toRaw(formData));
 };
+
+const goToJoinFranchise = () => {
+  router.push({ name: 'franchisee-join' })  // 또는 path: '/join-franchise'
+}
+
+const goToJoinManager = () => {
+  router.push({ name: 'manager-join' })  // 또는 path: '/join-franchise'
+}
+
 </script>
 
 <style scoped>
