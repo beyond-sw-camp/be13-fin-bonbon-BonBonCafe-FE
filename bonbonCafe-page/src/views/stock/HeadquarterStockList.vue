@@ -52,7 +52,7 @@
             <v-col cols="auto">
               <v-select
                 v-model="pageSize"
-                :items="[5, 10, 20]"
+                :items="[5, 10]"
                 density="compact"
                 variant="outlined"
                 hide-details
