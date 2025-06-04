@@ -281,11 +281,11 @@ const isValidImageUrl = (url) => {
     bottom: 34px;  /* 하단에서 20px 위치 */
     left: 24px;   /* 오른쪽에서 20px 위치 */
     }
-    :deep(.custom-pagination .v-pagination__item.v-pagination__item--is-active) {
-  background-color: #caddf0 !important;
-  color: white !important;
-  font-weight: bold;
-  border-radius: 8px;
-}
+    .custom-pagination >>> .v-pagination__item.v-pagination__item--is-active {
+    background-color: #caddf0 !important;
+    color: white !important;
+    font-weight: bold;
+    border-radius: 8px;
+    }
 
 </style>
