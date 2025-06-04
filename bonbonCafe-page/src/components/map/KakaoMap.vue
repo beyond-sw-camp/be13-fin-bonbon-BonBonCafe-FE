@@ -3,7 +3,7 @@
         <div v-if="selectedStore" id="info">
           <FranchiseInfo :selectedStore="selectedStore"@focus-marker="handleFocusMarker"/>
         </div>
-        <div id="maps" ref="mapContainer" style="width:100%;height:725px; "></div>
+        <div id="maps" ref="mapContainer" style="width:100%;height: 900px; "></div>
     </div>
 </template>
 <script setup>
@@ -167,6 +167,7 @@ watch(selectedStore, (newVal) => {
   display: flex;
   flex-direction: row; 
   margin: none;  
+  height: 900px;
 }
 
 #info{
@@ -174,6 +175,9 @@ watch(selectedStore, (newVal) => {
   padding: 10px;
   flex-shrink: 0; /* 줄어들지 않도록 고정 */
   background-color: #f5f5f5;
+  height: 900px;           /* 지도 높이와 동일하게 고정 */
+  overflow-y: auto;        /* 세로 스크롤 허용 */
+  box-sizing: border-box;  /* 패딩 포함한 높이 계산 */
 }
 
 #maps{

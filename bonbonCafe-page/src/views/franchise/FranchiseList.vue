@@ -1,45 +1,61 @@
 <template>
     <v-card class=" franchise-card ">
-        <div class="mb-16" id="div0">
-            <div id="div1">
-                
-                <SelectBox
-                    class="select-region"
-                    v-model="selectedRegion"
-                    :placeholder="'지역 선택'"
-                    :items="regionList"
-                />
-                <SelectBox
-                    class="select-district"
-                    v-model="selectedDistrict"
-                    :placeholder="'구 선택'"
-                    :items="districtList"
-                />
-                <v-text-field
-                    v-model="searchKeyword"
-                    class="search-input"
-                    density="comfortable"
-                    variant="outlined"
-                    flat="false"
-                    placeholder="Search here"
-                    append-inner-icon="mdi-magnify"
-                    width="300px"
-                    @keydown.enter="onSearch"
-                    @click:append-inner="onSearch"
-                />
-                <v-btn variant="tonal" color="grey" @click="resetFilters">
-                    <v-icon start>mdi-close</v-icon>
-                    초기화
-                </v-btn>
-                <v-btn
-                    variant="tonal" color="grey"
-                    @click="goToRegister"
-                >
-                    <v-icon start>mdi-plus</v-icon>
-                    ADD
-                </v-btn>
-            </div>
-        </div>
+        <v-row class="mb-6 align-center" dense>
+        <!-- 지역 선택 -->
+        <v-col cols="auto" class="mr-4">
+            <SelectBox
+            class="select-region"
+            v-model="selectedRegion"
+            :placeholder="'지역 선택'"
+            :items="regionList"
+            />
+        </v-col>
+
+        <!-- 구 선택 -->
+        <v-col cols="auto" class="mr-4">
+            <SelectBox
+            class="select-district"
+            v-model="selectedDistrict"
+            :placeholder="'구 선택'"
+            :items="districtList"
+            />
+        </v-col>
+
+        <!-- 검색 -->
+        <v-col cols="auto" class="mr-4">
+            <v-text-field
+            v-model="searchKeyword"
+            class="search-input"
+            density="comfortable"
+            variant="outlined"
+            placeholder="Search here"
+            append-inner-icon="mdi-magnify"
+            @keydown.enter="onSearch"
+            @click:append-inner="onSearch"
+            style="width: 300px;"  
+            />
+        </v-col>
+
+        <!-- 초기화 버튼 -->
+        <v-col cols="auto" class="mr-2">
+            <v-btn variant="tonal" color="grey" @click="resetFilters">
+            <v-icon start>mdi-close</v-icon>
+            초기화
+            </v-btn>
+        </v-col>
+
+         <!-- ADD 버튼 (오른쪽 끝) -->
+        <v-col class="ml-auto" cols="auto">
+        <v-btn variant="tonal" color="grey" @click="goToRegister">
+            <v-icon start>mdi-plus</v-icon>
+            ADD
+        </v-btn>
+        </v-col>
+    </v-row>
+
+
+        <!-- ↓ 이하 기존 테이블/페이지네이션 등 그대로 유지 -->
+
         <div>
             <!-- <Table :header="header" :item="item"/> -->
 
@@ -53,12 +69,6 @@
                 @update:items-per-page="onPageSizeChange"
                 hide-default-footer
             >
-                <!-- <template #item.status="{ item }">
-                    <v-chip variant="tonal" :color="getStatusColor(item.status)">
-                        {{ getStatusText(item.status) }}
-                    </v-chip>
-                </template> -->
-
                 <template #item="{ item, columns }">
                     <tr @click="goToDetail(item)" style="cursor: pointer">
                         <td v-for="column in columns" :key="column.key">
@@ -91,14 +101,14 @@
                     </tr>
                 </template>
             </v-data-table>
-                <v-pagination
+            <v-pagination
                 v-model="currentPage"
                 :length="totalPages"
                 :total-visible="10"
                 @update:model-value="onPageChange"
                 class="mt-4  custom-pagination"
-                />
-                <v-select
+            />
+            <v-select
                 v-model="pageSize"
                 :items="[5, 10, 20]"
                 density="compact"
@@ -106,7 +116,7 @@
                 hide-details
                 @update:model-value="onPageSizeChange"
                 class="custom-rows-per-page"
-                />
+            />
         </div>
 
     </v-card>
@@ -167,21 +177,6 @@
         { title: '상태', align: 'center', key: 'status', class: 'header' },
         { title: '개점 일자', align: 'center', key: 'openDate', class: 'header' }
     ]
-
-
-    // const fetchFranchise = async (page, size) => {
-    //     try {
-    //         const response = await apiClient.get(`/franchise?page=${page - 1}&size=${size}`);
-
-    //         console.log(response.data.content);
-            
-    //         item.value = response.data.content;
-    //         totalItems.value = response.data.totalElements;
-    //         totalPages.value = response.data.totalPages;
-    //     } catch (error) {
-    //         console.error("Error fetching boards:", error);
-    //     } 
-    // };
 
     const fetchFranchise = async (page, size) => {
         try {
@@ -281,13 +276,7 @@
 </script>
 
 <style scoped>
-    /* .Tdiv{
-        background-color: #ffffff;
-        margin: 16px 64px 64px;
-        padding: 70px;
-
-    } */
-     .v-data-table {
+    .v-data-table {
         min-height: 400px; /* 원하는 높이로 조절 */
     }
     .franchise-card {
@@ -297,33 +286,22 @@
         background-color: #fff;
         border-radius: 16px;
     }
-    #div0 {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        width: 100%;
-    }
-    #div1 {
-        display: flex;
-        flex-direction: row;
-        gap: 20px;
-        align-items: center;
-        
-    }
+
     .select-region {
         width: 200px;
     }
+
     .select-district {
         width: 150px;
     }
+
     .search-input {
-        /* margin-left: 750px; */
-        height: 48px; 
+        height: 48px;
         background-color: white;
     }
-    
+
     ::v-deep(.v-data-table__th) {
-    background-color: #f2f5f8 !important;
+        background-color: #f2f5f8 !important;
     }
 
     ::v-deep(.v-data-table tbody tr:hover) {
@@ -333,15 +311,15 @@
 
    
     .custom-rows-per-page {
-    position: absolute;
-    bottom: 34px;  /* 하단에서 20px 위치 */
-    left: 24px;   /* 오른쪽에서 20px 위치 */
+        position: absolute;
+        bottom: 46px; 
+        right: 200px;  
     }
     .custom-pagination >>> .v-pagination__item.v-pagination__item--is-active {
-    background-color: #caddf0 !important;
-    color: white !important;
-    font-weight: bold;
-    border-radius: 8px;
+        background-color: #caddf0 !important;
+        color: white !important;
+        font-weight: bold;
+        border-radius: 8px;
     }
 
 </style>

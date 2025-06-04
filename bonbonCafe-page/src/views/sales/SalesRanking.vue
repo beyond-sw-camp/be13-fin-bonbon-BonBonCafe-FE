@@ -1,108 +1,120 @@
 <template>
-  <v-container fluid>
+  <v-card class=" franchise-card ">
     <SalesRankingForm />
 
     <div class="table-wrapper">
-      <v-table
-        class="rounded-t-xl"
-        style="min-width: 1200px; width: 1200px;"
+      <v-data-table
+        :headers="headers"
+        :items="rankingList"
+        :items-length="totalItems"
+        :items-per-page="pageSize"
+        :page="currentPage"
+        hide-default-footer
+        class="ranking-table rounded-b rounded-t"
+        @update:page="onPageChange"
+        @update:items-per-page="onPageSizeChange"
       >
-
-        <thead class="theadColor">
+        <!-- 행 커스텀 렌더링 -->
+        <template #item="{ item, index }">
           <tr>
-            <th class="text-center font-weight-bold">순위</th>
-            <th class="text-center font-weight-bold">가맹점명</th>
-            <th class="text-center font-weight-bold">총 매출</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, idx) in rankingList" :key="idx">
             <td class="text-center">
-              {{ (currentPage-1)*pageSize + idx + 1 }}
+              {{ (currentPage - 1) * pageSize + index + 1 }}
             </td>
             <td class="text-center">{{ item.franchiseName }}</td>
-            <td class="text-center">
-              {{ item.totalSales.toLocaleString() }}
-            </td>
+            <td class="text-center">{{ item.totalSales.toLocaleString() }}</td>
           </tr>
-        </tbody>
-      </v-table>
+        </template>
 
+      </v-data-table>
+
+      <!-- 페이지네이션 -->
       <v-pagination
-        v-if="pageCount > 1"
         v-model="currentPage"
-        :length="pageCount"
-        @update:modelValue="onPageChange"
+        :length="totalPages"
+        @update:model-value="onPageChange"
         class="pagination-bar"
       />
     </div>
-  </v-container>
+  </v-card>
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
-import SalesRankingForm  from '@/components/forms/salesform/SalesRankingForm.vue'
+import { ref, computed, watch } from 'vue'
+import SalesRankingForm from '@/components/forms/salesform/SalesRankingForm.vue'
 import { useRankingStore } from '@/stores/rankingStore'
 
 const rankingStore = useRankingStore()
-const currentPage  = ref(1)
-const pageSize     = 10
 
-const rankingList = computed(() =>
-  rankingStore.rankingPage?.content || []
-)
-const pageCount = computed(() =>
-  rankingStore.rankingPage?.totalPages ?? 0
-)
+const currentPage = ref(1)
+const pageSize = ref(10)
+
+const rankingList = computed(() => rankingStore.rankingPage?.content || [])
+const totalPages = computed(() => rankingStore.rankingPage?.totalPages ?? 0)
+const totalItems = computed(() => rankingStore.rankingPage?.totalElements ?? 0)
+
+const headers = [
+  { title: '순위', key: 'rank', align: 'center' },
+  { title: '가맹점명', key: 'franchiseName', align: 'center' },
+  { title: '총 매출', key: 'totalSales', align: 'center' }
+]
+
+function onPageChange(page) {
+  currentPage.value = page
+  fetchData()
+}
+
+function onPageSizeChange(size) {
+  pageSize.value = size
+  currentPage.value = 1
+  fetchData()
+}
+
+function fetchData() {
+  rankingStore.fetchRanking({
+    page: currentPage.value - 1,
+    size: pageSize.value
+  })
+}
 
 watch(() => rankingStore.rankingPage, p => {
   if (p) currentPage.value = p.number + 1
 })
 
-function onPageChange(page) {
-  rankingStore.fetchRanking({ page: page-1, size: pageSize })
-}
+fetchData()
 </script>
 
 <style scoped>
+.franchise-card {
+    margin: 40px auto;
+    padding: 40px;
+    max-width: 1300px;
+    background-color: #fff;
+    border-radius: 16px;
+    height: 800px; /* 고정 높이 */
+    overflow-y: auto; /* 내용 많을 경우 스크롤 */
+
+}
 .table-wrapper {
   overflow-x: auto;
-  /* 가운데 정렬을 원하시면 이렇게 */
   display: flex;
-  justify-content: center;
-}
-/* 헤더 스타일 */
-.ranking-table thead th {
-  background: #E0E8D0;
-  font-weight: 600;
-  padding: 12px 8px;
-  font-size: 16px;
-  min-width: 1500px;
-  width: 150%;
+  flex-direction: column;
+  align-items: center;
+  min-width: 1200px;
 }
 
-/* 바디 스타일 */
-.ranking-table tbody td {
-  background: #FFF;
-  vertical-align: middle;
-  padding: 12px 8px;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-/* 짝수 행 배경 */
-.ranking-table tbody tr:nth-child(even) td {
-  background: #FAFAFA;
-}
-
-/* 페이징 */
 .pagination-bar {
   margin: 16px 0;
   display: flex;
   justify-content: center;
 }
 
-.theadColor{
-    background-color: #D8DBBD;
+::v-deep(.v-data-table__th) {
+  background-color: #f2f5f8 !important;
 }
+
+::v-deep(.v-data-table tbody tr:hover) {
+  background-color: #f4faff;
+  cursor: pointer;
+}
+
 </style>

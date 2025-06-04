@@ -46,16 +46,7 @@
             <MenuRanking :franchiseId="selectedStore.franchiseId || null" />
         
         
-        <h4 class="pa-2 mt-2">체크리스트</h4>
-        <v-card class="pa-1 mt-1" >
-            <!-- <h4>매장 매출</h4> -->
-            <v-card-text>
-                <br>
-                <br>
-                <br>
-                <br>
-            </v-card-text>
-        </v-card>
+        
     </v-container>
 </template>
 
