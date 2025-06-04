@@ -102,7 +102,7 @@ const menuGroups = [
     title: '공지사항',
     icon: 'mdi-clipboard-check-outline',
     items: [
-      { title: '공지사항' },
+      { title: '공지사항 목록' },
       { title: '이벤트' },
     ],
   },

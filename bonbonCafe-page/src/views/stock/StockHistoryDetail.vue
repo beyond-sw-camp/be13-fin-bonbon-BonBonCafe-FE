@@ -1,61 +1,76 @@
 <template>
-  <div class="detail-wrapper ma-8 pa-8">
-    <h3 class="text-2xl font-semibold mb-6">📄 재고 신청 상세</h3>
+  <v-container class="py-4" fluid>
+    <v-row dense>
+      <v-col cols="12" md="6" offset-md="3">
+        <v-card class="pa-6" elevation="2" style="width: 100%; height: 650px;">
 
-    <v-card class="pa-6 mb-6 elevation-1">
-      <div class="info-row mb-4">
-        <div class="info-label">재료명:</div>
-        <div class="info-value">{{ history.ingredientName }}</div>
-      </div>
+          <v-typography class="list" align="center">
+            재고&발주 관리 / 
+          </v-typography>
+          <v-typography class="title" align="center">
+            재고 신청 상세
+          </v-typography>
 
-      <div class="info-row mb-4">
-        <div class="info-label">수량:</div>
-        <div class="info-value">
-          <template v-if="editMode">
-            <v-text-field v-model="editForm.quantity" type="number" density="compact" hide-details
-              style="max-width: 200px" />
-          </template>
-          <template v-else>
-            {{ history.quantity }} {{ history.unit || '' }}
-          </template>
-        </div>
-      </div>
+          <br /><br />
 
-      <div class="info-row mb-4">
-        <div class="info-label">신청일:</div>
-        <div class="info-value">{{ formatDate(history.date) }}</div>
-      </div>
+          <v-row dense>
+            <v-col cols="12" md="12" class="mb-3">
+              <div class="info-label">재료명</div>
+              <div class="info-value">{{ history.ingredientName }}</div>
+            </v-col>
 
-      <div class="info-row mb-2">
-        <div class="info-label">상태:</div>
-        <div class="info-value">
-          <template v-if="editMode">
-            <template v-if="userRole === 'ROLE_HEADQUARTER'">
-              <v-select v-model="editForm.status" :items="statusOptions" item-title="label" item-value="value" dense
-                hide-details style="max-width: 200px" />
-            </template>
-            <template v-else>
-              {{ statusLabel(history.historyStatus) }}
-            </template>
-          </template>
-          <template v-else>
-            {{ statusLabel(history.historyStatus) }}
-          </template>
-        </div>
-      </div>
-    </v-card>
+            <v-col cols="12" md="12" class="mb-3">
+              <div class="info-label">수량</div>
+              <div class="info-value">
+                <template v-if="editMode">
+                  <v-text-field v-model="editForm.quantity" type="number" density="compact" hide-details style="max-width: 200px" />
+                </template>
+                <template v-else>
+                  {{ history.quantity }} {{ history.unit || '' }}
+                </template>
+              </div>
+            </v-col>
 
-    <div class="d-flex justify-end" style="gap: 10px">
-      <template v-if="editMode">
-        <v-btn color="#D8DBBD" variant="flat" @click="submitUpdate">수정 완료</v-btn>
-        <v-btn variant="outlined" @click="cancelEdit">취소</v-btn>
-      </template>
-      <template v-else>
-        <v-btn color="primary" @click="tryEdit">수정</v-btn>
-        <v-btn color="error" @click="deleteHistory">삭제</v-btn>
-      </template>
-    </div>
-  </div>
+            <v-col cols="12" md="12" class="mb-3">
+              <div class="info-label">신청일</div>
+              <div class="info-value">{{ formatDate(history.date) }}</div>
+            </v-col>
+
+            <v-col cols="12" md="12" class="mb-3">
+              <div class="info-label">상태</div>
+              <div class="info-value">
+                <template v-if="editMode">
+                  <template v-if="userRole === 'ROLE_HEADQUARTER'">
+                    <v-select v-model="editForm.status" :items="statusOptions" item-title="label" item-value="value" dense hide-details style="max-width: 200px" />
+                  </template>
+                  <template v-else>
+                    {{ statusLabel(history.historyStatus) }}
+                  </template>
+                </template>
+                <template v-else>
+                  {{ statusLabel(history.historyStatus) }}
+                </template>
+              </div>
+            </v-col>
+
+            <v-divider class="mt-3 mb-4"></v-divider>
+
+            <v-col cols="12" class="d-flex justify-end">
+              <template v-if="editMode">
+                <v-btn color="primary" class="mr-2" @click="submitUpdate">수정 완료</v-btn>
+                <v-btn variant="outlined" @click="cancelEdit">취소</v-btn>
+              </template>
+              <template v-else>
+                <v-btn color="primary" class="mr-2" @click="tryEdit">수정</v-btn>
+                <v-btn color="error" variant="outlined" @click="deleteHistory">삭제</v-btn>
+              </template>
+            </v-col>
+          </v-row>
+
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script setup>
@@ -183,21 +198,27 @@ onMounted(fetchDetail)
 </script>
 
 <style scoped>
-.detail-wrapper {
-  background-color: #f5f5f5;
-}
-
-.info-row {
-  display: flex;
-  align-items: center;
-}
-
 .info-label {
-  width: 80px;
-  font-weight: bold;
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 4px;
 }
 
 .info-value {
-  flex: 1;
+  font-size: 16px;
+  font-weight: 500;
+  color: #222;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #3f51b5;
+}
+
+.list {
+  font-size: 16px;
+  font-weight: 600;
+  color: gray;
 }
 </style>

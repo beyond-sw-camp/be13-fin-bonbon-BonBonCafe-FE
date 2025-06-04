@@ -1,47 +1,72 @@
 <template>
-  <div class="stock-detail-wrapper ma-10 pa-8">
-    <h3 class="text-2xl font-semibold mb-6">📦 본사 재고 상세</h3>
+  <v-container class="py-4" fluid>
+    <v-row dense>
+      <v-col cols="12" md="6" offset-md="3">
+        <v-card class="pa-6" elevation="2" style="width: 100%; height: 650px;">
+          
+          <v-typography class="list" align="center">
+            재고&발주 관리 / 
+          </v-typography>
+          <v-typography class="title" align="center">
+            본사 재고 상세
+          </v-typography>
 
-    <v-card v-if="stock" class="stock-card elevation-1 pa-6">
-      <v-card-title class="text-xl font-semibold mb-4">
-        {{ stock.ingredientName }}
-      </v-card-title>
+          <br /><br />
 
-      <v-card-text class="text-base">
-        <div class="mb-3">
-          <strong>📦 수량: </strong>
-          <span v-if="!editMode">{{ stock.quantity }} {{ stock.unit }}</span>
-          <v-text-field
-            v-else
-            v-model="editForm.quantity"
-            type="number"
-            hide-details
-            density="compact"
-            class="mt-2"
-          />
-        </div>
-        <div class="mb-2">💰 <strong>단가:</strong> {{ formatPrice(stock.unitPrice) }}원</div>
-        <div class="mb-2">🛒 <strong>소비자가:</strong> {{ formatPrice(stock.retailPrice) }}원</div>
-        <div class="mt-2 text-caption text-grey-darken-1">🏢 본사: {{ stock.headquarterName }}</div>
-      </v-card-text>
+          <v-row dense>
+            <v-col cols="12" md="12" class="mb-3">
+              <div class="info-label">재료명</div>
+              <div class="info-value">{{ stock?.ingredientName }}</div>
+            </v-col>
 
-      <!-- ✅ 버튼 영역 -->
-      <v-card-actions class="justify-end mt-4" style="gap: 8px;">
-        <template v-if="editMode">
-          <v-btn color="#D8DBBD" variant="flat" @click="submitUpdate">수정 완료</v-btn>
-          <v-btn variant="text" @click="cancelEdit">취소</v-btn>
-        </template>
-        <template v-else>
-          <v-btn color="primary" @click="editMode = true">수정</v-btn>
-          <v-btn color="error" @click="deleteStock">삭제</v-btn>
-        </template>
-      </v-card-actions>
-    </v-card>
+            <v-col cols="12" md="12" class="mb-3">
+              <div class="info-label">수량</div>
+              <div class="info-value">
+                <template v-if="editMode">
+                  <v-text-field v-model="editForm.quantity" type="number" density="compact" hide-details style="max-width: 200px" />
+                </template>
+                <template v-else>
+                  {{ stock?.quantity }} {{ stock?.unit }}
+                </template>
+              </div>
+            </v-col>
 
-    <v-alert v-else type="warning" class="mt-6" variant="outlined">
-      재고 정보를 불러오지 못했습니다.
-    </v-alert>
-  </div>
+            <v-col cols="12" md="12" class="mb-3">
+              <div class="info-label">단가</div>
+              <div class="info-value">{{ formatPrice(stock?.unitPrice) }}원</div>
+            </v-col>
+
+            <v-col cols="12" md="12" class="mb-3">
+              <div class="info-label">소비자가</div>
+              <div class="info-value">{{ formatPrice(stock?.retailPrice) }}원</div>
+            </v-col>
+
+            <v-col cols="12" md="12" class="mb-3">
+              <div class="info-label">본사</div>
+              <div class="info-value">{{ stock?.headquarterName }}</div>
+            </v-col>
+
+            <v-divider class="mt-3 mb-4"></v-divider>
+
+            <v-col cols="12" class="d-flex justify-end">
+              <template v-if="editMode">
+                <v-btn color="primary" class="mr-2" @click="submitUpdate">수정 완료</v-btn>
+                <v-btn variant="outlined" @click="cancelEdit">취소</v-btn>
+              </template>
+              <template v-else>
+                <v-btn color="primary" class="mr-2" @click="editMode = true">수정</v-btn>
+                <v-btn color="error" variant="outlined" @click="deleteStock">삭제</v-btn>
+              </template>
+            </v-col>
+          </v-row>
+        </v-card>
+
+        <v-alert v-if="!stock" type="warning" class="mt-6" variant="outlined">
+          재고 정보를 불러오지 못했습니다.
+        </v-alert>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script setup>
@@ -113,5 +138,28 @@ onMounted(fetchStock)
   max-width: 600px;
   margin: 0 auto;
   border-radius: 12px;
+}
+.info-label {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.info-value {
+  font-size: 16px;
+  font-weight: 500;
+  color: #222;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #3f51b5;
+}
+
+.list {
+  font-size: 16px;
+  font-weight: 600;
+  color: gray;
 }
 </style>
