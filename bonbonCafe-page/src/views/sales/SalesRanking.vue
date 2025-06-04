@@ -89,7 +89,6 @@ fetchData()
     padding: 40px;
     max-width: 1300px;
     background-color: #fff;
-    border-radius: 16px;
     height: 800px; /* 고정 높이 */
     overflow-y: auto; /* 내용 많을 경우 스크롤 */
 

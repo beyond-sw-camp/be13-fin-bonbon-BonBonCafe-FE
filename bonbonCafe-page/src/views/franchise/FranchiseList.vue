@@ -107,6 +107,7 @@
                 :total-visible="10"
                 @update:model-value="onPageChange"
                 class="mt-4  custom-pagination"
+                color="#2A3663"
             />
             <v-select
                 v-model="pageSize"
@@ -284,7 +285,7 @@
         padding: 40px;
         max-width: 1300px;
         background-color: #fff;
-        border-radius: 16px;
+        /* border-radius: 16px; */
     }
 
     .select-region {
