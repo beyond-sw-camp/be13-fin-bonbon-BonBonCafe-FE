@@ -98,10 +98,15 @@ const menuGroups = computed(() => [
   {
     title: '매출 관리',
     icon: 'mdi-chart-bar',
-    items: [
-      { title: '매출 분석' },
-      { title: '매출 순위' },
-    ],
+    items: 
+      userRole.value === 'ROLE_HEADQUARTER' || userRole.value === 'ROLE_MANAGER'
+      ?[
+        { title: '매출 분석' },
+        { title: '매출 순위' }
+      ]
+      : [
+        { title: '매출 순위' },
+      ],
   },
   {
     title: '공지사항',
