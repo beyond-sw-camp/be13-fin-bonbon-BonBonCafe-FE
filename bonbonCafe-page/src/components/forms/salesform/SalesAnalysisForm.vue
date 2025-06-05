@@ -132,8 +132,6 @@ const pdfTarget = ref(null)
 
 let salesChart = null
 let forecastChart = null
-let salesChart = null
-let forecastChart = null
 
 onMounted(() => {
   salesStore.menuRanking = []
@@ -323,11 +321,6 @@ async function downloadAsPdf() {
 // ───────────────────────────────────────────────────────
 </script>
 
-<style scoped>
-.sales-analysis-container {
-  max-width: 1280px;
-  margin: 0 auto;
-}
 <style scoped>
 .sales-analysis-container {
   max-width: 1280px;
