@@ -22,10 +22,14 @@
               />
             </v-col>
             <v-col cols="12" md="4" class="text-right">
-              <v-btn color="primary" @click="goToRegister">
-                <v-icon start>mdi-plus</v-icon>
-                재고 추가
-              </v-btn>
+              <v-btn
+  color="primary"
+  @click="goToRegister"
+  v-if="userRole === 'ROLE_HEADQUARTER'"
+>
+  <v-icon start>mdi-plus</v-icon>
+  재고 추가
+</v-btn>
             </v-col>
           </v-row>
 
@@ -79,7 +83,10 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import apiClient from '@/api'
+import { useAuthStore } from '@/stores/auth'
 
+const authStore = useAuthStore()
+const userRole = authStore.userInfo.role
 const router = useRouter()
 const stocks = ref([])
 const page = ref(1)
@@ -121,10 +128,16 @@ const onPageSizeChange = () => {
 }
 
 const goToStockDetail = (item) => {
+  if (userRole !== 'ROLE_HEADQUARTER') {
+    // 상세 이동 막고 무반응
+    return
+  }
+
   if (!item?.stockId) {
     alert('stockId가 없습니다.')
     return
   }
+
   router.push({
     name: 'headquarter-stock-detail',
     params: { headquarterStockId: item.stockId }

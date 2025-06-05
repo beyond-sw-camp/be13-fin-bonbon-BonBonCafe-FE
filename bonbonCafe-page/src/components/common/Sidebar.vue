@@ -43,7 +43,7 @@ const opened = ref([])
 const authStore = useAuthStore()
 const userRole = computed(() => authStore.userInfo.role)
 
-const menuGroups = [
+const menuGroups = computed(() => [
   {
     title: '가맹점 관리',
     icon: 'mdi-coffee-outline',
@@ -61,35 +61,33 @@ const menuGroups = [
   {
     title: '메뉴 관리',
     icon: 'mdi-silverware-fork-knife',
-    items:
-      userRole.value === 'ROLE_HEADQUARTER'
-        ? [
-            // { title: '가맹점 메뉴 조회' },
-            { title: '전체 메뉴 조회' },
-            { title: '메뉴 등록' },
-          ]
-        : [
-            { title: '가맹점 메뉴 조회' },
-            { title: '전체 메뉴 조회' },
-          ],
+    items: [
+      ...(userRole.value === 'ROLE_HEADQUARTER' || userRole.value === 'ROLE_FRANCHISEE'
+        ? [{ title: '가맹점 메뉴 조회' }]
+        : []),
+      { title: '전체 메뉴 조회' },
+      ...(userRole.value === 'ROLE_HEADQUARTER'
+        ? [{ title: '메뉴 등록' }]
+        : []),
+    ],
   },
   {
-    title: '재고&발주 관리',
-    icon: 'mdi-warehouse',
-    items:
-      userRole.value === 'ROLE_FRANCHISEE'
-        ? [
-            { title: '재고 조회' },
-            { title: '재고 주문' },
-            { title: '재고 주문 내역' },
-          ]
-        : userRole.value === 'ROLE_HEADQUARTER'
-        ? [
-            { title: '본사 재고 조회' },
-            { title: '가맹점 발주 내역' },
-          ]
-        : [],
-  },
+  title: '재고&발주 관리',
+  icon: 'mdi-warehouse',
+  items:
+    userRole.value === 'ROLE_FRANCHISEE'
+      ? [
+          { title: '재고 조회' },
+          { title: '재고 주문' },
+          { title: '재고 주문 내역' },
+        ]
+      : (userRole.value === 'ROLE_HEADQUARTER' || userRole.value === 'ROLE_MANAGER')
+      ? [
+          { title: '본사 재고 조회' },
+          { title: '가맹점 발주 내역' },
+        ]
+      : [],
+},
   {
     title: '매출 관리',
     icon: 'mdi-chart-bar',
@@ -114,7 +112,7 @@ const menuGroups = [
       { title: '담당자 관리' },
     ],
   },
-]
+])
 
 const routeMap = {
   '가맹점주 관리': '/franchisee-accounts',
@@ -138,7 +136,7 @@ const routeMap = {
   'kakao map': '/kakao-map',
   '매출 분석': '/sales-analysis',
   '매출 순위': '/sales-ranking',
-  '공지사항': '/notice-list',
+  '공지사항 목록': '/notice-list',
   '이벤트': '/event-list',
 }
 

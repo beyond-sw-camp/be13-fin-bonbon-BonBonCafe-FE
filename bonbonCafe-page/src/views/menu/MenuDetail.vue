@@ -183,7 +183,8 @@ const formatDate = (date) => new Date(date).toLocaleDateString()
 .image-wrapper {
   position: relative;
   width: 100%;
-  padding-top: 100%;
+  height: 100%;
+  max-height: 100%;
   border-radius: 12px;
   background-color: #f5f5f5;
   overflow: hidden;
