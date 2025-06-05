@@ -1,35 +1,65 @@
 <template>
-    <v-footer  class="text-center d-flex flex-column ga-1 py-1" name="footer" app>
-        <div class="d-flex ga-3">
-        <v-btn
-            v-for="icon in icons"
-            :key="icon"
-            :icon="icon"
-            density="comfortable"
-            variant="text"
-        ></v-btn>
-        </div>
-        <div class="text-caption font-weight-regular opacity-60">
-        Phasellus feugiat arcu sapien, et iaculis ipsum elementum sit amet. Mauris cursus commodo interdum. Praesent ut risus eget metus luctus accumsan id ultrices nunc. Sed at orci sed massa consectetur dignissim a sit amet dui. Duis commodo vitae velit et faucibus. Morbi vehicula lacinia malesuada. Nulla placerat augue vel ipsum ultrices, cursus iaculis dui sollicitudin. Vestibulum eu ipsum vel diam elementum tempor vel ut orci. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-        </div>
+  <v-card flat class="headquarter-info pa-3">
+    <v-row no-gutters class="mb-2" align="center">
+      <v-col cols="4" class="info-label">
+        <v-icon size="18" class="mr-1">mdi-domain</v-icon>
+        이름
+      </v-col>
+      <v-col cols="8" class="info-value text-truncate">{{ info.name }}</v-col>
+    </v-row>
 
-        <v-divider></v-divider>
+    <v-row no-gutters class="mb-2" align="center">
+      <v-col cols="4" class="info-label">
+        <v-icon size="18" class="mr-1">mdi-phone</v-icon>
+        전화
+      </v-col>
+      <v-col cols="8" class="info-value text-truncate">{{ info.headquarterTel }}</v-col>
+    </v-row>
 
-        <div>
-        {{ new Date().getFullYear() }} — <strong>BonBonCafe</strong>
-        </div>
-    </v-footer>
+    <v-row no-gutters align="center">
+      <v-col cols="4" class="info-label">
+        <v-icon size="18" class="mr-1">mdi-map-marker</v-icon>
+        주소
+      </v-col>
+      <v-col cols="8" class="info-value text-truncate">
+        {{ info.roadAddress }} {{ info.detailAddress }}
+      </v-col>
+    </v-row>
+  </v-card>
 </template>
 
+
 <script setup>
-  const icons = [
-    'mdi-facebook',
-    'mdi-twitter',
-    'mdi-linkedin',
-    'mdi-instagram',
-  ]
+import { ref, onMounted, computed } from 'vue'
+import apiClient from '@/api'
+
+const info = ref({})
+
+onMounted(async () => {
+  const { data } = await apiClient.get('/headquarters')
+  info.value = data
+})
 </script>
 
 <style scoped>
+.headquarter-info {
+  font-size: 13px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgb(165, 165, 165);
+}
 
+.info-label {
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.info-value {
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 </style>
