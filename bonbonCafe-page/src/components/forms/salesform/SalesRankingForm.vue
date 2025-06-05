@@ -1,8 +1,7 @@
-<!-- src/components/forms/salesform/SalesRankingForm.vue -->
 <template>
   <div class="mt-4 pa-10 Tdiv">
     <!-- 필터영역 -->
-    <div class="" id="div0">
+    <div id="div0">
       <div id="div1">
         <!-- 시/도 -->
         <v-select
@@ -41,7 +40,7 @@
           hide-details
           class="selectBox select-year"
         />
-        <!-- 월(선택) -->
+        <!-- 월 -->
         <v-select
           v-model="selectedMonth"
           :items="monthItems"
@@ -54,13 +53,14 @@
           class="selectBox select-month"
         />
         <v-btn
-          rounded="xl" 
-          color="#D8DBBD"
+          rounded
+          color="primary"
           @click="onSearch"
           class="search-btn"
         >
           조회
         </v-btn>
+        
       </div>
     </div>
   </div>
@@ -68,16 +68,16 @@
 
 <script setup>
 import { ref, watch, onMounted } from 'vue'
-import { useRegionStore }  from '@/stores/regionStore'
-import { useRankingStore } from '@/stores/rankingStore'
+import { useRegionStore } from '@/stores/regionStore'
 
-const regionStore   = useRegionStore()
-const rankingStore  = useRankingStore()
+const emit = defineEmits(['searched'])
+const regionStore = useRegionStore()
 
 const selectedMajor   = ref(null)
 const selectedSubCode = ref(null)
 const year            = ref(null)
 const selectedMonth   = ref(null)
+
 
 // 연도 리스트 (현재 연도부터 과거 9년)
 const currentYear = new Date().getFullYear()
@@ -101,25 +101,22 @@ watch(selectedMajor, code => {
   if (code != null) regionStore.fetchSubs(code)
 })
 
-async function onSearch() {
+function onSearch() {
   if (!selectedMajor.value || !selectedSubCode.value || !year.value) {
     alert('시/도, 구/군, 연도는 필수 선택입니다.')
     return
   }
-  await rankingStore.fetchRanking({
+
+  // 부모 컴포넌트로 필터값만 emit
+  emit('searched', {
     regionCode: selectedSubCode.value,
     year:       year.value,
-    month:      selectedMonth.value,
-    page:       0,
-    size:       10
+    month:      selectedMonth.value
   })
 }
 </script>
 
 <style scoped>
-.Tdiv {
-  /* background-color: #F5F5F5; */
-}
 #div0 {
   display: flex;
   width: 100%;
@@ -131,18 +128,17 @@ async function onSearch() {
   margin-left: 170px;
   margin-bottom: 30px;
 }
-/* SelectBox 디자인 재현 */
+/* SelectBox 디자인  */
 .selectBox {
   background-color: white;
   height: 48px;
-
 }
-/* 너비는 필요에 따라 조절하세요 */
-.select-region  { width: 180px; }
-.select-district{ width: 180px; }
-.select-year    { width: 120px; }
-.select-month   { width: 120px; }
-/* 조회 버튼도 높이를 맞춰줍니다 */
+/* 너비 지정 */
+.select-region   { width: 180px; }
+.select-district { width: 180px; }
+.select-year     { width: 120px; }
+.select-month    { width: 120px; }
+/* 조회 버튼 높이 맞추기 */
 .search-btn {
   height: 48px;
   min-width: 80px;
