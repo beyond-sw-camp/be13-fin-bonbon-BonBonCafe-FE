@@ -13,12 +13,15 @@
 </template>
 
 <script setup>
+import { useSalesStore } from '@/stores/salesStore'
+
 import 'chartjs-adapter-date-fns'
 import { ref, onMounted, nextTick } from 'vue'
 import dayjs from 'dayjs'
 import apiClient from '@/api'
 import Chart from 'chart.js/auto'
 
+const salesStore = useSalesStore()
 const chartRef = ref(null)
 let chart = null
 
@@ -52,10 +55,32 @@ onMounted(async () => {
           backgroundColor: 'rgba(249,128,132,0.2)',
           fill: true,
           borderWidth: 1,
-          pointRadius: ctx => {
-            const ticks = ctx.chart.scales.x.ticks.map(t => t.value)
-            return ticks.includes(ctx.parsed.x) ? 2 : 0
+          pointRadius: (context) => {
+
+          const idx = context.dataIndex
+          if (typeof idx !== 'number') {
+ 
+            return 0
           }
+
+          const dateString = salesStore.labels[idx]
+          if (!dateString || typeof dateString !== 'string') {
+            return 0
+          }
+
+          const parts = dateString.split('-')
+          if (parts.length < 2) {
+            return 0
+          }
+
+          const dayOfMonth = parseInt(parts[parts.length - 1], 10)
+          if (isNaN(dayOfMonth)) {
+            return 0
+          }
+
+          return dayOfMonth < 10 ? 5 : 2
+        }
+
         },
         {
           label: '작년 매출 (원)',

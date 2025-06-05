@@ -1,53 +1,87 @@
-  <template>
-    <v-container fluid class="pa-6 sales-analysis-container">
-      <sales-filter @select="onFranchiseSelect" />
+<template>
+  <v-container fluid class="pa-6 sales-analysis-container">
+    <!-- 페이지 타이틀 -->
+    <v-row class="px-2 pt-10 pb-0 pl-2">
+      <v-col cols="14">
+        <v-row class="mb-7">
+          <v-icon color="primary" size="40">mdi-chart-bar</v-icon>
+          <div class="text-h5 font-weight-bold mt-2">
+            매출 관리 / 매출 분석
+          </div>
+        </v-row>
+        <v-divider class="my-6"></v-divider>
+      </v-col>
+    </v-row>
 
-      <!-- 필터 & 버튼 섹션 -->
-      <v-row class="mb-6" dense>
-        <v-col cols="12" sm="4">
+    <!-- 상단 필터 + 날짜 + 버튼 영역 -->
+    <v-row class="mb-6 mt-n2" dense align="center">
+      <v-col cols="12" md="6">
+        <SalesFilter @select="onFranchiseSelect" />
+      </v-col>
+
+      <!-- 시작 날짜 -->
+      <v-col cols="12" sm="3" md="2" class="px-0">
+        <div class="date-wrapper">
           <v-date-input
             v-model="startDate"
             label="시작 날짜"
             variant="outlined"
             format="YYYY-MM-DD"
             model-format="YYYY-MM-DD"
+            density="compact"
             locale="ko"
             clearable
             dense
+            class="first-date"
           />
-        </v-col>
-        <v-col cols="12" sm="4">
+        </div>
+      </v-col>
+
+      <!-- 종료 날짜 -->
+      <v-col cols="12" sm="3" md="2" class="px-0">
+        <div class="date-wrapper">
           <v-date-input
             v-model="endDate"
             label="종료 날짜"
             variant="outlined"
             format="YYYY-MM-DD"
             model-format="YYYY-MM-DD"
+            density="compact"
             locale="ko"
             clearable
             dense
+            class="second-date"
           />
-        </v-col>
-        <v-col cols="12" sm="4" class="d-flex justify-end align-center">
-          <v-btn color="primary" class="mr-4" @click="onSalesSearch">매출 조회</v-btn>
-          <v-btn color="secondary" @click="onForecastSearch">매출 예측</v-btn>
-        </v-col>
-      </v-row>
+        </div>
+      </v-col>
 
-      <!-- 차트 카드 섹션 -->
+      <!-- 매출 조회 버튼 -->
+      <v-col cols="12" sm="2" md="2" class="px-0">
+        <div class="button-wrapper">
+          <v-btn color="primary" @click="onSearchAndForecast" rounded>
+            매출 조회
+          </v-btn>
+        </div>
+      </v-col>
+    </v-row>
+
+    <!-- PDF 대상 -->
+    <div ref="pdfTarget">                  
       <v-row dense>
         <!-- 일별 매출 -->
         <v-col cols="12" md="6" class="d-flex flex-column">
-          <!-- 일별 매출 분석 -->
           <v-card class="pa-6 elevation-2 chart-card mb-6">
-            <v-card-title class="subtitle-1 font-weight-bold">일별 매출 분석</v-card-title>
+            <v-card-title class="subtitle-1 font-weight-bold">
+              일별 매출 분석
+            </v-card-title>
             <v-card-text>
               <canvas ref="salesChartRef" class="chart-canvas"></canvas>
             </v-card-text>
           </v-card>
-          <!-- 주간 매출 예측 -->
           <v-card class="pa-6 elevation-2 chart-card">
-            <v-card-title class="subtitle-1 font-weight-bold">주간 매출 예측</v-card-title>
+            <v-card-title class="subtitle-1 font-weight-bold">
+              주간 매출 예측
+            </v-card-title>
             <v-card-text>
               <canvas ref="forecastChartRef" class="chart-canvas"></canvas>
             </v-card-text>
@@ -57,7 +91,9 @@
         <!-- 메뉴 판매 비율 -->
         <v-col cols="12" md="6">
           <v-card class="pa-6 elevation-2 chart-card">
-            <v-card-title class="subtitle-1 font-weight-bold">메뉴 수량 판매 비율</v-card-title>
+            <v-card-title class="subtitle-1 font-weight-bold">
+              메뉴 수량 판매 비율
+            </v-card-title>
             <v-card-text>
               <menu-ranking-chart
                 :key="salesStore.menuRanking.length"
@@ -67,214 +103,253 @@
           </v-card>
         </v-col>
       </v-row>
-    </v-container>
-  </template>
+    </div>
+    <v-row class="mt-4" justify="end">
+        <v-col cols="auto">
+          <v-btn color="#D8DBBD" @click="downloadAsPdf" rounded>
+            PDF 다운로드
+          </v-btn>
+        </v-col>
+      </v-row>
+  </v-container>
+</template>
 
-  <script setup>
-  import { ref, watch, computed, nextTick, onMounted } from 'vue'
-  import Chart from 'chart.js/auto'
-  import dayjs from 'dayjs'
-  import SalesFilter      from '@/components/forms/salesform/SalesFilter.vue'
-  import MenuRankingChart from '@/components/forms/salesform/MenuRankingChart.vue'
-  import { useSalesStore } from '@/stores/salesStore'
+<script setup>
+import { ref, watch, nextTick, onMounted } from 'vue'
+import Chart from 'chart.js/auto'
+import dayjs from 'dayjs'
+import html2canvas from 'html2canvas'   
+import jsPDF from 'jspdf'              
+import SalesFilter from '@/components/forms/salesform/SalesFilter.vue'
+import MenuRankingChart from '@/components/forms/salesform/MenuRankingChart.vue'
+import { useSalesStore } from '@/stores/salesStore'
+import { useRegionStore } from '@/stores/regionStore'
+const regionStore = useRegionStore()
 
-  const salesStore       = useSalesStore()
-  const startDate        = ref('')
-  const endDate          = ref('')
-  const salesChartRef    = ref(null)
-  const forecastChartRef = ref(null)
+const salesStore = useSalesStore()
+const startDate = ref('')
+const endDate = ref('')
+const showPdfButton = ref(false)    
 
-  let salesChart    = null
-  let forecastChart = null
+const salesChartRef = ref(null)
+const forecastChartRef = ref(null)
+const pdfTarget = ref(null)          
 
-  onMounted(() => {
-    // 페이지 진입 시 이전 메뉴랭킹, 차트 데이터 모두 지우기
-    salesStore.menuRanking   = []
-    salesStore.labels        = []
-    salesStore.values        = []
-    salesStore.forecastLabels = []
-    salesStore.forecastYhat   = []
-    salesStore.forecastLower  = []
-    salesStore.forecastUpper  = []
+let salesChart = null
+let forecastChart = null
+
+onMounted(() => {
+  salesStore.menuRanking = []
+  salesStore.labels = []
+  salesStore.values = []
+  salesStore.forecastLabels = []
+  salesStore.forecastYhat = []
+  salesStore.forecastLower = []
+  salesStore.forecastUpper = []
+})
+
+// “가맹점 선택” 시 => store ID를 받아서 Pinia에 저장
+function onFranchiseSelect(id) {
+  salesStore.filters.store = id
+  const franchise = regionStore.franchises.find(f => f.id === id)
+  salesStore.filters.storeName = franchise?.name || '가맹점'
+}
+
+// “조회 & 예측” 버튼 핸들러
+async function onSearchAndForecast() {
+  if (!salesStore.filters.store) return alert('가맹점을 먼저 선택해주세요.')
+  if (!startDate.value || !endDate.value) return alert('시작/종료 날짜를 모두 선택해주세요.')
+  if (dayjs(startDate.value).isAfter(endDate.value)) return alert('시작일이 종료일보다 클 수 없습니다.')
+  if (dayjs(startDate.value).isAfter(Date.now()) || dayjs(endDate.value).isAfter(Date.now()))
+    return alert('조회 날짜가 현재 날짜보다 클 수 없습니다.')
+  const diffMonths = dayjs(endDate.value).diff(dayjs(startDate.value), 'month', true)
+  if (diffMonths > 2) return alert('조회 기간은 최대 두 달까지만 가능합니다.')
+
+  // 필터에 날짜 정보 저장 및 메뉴랭킹·기간별 매출 조회
+  salesStore.filters.startDate = dayjs(startDate.value).format('YYYY-MM-DD')
+  salesStore.filters.endDate = dayjs(endDate.value).format('YYYY-MM-DD')
+
+  salesStore.menuRanking = []
+  salesStore.labels = []
+  salesStore.values = []
+  salesStore.forecastLabels = []
+  salesStore.forecastYhat = []
+  salesStore.forecastLower = []
+  salesStore.forecastUpper = []
+
+  await salesStore.fetchMenuRanking()
+  await salesStore.fetchSales()
+
+  // PDF 버튼 보이도록 설정
+  showPdfButton.value = true      
+
+  // 예측 조회
+  await salesStore.fetchWeeklyForecast({
+    expectationStartDate: dayjs(endDate.value).format('YYYY-MM-DD'),
+    periods: 7
   })
-
-  // 1) 가맹점 선택
-  function onFranchiseSelect(id) {
-    salesStore.filters.store = id
-  }
-
-  // 2) 매출 + 메뉴 랭킹 조회
-  async function onSalesSearch() {
-    if (!salesStore.filters.store)
-      return alert('가맹점을 먼저 선택해주세요.')
-    if (!startDate.value || !endDate.value)
-      return alert('시작/종료 날짜를 모두 선택해주세요.')
-    if (dayjs(startDate.value).isAfter(endDate.value))
-      return alert('시작일이 종료일보다 클 수 없습니다.')
-    if (dayjs(startDate.value).isAfter(Date.now()) || dayjs(endDate.value).isAfter(Date.now()))
-      return alert('조회 날짜가 현재 날짜보다  클 수 없습니다.')
-
-    // 두 달 초과 시 즉시 alert
-    const diffMonths = dayjs(endDate.value).diff(dayjs(startDate.value), 'month', true)
-    if (diffMonths > 2)
-      return alert('조회 기간은 최대 두 달까지만 가능합니다.')
-
-    salesStore.filters.startDate = dayjs(startDate.value).format('YYYY-MM-DD')
-    salesStore.filters.endDate   = dayjs(endDate.value).format('YYYY-MM-DD')
-
-    salesStore.menuRanking   = []
-    salesStore.labels        = []
-    salesStore.values        = []
-    salesStore.forecastLabels = []
-    salesStore.forecastYhat   = []
-    salesStore.forecastLower  = []
-    salesStore.forecastUpper  = []
+}
 
 
-    await salesStore.fetchMenuRanking()
-    await salesStore.fetchSales()
-  }
-
-  // 3) 주간 예측 조회
-  async function onForecastSearch() {
-    if (!salesStore.filters.store)
-      return alert('가맹점을 먼저 선택해주세요.')
-    if (!endDate.value)
-      return alert('예측 기준 날짜(종료일)를 선택해주세요.')
-
-    const formattedEnd = dayjs(endDate.value).format('YYYY-MM-DD')
-    await salesStore.fetchWeeklyForecast({
-      expectationStartDate: formattedEnd,
-      periods: 7
-    })
-  }
-
-  // 4) 차트 초기화
-  function initSalesChart() {
-    if (!salesChartRef.value) return
-    if (salesChart) salesChart.destroy()
-    const ctx = salesChartRef.value.getContext('2d')
-    salesChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: salesStore.labels,
-        datasets: [{
+// 차트 초기화 함수들 
+function initSalesChart() {
+  if (!salesChartRef.value) return
+  if (salesChart) salesChart.destroy()
+  const ctx = salesChartRef.value.getContext('2d')
+  salesChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: salesStore.labels,
+      datasets: [
+        {
           label: '매출 (원)',
           data: salesStore.values,
-          backgroundColor: '#7465DA'
-        }]
-      },
-      options: { responsive: true, scales: { y: { beginAtZero: true } } }
-    })
-  }
+          borderColor: '#7465DA',
+          backgroundColor: 'rgba(0,170,255,0.2)'
+        }
+      ]
+    },
+    options: { responsive: true, scales: { y: { beginAtZero: true } } }
+  })
+}
 
-  function initForecastChart() {
-    if (!forecastChartRef.value) return
-    if (forecastChart) forecastChart.destroy()
-
-    const ctx = forecastChartRef.value.getContext('2d')
-    forecastChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: salesStore.forecastLabels,
-        datasets: [
-          {
-            label: '예측 매출',
-            data: salesStore.forecastYhat,
-            borderColor: '#FF7F11',
-            backgroundColor: 'rgba(255,127,17,0.2)',
-            fill: 'origin',
-            tension: 0.2
-          },
-          {
-            label: '하한',
-            data: salesStore.forecastLower,
-            borderColor: '#FFC857',
-            borderDash: [5,5],
-            fill: false
-          },
-          {
-            label: '상한',
-            data: salesStore.forecastUpper,
-            borderColor: '#FFC857',
-            borderDash: [5,5],
-            fill: false
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          x: {
-            ticks: {
-              autoSkip: false,
-              maxRotation: 45,
-              minRotation: 45,
-            }
-          },
-          y: {
-            beginAtZero: true
+function initForecastChart() {
+  if (!forecastChartRef.value) return
+  if (forecastChart) forecastChart.destroy()
+  const ctx = forecastChartRef.value.getContext('2d')
+  forecastChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: salesStore.forecastLabels,
+      datasets: [
+        {
+          label: '예측 매출',
+          data: salesStore.forecastYhat,
+          borderColor: '#FF7F11',
+          backgroundColor: 'rgba(255,127,17,0.2)',
+          fill: 'origin',
+          tension: 0.2
+        },
+        {
+          label: '하한',
+          data: salesStore.forecastLower,
+          borderColor: '#FFC857',
+          borderDash: [5, 5],
+          fill: false
+        },
+        {
+          label: '상한',
+          data: salesStore.forecastUpper,
+          borderColor: '#FFC857',
+          borderDash: [5, 5],
+          fill: false
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: {
+          ticks: {
+            autoSkip: false,
+            maxRotation: 45,
+            minRotation: 45
           }
         },
-        plugins: {
-          legend: { display: true }
+        y: {
+          beginAtZero: true
         }
+      },
+      plugins: {
+        legend: { display: true }
       }
-    })
-  }
+    }
+  })
+}
 
+// ───────────────────────────────────────────────────────
+// Watchers: 데이터가 로드되면 자동으로 차트 그리기
+watch(
+  () => salesStore.labels,
+  async (labels) => {
+    if (labels.length) {
+      await nextTick()
+      initSalesChart()
+    }
+  },
+  { deep: true }
+)
 
+watch(
+  () => salesStore.forecastLabels,
+  async (labels) => {
+    if (labels.length) {
+      await nextTick()
+      initForecastChart()
+    }
+  },
+  { deep: true }
+)
 
-  watch(
-    () => salesStore.labels,
-    async () => {
-      if (salesStore.labels.length) {
-        await nextTick()
-        initSalesChart()
-      }
-    },
-    { deep: true }
-  )
+async function downloadAsPdf() {
+  if (!pdfTarget.value) return
+  const canvas = await html2canvas(pdfTarget.value, { scale: 2, useCORS: true })
+  const imgData = canvas.toDataURL('image/png')
+  const pdf = new jsPDF('p', 'mm', 'a4')
+  const imgWidth = 190
+  const imgHeight = (canvas.height * imgWidth) / canvas.width
+  pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight)
 
-  watch(
-    () => salesStore.forecastLabels,
-    async (labels) => {
-      if (labels.length) {
-        // 뷰 업데이트가 끝나길 기다린 뒤 차트 초기화
-        await nextTick()
-        initForecastChart()
-      }
-    },
-    { deep: true }
-  )
+  // 파일명 조립
+  const format = date => dayjs(date).format('YYMMDD')
+  const from = format(startDate.value)
+  const to = format(endDate.value)
+  const name = (salesStore.filters.storeName || '가맹점').replace(/[^가-힣a-zA-Z0-9]/g, '')
+  pdf.save(`${from}-${to}${name}.pdf`)
+}
+// ───────────────────────────────────────────────────────
+</script>
 
-  // 뷰 조건
-  const hasMenuData     = computed(() => salesStore.menuRanking.length > 0)
-  const hasSalesData    = computed(() => salesStore.values.length > 0)
-  const hasForecastData = computed(() => salesStore.forecastLabels.length > 0)
-  </script>
+<style scoped>
+.sales-analysis-container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
 
+/* 차트 카드 공통 */
+.chart-card {
+  background-color: #F9F9F9;
+  border-radius: 40px;
+}
+.chart-canvas {
+  width: 100% !important;
+  height: 365px !important;
+}
 
-  <style scoped>
-  .sales-analysis-container {
-    max-width: 1280px;
-    margin: 0 auto;
-  }
+/* date-input, select-box 여백이나 너비 조절 */
+.v-date-input {
+  width: 100%;
+}
 
-  .chart-card {
-    background-color: #F9F9F9;
-    border-radius: 40px;
+.mt-n2 {
+  margin-top: -20px !important;
+}
 
-  }
+.date-wrapper {
+  min-height: 100px;
+  position: relative;
+}
 
-  .chart-canvas {
-    width: 100% !important;
-    height: 365px !important;
-  }
+.button-wrapper {
+  min-height: 90px;
+  margin-left: 80px;
+}
 
-  /* date-input, select-box 여백이나 너비 조절하고 싶으면 아래를 조정하세요 */
-  .v-date-input {
-    width: 100%;
-  }
-
-  </style>
+/* 날짜 간격 조정 */
+.first-date {
+  margin-right: 16px;
+}
+.second-date {
+  margin-right: 8px;
+}
+</style>
