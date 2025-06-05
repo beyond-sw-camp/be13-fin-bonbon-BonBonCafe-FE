@@ -169,7 +169,7 @@ const isActive = (title) => {
 
 <style scoped>
 .v-navigation-drawer {
-  /* max-width: 250px; */
+  max-width: 250px;
 }
 
 .custom-drawer {
