@@ -40,7 +40,7 @@
               <div class="info-label">상태</div>
               <div class="info-value">
                 <template v-if="editMode">
-                  <template v-if="userRole === 'ROLE_HEADQUARTER'">
+                  <template v-if="['ROLE_HEADQUARTER', 'ROLE_MANAGER'].includes(userRole)">
                     <v-select v-model="editForm.status" :items="statusOptions" item-title="label" item-value="value" dense hide-details style="max-width: 200px" />
                   </template>
                   <template v-else>
