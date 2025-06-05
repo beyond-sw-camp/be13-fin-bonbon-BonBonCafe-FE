@@ -68,7 +68,6 @@
     <!-- PDF 대상 -->
     <div ref="pdfTarget">                  
       <v-row dense>
-        <!-- 일별 매출 -->
         <v-col cols="12" md="6" class="d-flex flex-column">
           <v-card class="pa-6 elevation-2 chart-card mb-6">
             <v-card-title class="subtitle-1 font-weight-bold">
@@ -88,17 +87,13 @@
           </v-card>
         </v-col>
 
-        <!-- 메뉴 판매 비율 -->
         <v-col cols="12" md="6">
           <v-card class="pa-6 elevation-2 chart-card">
             <v-card-title class="subtitle-1 font-weight-bold">
               메뉴 수량 판매 비율
             </v-card-title>
             <v-card-text>
-              <menu-ranking-chart
-                :key="salesStore.menuRanking.length"
-                :ranking="salesStore.menuRanking"
-              />
+              <menu-ranking-chart :key="salesStore.menuRanking.length" :ranking="salesStore.menuRanking" />
             </v-card-text>
           </v-card>
         </v-col>
@@ -137,7 +132,18 @@ const pdfTarget = ref(null)
 
 let salesChart = null
 let forecastChart = null
+let salesChart = null
+let forecastChart = null
 
+onMounted(() => {
+  salesStore.menuRanking = []
+  salesStore.labels = []
+  salesStore.values = []
+  salesStore.forecastLabels = []
+  salesStore.forecastYhat = []
+  salesStore.forecastLower = []
+  salesStore.forecastUpper = []
+})
 onMounted(() => {
   salesStore.menuRanking = []
   salesStore.labels = []
@@ -169,6 +175,13 @@ async function onSearchAndForecast() {
   salesStore.filters.startDate = dayjs(startDate.value).format('YYYY-MM-DD')
   salesStore.filters.endDate = dayjs(endDate.value).format('YYYY-MM-DD')
 
+  salesStore.menuRanking = []
+  salesStore.labels = []
+  salesStore.values = []
+  salesStore.forecastLabels = []
+  salesStore.forecastYhat = []
+  salesStore.forecastLower = []
+  salesStore.forecastUpper = []
   salesStore.menuRanking = []
   salesStore.labels = []
   salesStore.values = []
@@ -310,6 +323,11 @@ async function downloadAsPdf() {
 // ───────────────────────────────────────────────────────
 </script>
 
+<style scoped>
+.sales-analysis-container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
 <style scoped>
 .sales-analysis-container {
   max-width: 1280px;
