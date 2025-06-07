@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-4 pa-10 Tdiv">
+  <div class="mt-4 pa-0 Tdiv">
     <!-- 필터영역 -->
     <div id="div0">
       <div id="div1">
@@ -117,6 +117,12 @@ function onSearch() {
 </script>
 
 <style scoped>
+
+.sales-analysis-container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
 #div0 {
   display: flex;
   width: 100%;

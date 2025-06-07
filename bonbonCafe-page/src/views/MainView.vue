@@ -15,11 +15,11 @@
         </v-row>
         <v-row class="mainC ma-4">
             <!-- 지난 매출 추이 -->
-            <v-col cols="7">
+            <v-col cols="6">
                 <HeadQuarterSalesChart/>
             </v-col>
             <!-- 전국 가맹점 예상 매출 -->
-            <v-col cols="5">
+            <v-col cols="6">
                 <HeadQuarterForecastChart/>
             </v-col>
          

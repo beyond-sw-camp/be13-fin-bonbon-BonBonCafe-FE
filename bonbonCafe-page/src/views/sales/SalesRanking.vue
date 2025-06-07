@@ -1,6 +1,21 @@
 <template>
-  <v-card class="ranking-card">
 
+  <div class = "title-wrapper">
+    <v-row class="px-2 pt-10 pb-0 pl-2">
+      <v-col cols="14">
+        <v-row class="mb-7">
+          <v-icon color="primary" size="40">mdi-chart-bar</v-icon>
+          <div class="text-h5 font-weight-bold mt-2">
+            매출 관리 / 매출 순위
+          </div>
+        </v-row>
+        <v-divider class="title-divider"></v-divider>
+      </v-col>
+    </v-row>
+  </div>
+
+
+  <v-card class="ranking-card">
     <SalesRankingForm @searched="handleSearch" />
 
     <div class="table-wrapper">
@@ -138,6 +153,18 @@ watch(pageSize, (newSize, oldSize) => {
 </script>
 
 <style scoped>
+
+.title-wrapper {
+  max-width: 80%;
+
+  /* 가로 가운데 정렬 */
+  margin: 0 auto;
+
+  /* 위/아래 여백도 필요하다면 조정 */
+  padding-top: 40px;  /* 위쪽 여백 예시 */
+  padding-bottom: 16px; /* 구분선 아래 여백 예시 */
+}
+
 .ranking-card {
   margin: 40px auto;
   padding: 40px;

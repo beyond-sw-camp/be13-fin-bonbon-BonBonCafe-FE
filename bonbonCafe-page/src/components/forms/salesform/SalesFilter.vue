@@ -126,13 +126,13 @@ watch(
 // “구/군” 선택 시: Pinia에 저장 + 가맹점 초기화 + fetchFranchises 호출
 watch(
   selectedSub,
-  (newSubVal) => {
+  async (newSubVal) => {
     regionStore.selectedSub = newSubVal
     selectedFranchise.value = null
     regionStore.franchises = []
 
     if (newSubVal !== null) {
-      regionStore.fetchFranchises(newSubVal)
+      await regionStore.fetchFranchises(newSubVal)
     }
   }
 )
