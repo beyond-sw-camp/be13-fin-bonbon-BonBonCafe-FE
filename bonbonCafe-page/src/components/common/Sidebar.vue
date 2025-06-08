@@ -127,8 +127,8 @@ const menuGroups = computed(() => [
 ])
 
 const routeMap = {
-  '가맹점주 관리': '/franchisee-accounts',
-  '담당자 관리': '/manager-accounts',
+  '가맹점주 관리': {name : 'franchisee-accounts-list' },
+  '담당자 관리': {name :'manager-accounts-list'},
   '가맹점 메뉴 조회': computed(() =>
     userRole.value === 'ROLE_HEADQUARTER'
       ? { name: 'franchise-menu-franchise-list' }

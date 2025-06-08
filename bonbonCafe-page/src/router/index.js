@@ -1,6 +1,7 @@
 
 // Vue Router 설정 코드 - 페이지 간 이동 처리 라이브러리
 
+import ManagerJoinForm from '@/components/forms/userform/ManagerJoinForm.vue';
 import { useAuthStore } from '@/stores/auth'
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -11,7 +12,16 @@ const NotFound = () => import('@/views/common/NotFound.vue');
 const MainView = () => import('@/views/MainView.vue')
 
 const FranchiseeAccount = () => import('@/views/accounts/FranchiseeAccount.vue')
-const ManagerAccounts = () => import('@/views/accounts/ManagerAccount.vue')
+const FranchiseeAccountListView = () => import('@/views/accounts/FranchiseeAccountListView.vue')
+const ManagerAccount = () => import('@/views/accounts/ManagerAccount.vue')
+const ManagerAccountListView = () => import('@/views/accounts/ManagerAccountListView.vue')
+const FranchiseeAccountEditView = () => import('@/views/accounts/FranchiseeAccountEditView.vue')
+// const FranchiseeRegisterView = () => import('@/views/accounts/FranchiseeRegisterView.vue')
+const ManagerAccountEditView = () => import('@/views/accounts/ManagerAccountEditView.vue')
+// const ManagerRegistView = () => import('@/views/accounts/ManagerRegistView.vue')
+
+const FranchiseeJoin = () => import('@/views/auth/FranchiseeJoin.vue')
+const ManagerJoin = () => import('@/views/auth/ManagerJoin.vue')
 
 const FranchiseListForMenu = () => import('@/views/franchise/FranchiseListForMenu.vue')
 const FranchiseMenuList = () => import('@/views/menu/FranchiseMenuList.vue')
@@ -44,7 +54,6 @@ const MapView = () => import('@/views/franchise/MapView.vue')
 
 const SalesAnalysis = () => import('@/views/sales/SalesAnalysis.vue')
 const SalesRanking = () => import('@/views/sales/SalesRanking.vue')
-
 
 const NoticeList = () => import('@/views/board/NoticeList.vue')
 const NoticeRegister = () => import('@/views/board/NoticeRegister.vue')
@@ -84,14 +93,34 @@ const router = createRouter({
           component: MainView,
         },
         {
-          path:'franchisee-accounts',
+          path:'franchisee-accounts/:userId',
           name: 'franchisee-accounts',
           component: FranchiseeAccount,
         },
         {
-          path:'manager-accounts',
+          path:'franchisee-accounts',
+          name: 'franchisee-accounts-list',
+          component: FranchiseeAccountListView,
+        },
+        {
+          path:'franchisee-accounts/:userId/edit',
+          name:'franchisee-accounts-edit',
+          component: FranchiseeAccountEditView
+        },
+        {
+          path:'manager-accounts/:userId',
           name: 'manager-accounts',
-          component: ManagerAccounts,
+          component: ManagerAccount,
+        },
+        {
+          path:'manager-accounts',
+          name: 'manager-accounts-list',
+          component: ManagerAccountListView,
+        },
+        {
+          path: 'manager-accounts/:userId/edit',
+          name: 'manager-account-edit',
+          component: ManagerAccountEditView
         },
         {
           path: 'franchise-menu-list',
@@ -280,6 +309,16 @@ const router = createRouter({
           path: 'login',
           name: 'login',
           component: Login
+        },
+        {
+          path: 'franchisee-join',
+          name: 'franchisee-join',
+          component: FranchiseeJoin,
+        },
+        {
+          path: 'manager-join',
+          name: 'manager-join',
+          component: ManagerJoin,
         }
       ]
     },
@@ -307,7 +346,7 @@ router.beforeEach((to, from, next) => {
 
   // 로그인 페이지가 아니고, 로그인 상태가 아니면 로그인 페이지로 리다이렉트한다.
   // 로그인하지 않은 상태에서 로그인 페이지가 아닌 다른 페이지로 가는 경우, 로그인페이지로 리다이렉트 되도록
-  if(to.name !== 'login' && to.name !== 'main' && to.name !== 'join' && !authStore.isLoggedIn) {
+  if(to.name !== 'login' && to.name !== 'franchisee-join' && to.name !== 'manager-join' && !authStore.isLoggedIn) {
     next({name: 'login'});
   } else {
     next();

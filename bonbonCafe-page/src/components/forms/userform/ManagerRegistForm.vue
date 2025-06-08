@@ -451,11 +451,8 @@ const fetchDialogFranchiseList = async (page, size, search = '') => {
   try {
     const accessToken = localStorage.getItem('accessToken');
 
-    // 가맹점주가 지정되지 않은 가맹점 목록 출력
+    // 지역 목록 조회 
     const res = await apiClient.get(`/bonbon/user/region`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      },
       params: {
         page: page - 1,
         size,
