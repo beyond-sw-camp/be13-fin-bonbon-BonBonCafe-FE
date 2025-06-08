@@ -59,6 +59,7 @@
             <v-divider></v-divider>
 
             <v-col cols="12" class="d-flex justify-end mt-4">
+              <v-btn color="secondary" @click="goToList">목록으로</v-btn>
               <v-btn color="primary" @click="goToEdit">수정하기</v-btn>
             </v-col>
 
@@ -133,6 +134,11 @@ const route = useRoute();
 const router = useRouter();
 const userId = route.params.userId;
 const managerInfo = ref({});
+
+const goToList = () => {
+  router.push({name : 'manager-accounts-list'}); // 원하는 목록 페이지 경로로 변경
+};
+
 
 const goToEdit = () => {
   router.push(`/manager-accounts/${userId}/edit`);

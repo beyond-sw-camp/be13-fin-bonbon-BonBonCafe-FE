@@ -16,9 +16,9 @@ const FranchiseeAccountListView = () => import('@/views/accounts/FranchiseeAccou
 const ManagerAccount = () => import('@/views/accounts/ManagerAccount.vue')
 const ManagerAccountListView = () => import('@/views/accounts/ManagerAccountListView.vue')
 const FranchiseeAccountEditView = () => import('@/views/accounts/FranchiseeAccountEditView.vue')
-const FranchiseeRegisterView = () => import('@/views/accounts/FranchiseeRegisterView.vue')
+// const FranchiseeRegisterView = () => import('@/views/accounts/FranchiseeRegisterView.vue')
 const ManagerAccountEditView = () => import('@/views/accounts/ManagerAccountEditView.vue')
-const ManagerRegistView = () => import('@/views/accounts/ManagerRegistView.vue')
+// const ManagerRegistView = () => import('@/views/accounts/ManagerRegistView.vue')
 
 const FranchiseeJoin = () => import('@/views/auth/FranchiseeJoin.vue')
 const ManagerJoin = () => import('@/views/auth/ManagerJoin.vue')
@@ -54,7 +54,6 @@ const MapView = () => import('@/views/franchise/MapView.vue')
 
 const SalesAnalysis = () => import('@/views/sales/SalesAnalysis.vue')
 const SalesRanking = () => import('@/views/sales/SalesRanking.vue')
-
 
 const NoticeList = () => import('@/views/board/NoticeList.vue')
 const NoticeRegister = () => import('@/views/board/NoticeRegister.vue')
@@ -94,14 +93,34 @@ const router = createRouter({
           component: MainView,
         },
         {
-          path:'franchisee-accounts',
+          path:'franchisee-accounts/:userId',
           name: 'franchisee-accounts',
           component: FranchiseeAccount,
         },
         {
-          path:'manager-accounts',
+          path:'franchisee-accounts',
+          name: 'franchisee-accounts-list',
+          component: FranchiseeAccountListView,
+        },
+        {
+          path:'franchisee-accounts/:userId/edit',
+          name:'franchisee-accounts-edit',
+          component: FranchiseeAccountEditView
+        },
+        {
+          path:'manager-accounts/:userId',
           name: 'manager-accounts',
-          component: ManagerAccounts,
+          component: ManagerAccount,
+        },
+        {
+          path:'manager-accounts',
+          name: 'manager-accounts-list',
+          component: ManagerAccountListView,
+        },
+        {
+          path: 'manager-accounts/:userId/edit',
+          name: 'manager-account-edit',
+          component: ManagerAccountEditView
         },
         {
           path: 'franchise-menu-list',
