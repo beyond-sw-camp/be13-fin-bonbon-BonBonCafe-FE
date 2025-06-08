@@ -1,12 +1,13 @@
 <template>
-    <v-card class=" Tdiv ">
+    <v-card class=" franchise-card ">
         <div class="mb-16" id="div0">
             <div id="div1">
+                
                 <SelectBox
-                class="select-region"
-                v-model="selectedRegion"
-                :placeholder="'지역 선택'"
-                :items="regionList"
+                    class="select-region"
+                    v-model="selectedRegion"
+                    :placeholder="'지역 선택'"
+                    :items="regionList"
                 />
                 <SelectBox
                     class="select-district"
@@ -15,16 +16,22 @@
                     :items="districtList"
                 />
                 <v-text-field
+                    v-model="searchKeyword"
                     class="search-input"
                     density="comfortable"
                     variant="outlined"
                     flat="false"
                     placeholder="Search here"
-                    prepend-inner-icon="mdi-magnify"
-                    width="300px"
+                    append-inner-icon="mdi-magnify"
+                    @keydown.enter="onSearch"
+                    @click:append-inner="onSearch"
                 />
+                <v-btn variant="tonal" color="grey" @click="resetFilters">
+                    <v-icon start>mdi-close</v-icon>
+                    초기화
+                </v-btn>
                 <v-btn
-                    variant="outlined"
+                    variant="tonal" color="grey"
                     @click="goToRegister"
                 >
                     <v-icon start>mdi-plus</v-icon>
@@ -39,33 +46,27 @@
                 :headers="header"
                 :items="item"
                 class="rounded-b rounded-t"
-                :page="currentPage"
                 :items-length="totalItems"
                 :items-per-page="pageSize"
                 @update:page="onPageChange"
                 @update:items-per-page="onPageSizeChange"
                 hide-default-footer
             >
-                <!-- <template #item.status="{ item }">
-                    <v-chip variant="tonal" :color="getStatusColor(item.status)">
-                        {{ getStatusText(item.status) }}
-                    </v-chip>
-                </template> -->
-
                 <template #item="{ item, columns }">
                     <tr @click="goToDetail(item)" style="cursor: pointer">
                         <td v-for="column in columns" :key="column.key">
-                            <!-- 이미지 컬럼 처리 -->
+                            <!-- 이미지 컬럼 렌더링 -->
                             <v-avatar
-                                v-if="column.key === 'franchiseeImage'"
-                                size="64"
+                                v-if="column.key === 'franchiseImage'"
+                                size="30"
                                 class="my-2"
                             >
                                 <v-img
-                                :src="item.franchiseeImage || defaultImage"
-                                cover
+                                    :src="isValidImageUrl(item.franchiseImage) ? item.franchiseImage : defaultImage"
+                                    cover
                                 />
                             </v-avatar>
+
                             <!-- 상태 칩인 경우만 따로 처리 -->
                             <v-chip
                             v-if="column.key === 'status'"
@@ -75,19 +76,29 @@
                             {{ getStatusText(item.status) }}
                             </v-chip>
 
-                            <!-- 그 외는 일반 텍스트로 렌더링 -->
-                            <span v-else>
-                            {{ item[column.key] }}
+                             <!-- 일반 텍스트는 항상 출력 -->
+                            <span v-if="column.key !== 'franchiseImage' && column.key !== 'status'">
+                                {{ item[column.key] }}
                             </span>
                         </td>
                     </tr>
                 </template>
             </v-data-table>
             <v-pagination
-            v-model="currentPage"
-            :length="totalPages"
-            @update:modelValue="onPageChange"
-            class="mt-4"
+                v-model="currentPage"
+                :length="totalPages"
+                :total-visible="10"
+                @update:model-value="onPageChange"
+                class="mt-4  custom-pagination"
+            />
+            <v-select
+                v-model="pageSize"
+                :items="[5, 10, 20]"
+                density="compact"
+                variant="outlined"
+                hide-details
+                @update:model-value="onPageSizeChange"
+                class="custom-rows-per-page"
             />
         </div>
 
@@ -100,7 +111,7 @@
 <script setup>
 
     import apiClient from '@/api';
-    import { ref, onMounted, computed } from 'vue'
+    import { ref, onMounted, watch } from 'vue'
     // import Table from '@/components/franchise/Table.vue'
     import SelectBox from '@/components/franchise/Select.vue'
     import { useRouter } from 'vue-router'
@@ -110,36 +121,76 @@
     const item = ref([]);
     const currentPage = ref(1);
     const pageSize = ref(10);
-    const totalCount = ref(0);
-    const totalPages = computed(() => {
-        return Math.ceil(totalCount.value / pageSize.value);
-    });
+    const totalItems = ref(0);
+    const totalPages = ref(0);
+    const defaultImage = 'https://bonbon-file-bucket.s3.ap-northeast-2.amazonaws.com/profile-default.jpg'
 
+    const isValidImageUrl = (url) => {
+        return typeof url === 'string' && url.startsWith('http');
+    }
+
+    // 임시 더미 데이터
+    const regionList = ref([
+        { title: '서울특별시', value: '서울특별시' },
+        { title: '부산광역시', value: '부산광역시' },
+        { title: '대구광역시', value: '대구광역시' },
+    ])
+
+    const districtList = ref([
+        { title: '강동구', value: '강동구' },
+        { title: '광진구', value: '광진구' },
+        { title: '송파구', value: '송파구' },
+        { title: '종로구', value: '종로구' },
+        { title: '관악구', value: '관악구' },
+    ])
 
 
     // 선택된 지역/구
     const selectedRegion = ref(null);
     const selectedDistrict = ref(null);
 
+    const searchKeyword = ref('');
+
     const header = [
-        { title: '', align: 'start', key: 'franchiseeImage', class: 'header'},
+        { title: '', align: 'start', key: 'franchiseImage', class: 'header'},
         { title: '가맹점 이름', align: 'start', key: 'name', class: 'header' },
         { title: '가맹점 주소', align: 'start', key: 'roadAddress', class: 'header' },
         { title: '점주 이름', align: 'start', key: 'franchiseeName', class: 'header' },
         { title: '가맹점 연락처', align: 'start', key: 'franchiseTel', class: 'header' },
         { title: '상태', align: 'center', key: 'status', class: 'header' },
-        { title: '등록일', align: 'center', key: 'openDate', class: 'header' }
+        { title: '개점 일자', align: 'center', key: 'openDate', class: 'header' }
     ]
-
 
     const fetchFranchise = async (page, size) => {
         try {
-        const response = await apiClient.get(`/franchise?page=${page - 1}&size=${size}`);
-            item.value = response.data.franchises;
-            totalCount.value = response.data.totalElements;
+            const params = new URLSearchParams();
+            params.append('page', page - 1); // 서버는 0부터 시작
+            params.append('size', size);
+            if (selectedRegion.value) params.append('region', selectedRegion.value.value);
+            if (selectedDistrict.value) params.append('district', selectedDistrict.value.value);
+            if (searchKeyword.value) params.append('name', searchKeyword.value);
+
+            const response = await apiClient.get(`/franchise?${params.toString()}`);
+
+            item.value = response.data.content;
+            totalItems.value = response.data.totalElements;
+            totalPages.value = response.data.totalPages;
         } catch (error) {
-            console.error("Error fetching boards:", error);
-        } 
+            console.error("Error fetching franchise list:", error);
+        }
+    };
+
+    const onSearch = () => {
+        currentPage.value = 1;
+        fetchFranchise(1, pageSize.value);
+    };
+
+    const resetFilters = () => {
+        selectedRegion.value = null;
+        selectedDistrict.value = null;
+        searchKeyword.value = '';
+        currentPage.value = 1;
+        fetchFranchise(1, pageSize.value);
     };
 
 
@@ -193,9 +244,13 @@
 
 
     
-    // 컴포넌트가 mount 될 때 실행
     onMounted(() => {
         fetchFranchise(currentPage.value, pageSize.value); 
+    });
+
+    watch([selectedRegion, selectedDistrict], () => {
+        currentPage.value = 1;
+        fetchFranchise(1, pageSize.value);
     });
 
 
@@ -204,11 +259,15 @@
 </script>
 
 <style scoped>
-    .Tdiv{
-        background-color: #ffffff;
-        margin: 16px 64px 64px;
-        padding: 70px;
-
+    .v-data-table {
+        min-height: 400px; /* 원하는 높이로 조절 */
+    }
+    .franchise-card {
+        margin: 40px auto;
+        padding: 40px;
+        max-width: 1300px;
+        background-color: #fff;
+        border-radius: 16px;
     }
     #div0 {
         display: flex;
@@ -232,15 +291,30 @@
     .search-input {
         /* margin-left: 750px; */
         height: 48px; 
+        width: 300px;
         background-color: white;
-    }
-    .v-data-table-server tbody tr:hover {
-    background-color: #f0f8ff; /* 연한 파란색 예시 */
-    cursor: pointer; /* 마우스 커서 포인터로 변경 */
     }
     
     ::v-deep(.v-data-table__th) {
-    background-color: #f2f5f8 !important;
+        background-color: #f2f5f8 !important;
+    }
+
+    ::v-deep(.v-data-table tbody tr:hover) {
+        background-color: #f4faff;
+        cursor: pointer;
+    }
+
+   
+    .custom-rows-per-page {
+        position: absolute;
+        bottom: 46px; 
+        right: 200px;  
+    }
+    .custom-pagination >>> .v-pagination__item.v-pagination__item--is-active {
+        background-color: #caddf0 !important;
+        color: white !important;
+        font-weight: bold;
+        border-radius: 8px;
     }
 
 </style>

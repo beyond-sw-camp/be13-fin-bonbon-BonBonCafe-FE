@@ -23,25 +23,10 @@
           @click="goToDetail(item)"
           style="cursor: pointer;"
         >
-          <!-- <td v-for="header in header" :key="header.value"> -->
-            <!-- 각 칼럼 값 출력 -->
-            <!-- {{ item[header.value] }}
-          </td> -->
+         
         </tr>
       </tbody>
     </template>
-    
-    <!-- <template #item.franchiseImage="{ item }">
-      <v-avatar size="32">
-        <v-img :src="item.franchiseImage"></v-img>
-    </v-avatar>
-    </template> -->
-
-    <!-- <template #item.name="{ item }">
-      <span @click="goToDetail(item)" style="cursor: pointer; color: blue;">
-        {{ item.name }}
-      </span>
-    </template> -->
     
   </v-data-table-server>
 </template>

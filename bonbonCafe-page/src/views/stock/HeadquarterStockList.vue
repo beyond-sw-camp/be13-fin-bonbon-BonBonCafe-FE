@@ -1,62 +1,96 @@
 <template>
-  <div class="stock-wrapper ma-10 pa-8">
-    <h3 class="text-2xl font-semibold mb-6">🏢 본사 재고 목록</h3>
+  <v-container class="py-4" fluid>
+    <v-row dense>
+      <v-col cols="12" md="10" offset-md="1">
+        <v-card class="pa-6 elevation-2" style="min-height: 650px;">
+          <v-typography class="list" align="center">재고&발주 관리 /</v-typography>
+          <v-typography class="title" align="center">본사 재고 조회</v-typography>
 
-    <!-- 🔍 검색 + 추가 버튼 -->
-    <div class="d-flex justify-between align-center mb-6 flex-wrap" style="gap: 12px;">
-      <v-text-field
-        v-model="search"
-        label="재료명 검색"
-        prepend-inner-icon="mdi-magnify"
-        variant="outlined"
-        density="comfortable"
-        hide-details
-        class="flex-grow-1"
-        @keyup.enter="onSearch"
-      />
-      <v-btn color="#D8DBBD" variant="flat" @click="goToRegister">재고 추가</v-btn>
-    </div>
+          <br /><br />
 
-    <!-- 📋 재고 테이블 -->
-    <v-card class="rounded-table-card elevation-1">
-      <v-data-table
-  :headers="headers"
-  :items="stocks"
-  class="rounded-table"
-  density="comfortable"
-  hide-default-footer
+          <!-- 🔍 검색 + 추가 버튼 -->
+          <v-row class="mb-6" align="center" justify="space-between">
+            <v-col cols="12" md="8">
+              <v-text-field
+                v-model="search"
+                label="재료명 검색"
+                prepend-inner-icon="mdi-magnify"
+                variant="outlined"
+                density="comfortable"
+                hide-details
+                @keyup.enter="onSearch"
+              />
+            </v-col>
+            <v-col cols="12" md="4" class="text-right">
+              <v-btn
+  color="primary"
+  @click="goToRegister"
+  v-if="userRole === 'ROLE_HEADQUARTER'"
 >
-  <template #item="{ item, index }">
-    <tr @click="goToStockDetail(item)" style="cursor: pointer;">
-      <!-- <td>{{ index + 1 }}</td> -->
-      <td>{{ item.ingredientName }}</td>
-      <td>{{ item.quantity }} {{ item.unit }}</td>
-      <td>{{ formatPrice(item.unitPrice) }}원</td>
-      <td>{{ formatPrice(item.retailPrice) }}원</td>
-    </tr>
-  </template>
-</v-data-table>
-    </v-card>
+  <v-icon start>mdi-plus</v-icon>
+  재고 추가
+</v-btn>
+            </v-col>
+          </v-row>
 
-    <!-- 📄 페이징 -->
-    <v-pagination
-      v-model="page"
-      :length="totalPages"
-      class="mt-4 custom-pagination"
-      color="black"
-      @input="fetchStocks"
-    />
-  </div>
+          <!-- 📋 테이블 -->
+          <v-data-table
+            :headers="headers"
+            :items="stocks"
+            class="rounded-table"
+            density="comfortable"
+            hide-default-footer
+          >
+            <template #item="{ item }">
+              <tr @click="goToStockDetail(item)" style="cursor: pointer;">
+                <td>{{ item.ingredientName }}</td>
+                <td>{{ item.quantity }} {{ item.unit }}</td>
+                <td>{{ formatPrice(item.unitPrice) }}원</td>
+                <td>{{ formatPrice(item.retailPrice) }}원</td>
+              </tr>
+            </template>
+          </v-data-table>
+
+          <!-- 📄 페이징 및 페이지 수 -->
+          <v-row class="mt-4 align-center justify-space-between">
+            <v-col cols="auto">
+              <v-select
+                v-model="pageSize"
+                :items="[5, 10]"
+                density="compact"
+                variant="outlined"
+                hide-details
+                @update:model-value="onPageSizeChange"
+                style="max-width: 100px"
+              />
+            </v-col>
+            <v-col cols="auto">
+              <v-pagination
+                v-model="page"
+                :length="totalPages"
+                color="primary"
+                @input="fetchStocks"
+              />
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import apiClient from '@/api'
+import { useAuthStore } from '@/stores/auth'
 
+const authStore = useAuthStore()
+const userRole = authStore.userInfo.role
 const router = useRouter()
 const stocks = ref([])
 const page = ref(1)
+const pageSize = ref(10)
 const totalPages = ref(1)
 const search = ref('')
 
@@ -64,8 +98,7 @@ const headers = [
   { title: '재료명', key: 'ingredientName' },
   { title: '수량', key: 'quantity' },
   { title: '단가', key: 'unitPrice' },
-  { title: '소비자가', key: 'retailPrice' },
-  // { title: '본사명', key: 'headquarterName' }
+  { title: '소비자가', key: 'retailPrice' }
 ]
 
 const fetchStocks = async () => {
@@ -73,6 +106,7 @@ const fetchStocks = async () => {
     const { data } = await apiClient.get(`/headquarter-stocks`, {
       params: {
         page: page.value - 1,
+        size: pageSize.value,
         search: search.value || null
       }
     })
@@ -88,8 +122,16 @@ const onSearch = () => {
   fetchStocks()
 }
 
+const onPageSizeChange = () => {
+  page.value = 1
+  fetchStocks()
+}
+
 const goToStockDetail = (item) => {
-  console.log('✅ 클릭된 row:', item)
+  if (userRole !== 'ROLE_HEADQUARTER') {
+    // 상세 이동 막고 무반응
+    return
+  }
 
   if (!item?.stockId) {
     alert('stockId가 없습니다.')
@@ -115,21 +157,25 @@ watch(page, fetchStocks)
 </script>
 
 <style scoped>
-.stock-wrapper {
-  background-color: #f5f5f5;
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #3f51b5;
 }
 
-.rounded-table-card {
-  border-radius: 12px 12px 0 0;
-  overflow: hidden;
+.list {
+  font-size: 16px;
+  font-weight: 600;
+  color: gray;
 }
 
-::v-deep(.rounded-table thead) {
-  background-color: #D8DBBD;
+:deep(.rounded-table thead) {
+  background-color: #f2f5f8;
 }
 
-.custom-pagination {
-  justify-content: center;
+:deep(.rounded-table tbody tr:hover) {
+  background-color: #f4faff;
+  cursor: pointer;
 }
 
 ::v-deep(.v-pagination) {
@@ -144,7 +190,7 @@ watch(page, fetchStocks)
 }
 
 ::v-deep(.v-pagination .v-btn.v-btn--active) {
-  background-color: #D8DBBD !important;
+  background-color: #caddf0 !important;
   color: black !important;
 }
 </style>

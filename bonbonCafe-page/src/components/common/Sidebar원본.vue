@@ -98,15 +98,10 @@ const menuGroups = computed(() => [
   {
     title: '매출 관리',
     icon: 'mdi-chart-bar',
-    items: 
-      userRole.value === 'ROLE_HEADQUARTER' || userRole.value === 'ROLE_MANAGER'
-      ?[
-        { title: '매출 분석' },
-        { title: '매출 순위' }
-      ]
-      : [
-        { title: '매출 순위' },
-      ],
+    items: [
+      { title: '매출 분석' },
+      { title: '매출 순위' },
+    ],
   },
   {
     title: '공지사항',
@@ -127,8 +122,8 @@ const menuGroups = computed(() => [
 ])
 
 const routeMap = {
-  '가맹점주 관리': {name : 'franchisee-accounts-list' },
-  '담당자 관리': {name :'manager-accounts-list'},
+  '가맹점주 관리': '/franchisee-accounts',
+  '담당자 관리': '/manager-accounts',
   '가맹점 메뉴 조회': computed(() =>
     userRole.value === 'ROLE_HEADQUARTER'
       ? { name: 'franchise-menu-franchise-list' }
@@ -174,7 +169,7 @@ const isActive = (title) => {
 
 <style scoped>
 .v-navigation-drawer {
-  /* max-width: 250px; */
+  max-width: 250px;
 }
 
 .custom-drawer {

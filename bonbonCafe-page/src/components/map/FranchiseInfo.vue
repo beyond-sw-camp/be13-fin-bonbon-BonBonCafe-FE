@@ -1,5 +1,17 @@
 <template>
      <v-container class="pa-0 ma-0">
+        <v-text-field
+            v-model="search"
+            label="가맹점 이름 검색"
+            append-inner-icon="mdi-magnify"
+            @click:append-inner="handleSearch"
+            @keydown.enter="handleSearch"
+            density="compact"
+            variant="outlined"
+            rounded="xl"
+            class="mt-4 mb-4"
+        />
+
         <h3>{{ selectedStore.name }}</h3>
 
 
@@ -22,7 +34,7 @@
         </v-card>
 
 
-        <h4 class="pa-2 mt-2">매출 (지난 주)</h4>
+        <h4 class="pa-2 mt-2">매출</h4>
             <sales-forecast-form v-if="selectedStore.franchiseId" :store-id="selectedStore.franchiseId" />
             <v-card v-else>
                 <v-card-title>
@@ -31,35 +43,23 @@
             </v-card>
 
         <h4 class="pa-2 mt-2">메뉴 순위</h4>
-        <v-card class="pa-1 mt-1" >
-            <v-card-text>
-                <br>
-                <br>
-                <br>
-                <br>
-            </v-card-text>
-        </v-card>
-
+            <MenuRanking :franchiseId="selectedStore.franchiseId || null" />
         
-        <h4 class="pa-2 mt-2">체크리스트</h4>
-        <v-card class="pa-1 mt-1" >
-            <!-- <h4>매장 매출</h4> -->
-            <v-card-text>
-                <br>
-                <br>
-                <br>
-                <br>
-            </v-card-text>
-        </v-card>
+        
+        
     </v-container>
 </template>
 
 <script setup>
 import SalesForecastForm from '@/components/forms/salesform/SalesForecastForm.vue'
+import MenuRanking from '@/components/franchise/MenuRanking.vue'
 // import { onMounted, ref } from 'vue';
 import { watch, ref, onMounted } from 'vue';
 import apiClient from '@/api' ;
 
+const emit = defineEmits(['focus-marker']);
+
+const search = ref('');
 const data = ref({});
 
 const props = defineProps({
@@ -68,48 +68,7 @@ const props = defineProps({
             required: true
         }
 });
-// watch(
-//     () =>{
-//         return props.selectedStore;
-//     }, async () => {
-        
-//         data.value = await fetchFranchiseInfo(props.selectedStore);
-        
-//         console.log(data.value);
-        
-//     }
-// )
 
-    // onMounted(async() => {
-    //     // data.value = await fetchFranchiseInfo(props.selectedStore);
-    //     const franchiseData = await fetchFranchiseInfo(props.selectedStore);
-    //     Object.assign(data.value, franchiseData);
-
-    // });
-    // const fetchFranchiseInfo = async (store) => {
-    //     try {
-    //         const response = await apiClient.get(`/franchise/summary/${store.name}`)
-    //         data.franchiseTel = response.data.franchiseTel;
-    //         data.managerName = response.data.managerName;
-    //         data.managerTel = response.data.managerTel;
-    //         console.log( data.franchiseId);        
-    //         return response.data
-    //     } catch (error) {
-    //         console.error('프랜차이즈 데이터 불러오기 실패:', error)
-    //     }
-    // }
-    // selectedStore가 바뀔 때마다 fetch
-watch(
-  () => props.selectedStore, async (newStore) => {
-    console.log(newStore);
-    
-    if (newStore && newStore.franchiseId) {
-      const franchiseData = await fetchFranciseInfo(newStore);
-      Object.assign(data.value, franchiseData); // 내부 데이터 갱신
-    }
-  },
-  { immediate: true } // 컴포넌트 마운트 시에도 실행되게 함
-);
 
 const fetchFranciseInfo = async (store) => {
   try {
@@ -124,11 +83,51 @@ const fetchFranciseInfo = async (store) => {
       
     }
   }
-}
+};
 
-// onMounted( () => {
-//   fetchFranciseInfo(selectedStore);
-// })
+
+watch(
+  () => props.selectedStore, async (newStore) => {
+    console.log(newStore);
+    
+    if (newStore && newStore.franchiseId) {
+      const franchiseData = await fetchFranciseInfo(newStore);
+      Object.assign(data.value, franchiseData); // 내부 데이터 갱신
+    }
+  },
+  { immediate: true } // 컴포넌트 마운트 시에도 실행되게 함
+);
+
+
+const handleSearch = async () => {
+  if (!search.value.trim()) return;
+
+  try {
+    const response = await apiClient.get('/franchise/locations', {
+        params: {
+            keyword: search.value.trim()
+        }
+    });
+
+    console.log(response);
+    
+    const allStores = response.data;
+    const foundStore = allStores.find((store) =>
+      store.name.trim().includes(search.value.trim())
+    );
+    if (foundStore) {
+      emit('focus-marker', foundStore.franchiseId);
+    } else {
+      alert('해당 가맹점을 찾을 수 없습니다.');
+    }
+  } catch (err) {
+    console.error('검색 실패:', err);
+  }
+};
 
 </script>
+
+<style scoped>
+
+</style>
 
