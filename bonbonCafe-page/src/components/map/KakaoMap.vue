@@ -96,9 +96,9 @@ const loadMap = async (container) => {
                   onerror="this.src='https://bonbon-file-bucket.s3.ap-northeast-2.amazonaws.com/profile-default.jpg'"
                   style="width: 100%; height: auto; border-radius: 8px; object-fit: cover; box-shadow: 0 1px 4px rgba(0,0,0,0.2);" />
 
-              <div style="margin-top: 12px; font-weight: 600; font-size: 14px; color: #444;">현장 점검 메모</div>
+              <div style="margin-top: 12px; font-weight: 600; font-size: 14px; color: #444;">매장 운영 메모</div>
               <div style="margin-top: 6px; font-size: 13px; line-height: 1.4; color: #555; background-color: #f9f9f9; padding: 8px; border-radius: 6px;">
-                ${store.memo && store.memo.trim() ? store.memo : '특이사항 없음'}
+                ${store.memo && store.memo.trim() ? store.memo : '현재 등록된 메모가 없습니다.'}
               </div>
 
               <button style="
