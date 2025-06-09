@@ -1,5 +1,5 @@
 <template>
-  <v-container class="py-4" fluid>
+  <v-container class="py-4 hei" fluid>
     <v-row dense>
       <v-col cols="12" md="10" offset-md="1">
         <v-card class="pa-6 elevation-2" style="min-height: 650px;">
@@ -167,6 +167,9 @@ watch(page, fetchStocks)
   font-size: 16px;
   font-weight: 600;
   color: gray;
+}
+.hei {
+  min-height: 900px;
 }
 
 :deep(.rounded-table thead) {

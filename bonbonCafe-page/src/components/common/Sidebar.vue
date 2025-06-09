@@ -59,18 +59,18 @@ const menuGroups = computed(() => [
     items: [{ title: '내 본사 정보' }],
   },
   {
-    title: '메뉴 관리',
-    icon: 'mdi-silverware-fork-knife',
-    items: [
-      ...(userRole.value === 'ROLE_HEADQUARTER' || userRole.value === 'ROLE_FRANCHISEE'
-        ? [{ title: '가맹점 메뉴 조회' }]
-        : []),
-      { title: '전체 메뉴 조회' },
-      ...(userRole.value === 'ROLE_HEADQUARTER'
-        ? [{ title: '메뉴 등록' }]
-        : []),
-    ],
-  },
+  title: '메뉴 관리',
+  icon: 'mdi-silverware-fork-knife',
+  items: [
+    userRole.value === 'ROLE_FRANCHISEE'
+      ? { title: '가맹점 메뉴 조회' }
+      : null,
+    { title: '전체 메뉴 조회' },
+    userRole.value === 'ROLE_HEADQUARTER'
+      ? { title: '메뉴 등록' }
+      : null,
+  ].filter(Boolean), // null 제거
+},
   {
   title: '재고&발주 관리',
   icon: 'mdi-warehouse',
