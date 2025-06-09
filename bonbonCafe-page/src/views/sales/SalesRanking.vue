@@ -34,15 +34,6 @@
         <template #item="{ item, index }">
           <tr>
             <td class="text-center">
-              <v-avatar size="36">
-                <v-img
-                  :src="isValidImageUrl(item.franchiseImage) ? item.franchiseImage : defaultImage"
-                  cover
-                />
-              </v-avatar>
-            </td>
-
-            <td class="text-center">
               {{ (currentPage - 1) * pageSize + index + 1 }}
             </td>
             <td class="text-center">{{ item.franchiseName }}</td>
@@ -93,20 +84,15 @@ const rankingList = ref([])
 
 const generatingPdf = ref(false)
 
-
-const defaultImage =
-  'https://bonbon-file-bucket.s3.ap-northeast-2.amazonaws.com/profile-default.jpg'
-
 function isValidImageUrl(url) {
   return typeof url === 'string' && url.startsWith('http')
 }
 
 //  테이블 헤더 정의
 const headers = [
-  { title: '', align: 'start', key: 'franchiseImage', class: 'header'},
   { title: '순위', key: 'rank', align: 'center' },
   { title: '가맹점명', key: 'franchiseName', align: 'center' },
-  { title: '가맹점 주소', align: 'start', key: 'roadAddress', class: 'header' },
+  { title: '가맹점 주소', align: 'center', key: 'roadAddress', class: 'header' },
   { title: '점주명', key: 'franchiseName', align: 'center' },
   { title: '총 매출(원)', key: 'totalSales', align: 'center' }
 ]
