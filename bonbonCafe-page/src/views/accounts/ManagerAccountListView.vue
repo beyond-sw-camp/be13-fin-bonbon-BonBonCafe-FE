@@ -19,17 +19,21 @@
         <v-row align="center" no-gutters>
           <!-- 검색 필드 -->
           <v-col cols="12" md="4" class="d-flex mt-5">
-            <v-text-field
-              v-model="search"
-              class="search-input"
-              density="compact"
-              variant="outlined"
-              placeholder="Search by name, email..."
-              prepend-inner-icon="mdi-magnify"
-              clearable
-              dense
-              style="flex-grow: 1"
-            />
+          <v-text-field
+            v-model="search"
+            density="compact"
+            variant="outlined"
+            placeholder="가맹점주명, 가맹점 이름으로 검색"
+            prepend-inner-icon="mdi-magnify"
+            clearable
+            class="me-2"
+            dense
+            style="flex-grow: 1"
+          />
+          </v-col>
+          <v-col cols="3" class="d-flex justify-left">
+            <v-btn color="primary" class="me-1" @click="handleSearch">검색</v-btn>
+            <v-btn color="grey" @click="handleClearSearch">초기화</v-btn>
           </v-col>
 <!--   
           <v-col cols="12" md="8" class="d-flex justify-end">
@@ -131,17 +135,22 @@
     { title: '계정 상태', align: 'center', key: 'status' }
   ];
   
-  const fetchManagerData = async (page, size) => {
+  const fetchManagerData = async (page, size, search = '') => {
     const accessToken = localStorage.getItem('accessToken');
     try {
       const response = await apiClient.get(
-        `/bonbon/user/manager?page=${page - 1}&size=${size}`,
+        `/bonbon/user/manager`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`
-          }
+          },
+        params: {
+          page: page - 1,
+          size,
+          keyword: search
         }
-      );
+      }
+    ); 
   
       console.log(response.data.content);
   
@@ -149,34 +158,45 @@
       totalItems.value = response.data.totalElements;
       totalPages.value = response.data.totalPages;
     } catch (error) {
-      console.error('가맹점주 목록 조회 실패:', error);
+      console.error('지역구 담당자 목록 조회 실패:', error);
     }
   };
   
   const onPageChange = (page) => {
     currentPage.value = page;
-    fetchManagerData(page, pageSize.value);
+    fetchManagerData(page, pageSize.value, search.value);
   };
   
   const onPageSizeChange = (size) => {
     pageSize.value = size;
     currentPage.value = 1;
-    fetchManagerData(1, size);
+    fetchManagerData(1, size, search.value);
   };
   
   onMounted(() => {
-    fetchManagerData(currentPage.value, pageSize.value);
+    fetchManagerData(currentPage.value, pageSize.value, search.value);
   });
   
-  watch(search, () => {
-    currentPage.value = 1;
-    fetchManagerData(1, pageSize.value);
-  });
+  // watch(search, () => {
+  //   currentPage.value = 1;
+  //   fetchManagerData(1, pageSize.value);
+  // });
   
   watch(currentPage, (newPage) => {
-    fetchManagerData(newPage, pageSize.value);
+    fetchManagerData(newPage, pageSize.value, search.value);
   });
-  
+
+  const handleSearch = () => {
+    currentPage.value = 1;
+    fetchManagerData(1, pageSize.value, search.value);
+  };
+
+  const handleClearSearch = () => {
+    search.value = '';  // 검색어 초기화
+    currentPage.value = 1;  // 페이지도 첫 번째 페이지로 초기화
+    fetchManagerData(1, pageSize.value);  // 조건 없는 전체 리스트 조회
+  };
+    
   // 계정 상태에 맞는 색상 반환 함수
   const getStatusColor = (status) => {
     switch (status) {

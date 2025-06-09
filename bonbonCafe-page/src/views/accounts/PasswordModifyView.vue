@@ -47,7 +47,7 @@
             </v-card-text>
 
             <v-card-actions class="justify-end">
-              <v-btn text color="grey" @click="cancelPasswordChange">취소</v-btn>
+              <v-btn text color="grey" @click="cancelPasswordChange">초기화</v-btn>
               <v-btn color="primary" @click="submitPasswordChange">비밀번호 변경</v-btn>
             </v-card-actions>
           </v-card>

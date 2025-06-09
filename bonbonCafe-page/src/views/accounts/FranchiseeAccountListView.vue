@@ -21,15 +21,19 @@
         <v-col cols="12" md="4" class="d-flex mt-5">
           <v-text-field
             v-model="search"
-            class="search-input"
             density="compact"
             variant="outlined"
-            placeholder="Search by name, email..."
+            placeholder="가맹점주명, 가맹점 이름으로 검색"
             prepend-inner-icon="mdi-magnify"
             clearable
+            class="me-2"
             dense
             style="flex-grow: 1"
           />
+        </v-col>
+        <v-col cols="3" class="d-flex justify-left">
+          <v-btn color="primary" class="me-1" @click="handleSearch">검색</v-btn>
+          <v-btn color="grey" @click="handleClearSearch">초기화</v-btn>
         </v-col>
 
         <!-- <v-col cols="12" md="8" class="d-flex justify-end">
@@ -43,7 +47,7 @@
       <v-data-table
         :headers="headers"
         :items="items"
-        class="rounded-b rounded-t"
+        class="rounded-b rounded-t text-center"
         :items-length="totalItems"
         :items-per-page="pageSize"
         :page="currentPage"
@@ -53,7 +57,7 @@
 
         <template #item="{ item, columns }">
           <tr @click="goToFranchiseeDetail(item.userId)" style="cursor: pointer">
-            <td v-for="column in columns" :key="column.key">
+            <td v-for="column in columns" :key="column.key" class="text-center">
     
             <!-- 상태 칩인 경우만 따로 처리 -->
             <v-chip
@@ -119,7 +123,6 @@ const goToCreateFranchisee = () => {
 };
 
 
-
 const search = ref('');
 const items = ref([]);
 const currentPage = ref(1);
@@ -135,16 +138,21 @@ const headers = [
   { title: '계정 상태', align: 'center', key: 'status' }
 ];
 
-const fetchFranchiseeData = async (page, size) => {
+const fetchFranchiseeData = async (page, size, search = '') => {
   const accessToken = localStorage.getItem('accessToken');
   try {
     const response = await apiClient.get(
-      `/bonbon/user/franchisee?page=${page - 1}&size=${size}`,
+      `/bonbon/user/franchisee`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`
-        }
+        },
+      params: {
+        page: page - 1,
+        size,
+        keyword: search
       }
+    }
     );
 
     console.log(response.data.content);
@@ -159,27 +167,41 @@ const fetchFranchiseeData = async (page, size) => {
 
 const onPageChange = (page) => {
   currentPage.value = page;
-  fetchFranchiseeData(page, pageSize.value);
+  fetchFranchiseeData(page, pageSize.value, search.value);
 };
 
 const onPageSizeChange = (size) => {
   pageSize.value = size;
   currentPage.value = 1;
-  fetchFranchiseeData(1, size);
+  fetchFranchiseeData(1, size, search.value);
 };
 
 onMounted(() => {
-  fetchFranchiseeData(currentPage.value, pageSize.value);
+  fetchFranchiseeData(currentPage.value, pageSize.value, search.value);
 });
 
-watch(search, () => {
-  currentPage.value = 1;
-  fetchFranchiseeData(1, pageSize.value);
-});
+// watch(search, async(visible) => {
+//   currentPage.value = 1;
+//   fetchFranchiseeData(1, pageSize.value, search.value);
+// });
 
 watch(currentPage, (newPage) => {
-  fetchFranchiseeData(newPage, pageSize.value);
+  fetchFranchiseeData(newPage, pageSize.value, search.value);
 });
+
+
+const handleSearch = () => {
+  currentPage.value = 1;
+  fetchFranchiseeData(1, pageSize.value, search.value);
+};
+
+const handleClearSearch = () => {
+  search.value = '';  // 검색어 초기화
+  currentPage.value = 1;  // 페이지도 첫 번째 페이지로 초기화
+  fetchFranchiseeData(1, pageSize.value);  // 조건 없는 전체 리스트 조회
+};
+
+
 
 // 계정 상태에 맞는 색상 반환 함수
 const getStatusColor = (status) => {
