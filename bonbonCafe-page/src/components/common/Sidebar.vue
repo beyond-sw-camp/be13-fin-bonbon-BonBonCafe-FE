@@ -132,7 +132,6 @@ const menuGroups = computed(() => [
       { title: '비밀번호 수정' },
     ],
   },
-]
 ])
 
 const routeMap = {
