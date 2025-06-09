@@ -1,8 +1,16 @@
 <template>
   <v-container class="">
-    <v-col>
-      <h2>가맹점 상세 정보{{ franchiseId }}</h2>
-    </v-col>
+        <v-row justify="center" class="pa-10 pb-0">
+          <v-col>
+            <v-row class="mb-6">
+              <v-icon color="primary" size="40">mdi-store-plus</v-icon>
+              <div class="text-h5 font-weight-bold mt-2">가맹점 관리 / 가맹점 상세 정보</div>
+            </v-row>
+            <v-divider class="my-4"></v-divider>
+          </v-col>
+          
+        </v-row>
+
     <v-col>
       <!-- FranchiseForm을 읽기 전용 모드로 -->
       <!-- <FranchiseForm :readonly="true" v-if="formData" :form="formData" /> -->
