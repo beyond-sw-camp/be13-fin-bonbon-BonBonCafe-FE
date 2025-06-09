@@ -563,6 +563,9 @@ const isDirty = ref(false);
       const res = await apiClient.get('/bonbon/user/franchisee/without-owner', {
         params
       });
+
+      console.log(res);
+      console.log(params);
   
       dialogItems.value = res.data.content;
       dialogTotalItems.value = res.data.totalElements;
@@ -577,6 +580,8 @@ const isDirty = ref(false);
   watch(selectedHeadquarter, (newVal) => {
     if (newVal && newVal.headquarterId) {
       editedInfo.value.headquarterId = newVal.headquarterId;
+
+      console.log(newVal);
       // 페이지 1로 초기화 하고 새로운 가맹점 리스트 요청
       dialogCurrentPage.value = 1;
       fetchFranchiseList(dialogCurrentPage.value, dialogPageSize.value, dialogSearch.value, newVal.headquarterId);

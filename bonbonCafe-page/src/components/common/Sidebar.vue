@@ -1,6 +1,6 @@
 <template>
   <v-navigation-drawer v-model="drawer" app class="custom-drawer" dark permanent name="drawer">
-    <div class="d-flex align-center pa-4">
+    <div class="d-flex align-center pa-4" style="cursor: pointer;" @click="router.push({ name: 'main' })">
       <v-img
         src="https://bonbon-file-bucket.s3.ap-northeast-2.amazonaws.com/bonbon-logo-banner(white).png"
         alt="BonBon Cafe Logo"
