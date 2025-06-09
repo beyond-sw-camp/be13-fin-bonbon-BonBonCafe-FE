@@ -20,8 +20,13 @@ const FranchiseeAccountEditView = () => import('@/views/accounts/FranchiseeAccou
 const ManagerAccountEditView = () => import('@/views/accounts/ManagerAccountEditView.vue')
 // const ManagerRegistView = () => import('@/views/accounts/ManagerRegistView.vue')
 
+const UserAccount = () => import('@/views/accounts/UserAccount.vue')
+const UserAccountModifyView = () => import('@/views/accounts/UserAccountModifyView.vue')
+const PasswordModifyView = () => import('@/views/accounts/PasswordModifyView.vue')
+
 const FranchiseeJoin = () => import('@/views/auth/FranchiseeJoin.vue')
 const ManagerJoin = () => import('@/views/auth/ManagerJoin.vue')
+
 
 const FranchiseListForMenu = () => import('@/views/franchise/FranchiseListForMenu.vue')
 const FranchiseMenuList = () => import('@/views/menu/FranchiseMenuList.vue')
@@ -91,6 +96,21 @@ const router = createRouter({
           path:'',
           name: 'main',
           component: MainView,
+        },
+        {
+          path:'user-account',
+          name: 'user-account',
+          component: UserAccount,
+        },
+        {
+          path:'user-account-modify',
+          name: 'user-account-modify',
+          component: UserAccountModifyView,
+        },
+        {
+          path:'password-modify',
+          name: 'password-modify',
+          component: PasswordModifyView,
         },
         {
           path:'franchisee-accounts/:userId',
