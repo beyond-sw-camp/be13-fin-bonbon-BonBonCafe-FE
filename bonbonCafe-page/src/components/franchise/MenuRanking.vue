@@ -9,13 +9,13 @@
     />
 
     <!-- 오류 메시지 -->
-    <v-card v-if="error" class="pa-2 mt-1" color="error" dark>
+    <v-card v-else-if="error" class="pa-2 mt-1" color="error" dark>
       {{ error }}
     </v-card>
 
-    <!-- 메뉴 랭킹 테이블 -->
+    <!-- 랭킹 테이블 -->
     <v-table
-      v-if="ranking.length && !loading && !error"
+      v-else-if="ranking.length"
       class="table-fixed w-full text-sm border-collapse"
     >
       <thead>
@@ -27,14 +27,25 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(item, idx) in ranking" :key="item.menuId || idx" class="border-b">
+        <tr
+          v-for="(item, idx) in ranking"
+          :key="item.menuId || idx"
+          class="border-b"
+        >
           <td class="text-center px-4 py-2">{{ idx + 1 }}</td>
           <td class="text-left px-4 py-2">{{ item.menuName }}</td>
           <td class="text-center px-4 py-2">{{ item.totalQuantity }}</td>
-          <td class="text-right px-4 py-2">{{ item.totalAmount.toLocaleString() }}</td>
+          <td class="text-right px-4 py-2">
+            {{ item.totalAmount.toLocaleString() }}
+          </td>
         </tr>
       </tbody>
     </v-table>
+
+    <!-- 데이터 없음 (휴점 중) -->
+    <v-card v-else class="pa-4 mt-2 text-center">
+      가맹점이 현재 휴점 중입니다.
+    </v-card>
   </div>
 </template>
 

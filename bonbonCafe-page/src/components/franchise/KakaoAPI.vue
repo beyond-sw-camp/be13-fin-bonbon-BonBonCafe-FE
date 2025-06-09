@@ -13,15 +13,6 @@
       variant="outlined" 
       class="textBox"
     />
-    <!-- <v-text-field :value="props.modelValue" @input="onDetailAddressInput" label="상세주소" density="comfortable" variant="outlined" class="textBox" -->
-    <!-- <v-text-field 
-      v-model="detailAddress"
-      @blur="emitFullAddress"
-      label="상세주소"
-      density="comfortable"
-      variant="outlined"
-      class="textBox"
-    /> -->
 
     <!-- 카카오 주소 검색 레이어 -->
     <div id="layer" style="display:none;position:fixed;overflow:hidden;z-index:999;-webkit-overflow-scrolling:touch;">
