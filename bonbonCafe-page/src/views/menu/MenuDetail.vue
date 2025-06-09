@@ -32,6 +32,9 @@
 
           <!-- 버튼 -->
           <v-card-actions class="justify-end mt-6">
+            <v-btn class="menu-back-btn" @click="goToMenuList">
+              <v-icon start>mdi-chevron-left</v-icon> 메뉴 목록
+            </v-btn>
             <v-btn v-if="userRole === 'ROLE_HEADQUARTER' || userRole === 'ROLE_MANAGER'" color="secondary"
               @click="dialog = true">
               가맹점 목록 보기
@@ -146,6 +149,9 @@ const addMenu = async () => {
     const errorMsg = e.response?.data?.message || '추가에 실패했습니다.'
     alert(errorMsg)
   }
+}
+const goToMenuList = () => {
+  router.push({ name: 'menu-list' }) // 또는 경로 문자열: '/headquarters/menus'
 }
 
 onMounted(async () => {

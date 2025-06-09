@@ -5,7 +5,7 @@
         <v-card class="pa-6" elevation="2" style="width: 100%; height: 650px;">
 
           <v-typography class="list" align="center">
-            재고&발주 관리 / 
+            재고&발주 관리 /
           </v-typography>
           <v-typography class="title" align="center">
             재고 신청 상세
@@ -23,7 +23,8 @@
               <div class="info-label">수량</div>
               <div class="info-value">
                 <template v-if="editMode">
-                  <v-text-field v-model="editForm.quantity" type="number" density="compact" hide-details style="max-width: 200px" />
+                  <v-text-field v-model="editForm.quantity" type="number" density="compact" hide-details
+                    style="max-width: 200px" />
                 </template>
                 <template v-else>
                   {{ history.quantity }} {{ history.unit || '' }}
@@ -41,7 +42,8 @@
               <div class="info-value">
                 <template v-if="editMode">
                   <template v-if="['ROLE_HEADQUARTER', 'ROLE_MANAGER'].includes(userRole)">
-                    <v-select v-model="editForm.status" :items="statusOptions" item-title="label" item-value="value" dense hide-details style="max-width: 200px" />
+                    <v-select v-model="editForm.status" :items="statusOptions" item-title="label" item-value="value"
+                      dense hide-details style="max-width: 200px" />
                   </template>
                   <template v-else>
                     {{ statusLabel(history.historyStatus) }}
@@ -61,6 +63,10 @@
                 <v-btn variant="outlined" @click="cancelEdit">취소</v-btn>
               </template>
               <template v-else>
+                <v-btn variant="text" color="primary" @click="goToList" class="mb-4">
+                  <v-icon start>mdi-arrow-left</v-icon>
+                  신청 목록으로
+                </v-btn>
                 <v-btn color="primary" class="mr-2" @click="tryEdit">수정</v-btn>
                 <v-btn color="error" variant="outlined" @click="deleteHistory">삭제</v-btn>
               </template>
@@ -130,7 +136,9 @@ const tryEdit = () => {
 
   editMode.value = true
 }
-
+const goToList = () => {
+  router.push({ name: 'franchise-order-list' }) // 또는 문자열 경로: '/franchise-orders'
+}
 const submitUpdate = async () => {
   try {
     await apiClient.put(`/franchiseOrder/${historyId}`, {
@@ -221,6 +229,7 @@ onMounted(fetchDetail)
   font-weight: 600;
   color: gray;
 }
+
 .hei {
   min-height: 900px;
 }

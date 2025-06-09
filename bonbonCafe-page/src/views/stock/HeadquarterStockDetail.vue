@@ -3,9 +3,9 @@
     <v-row dense>
       <v-col cols="12" md="6" offset-md="3">
         <v-card class="pa-6" elevation="2" style="width: 100%; height: 650px;">
-          
+
           <v-typography class="list" align="center">
-            재고&발주 관리 / 
+            재고&발주 관리 /
           </v-typography>
           <v-typography class="title" align="center">
             본사 재고 상세
@@ -23,7 +23,8 @@
               <div class="info-label">수량</div>
               <div class="info-value">
                 <template v-if="editMode">
-                  <v-text-field v-model="editForm.quantity" type="number" density="compact" hide-details style="max-width: 200px" />
+                  <v-text-field v-model="editForm.quantity" type="number" density="compact" hide-details
+                    style="max-width: 200px" />
                 </template>
                 <template v-else>
                   {{ stock?.quantity }} {{ stock?.unit }}
@@ -54,6 +55,10 @@
                 <v-btn variant="outlined" @click="cancelEdit">취소</v-btn>
               </template>
               <template v-else>
+                <v-btn variant="text" color="primary" @click="goToList" class="mb-4">
+                  <v-icon start>mdi-arrow-left</v-icon>
+                  재고 목록으로
+                </v-btn>
                 <v-btn color="primary" class="mr-2" @click="editMode = true">수정</v-btn>
                 <v-btn color="error" variant="outlined" @click="deleteStock">삭제</v-btn>
               </template>
@@ -124,7 +129,9 @@ const deleteStock = async () => {
     }
   }
 }
-
+const goToList = () => {
+  router.push({ name: 'headquarter-stock-list' })
+}
 const formatPrice = (price) => price ? Number(price).toLocaleString() : '-'
 
 onMounted(fetchStock)
@@ -134,11 +141,13 @@ onMounted(fetchStock)
 .stock-detail-wrapper {
   background-color: #f5f5f5;
 }
+
 .stock-card {
   max-width: 600px;
   margin: 0 auto;
   border-radius: 12px;
 }
+
 .info-label {
   font-size: 14px;
   color: #888;
@@ -162,6 +171,7 @@ onMounted(fetchStock)
   font-weight: 600;
   color: gray;
 }
+
 .hei {
   min-height: 900px;
 }
