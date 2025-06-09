@@ -56,27 +56,27 @@ onMounted(async () => {
         labels,
         datasets: [
             {
-            label: '예측 매출 (원)',
+            label: '예측 매출',
             data: yhat,
-            borderColor: '#2A3663',          
+            borderColor: 'rgba(11, 92, 199, 0.8)',          
             backgroundColor: '#3E4A8C',
             tension: 0.2,
             pointRadius: 0
             },
             {
-            label: '하한 (원)',
+            label: '',               
             data: yhatLower,
-            borderColor: '#3E4A8C',
-            borderDash: [5,5],
-            fill: false,
+            borderColor: 'transparent',
+            backgroundColor: 'rgba(195, 221, 255, 0.8)',
+            fill: '+1',
             pointRadius: 0
             },
             {
-            label: '상한 (원)',
-            data: yhatUpper,
-            borderColor: '#5A6ABF',
-            borderDash: [5,5],
-            fill: false,
+            label: '',             
+            data: yhatUpper, 
+            borderColor: 'transparent',
+            backgroundColor: 'rgba(195, 221, 255, 0.8)',
+            fill: '+1',
             pointRadius: 0
             }
         ]
@@ -92,15 +92,47 @@ onMounted(async () => {
                 unit: 'week',
                 displayFormats: { week: 'MM-dd' }
             },
+            title: {
+                display: true,
+                text: '날짜',
+                font: {size: 14, weight: '600'},
+                color: '#444',
+            },
             ticks: { autoSkip: true, maxTicksLimit: 12 },
             grid: { display: false }
             },
             y: {
-            beginAtZero: true
+            beginAtZero: true,
+            title: {
+                display: true,
+                text: '만(원)',
+                font: {size: 14, weight: '600'},
+                color: '#444',
+            },
+            ticks: {
+                callback: value => {
+                    if (value === 0) {
+                    return '0';
+                    }
+                    return (value / 10_000).toFixed(0);
+                },
+                    
+                color: '#444',
+                font: {
+                    size: 13
+                }
+            },
             }
         },
         plugins: {
-            legend: { position: 'bottom' }
+            legend: { 
+                position: 'bottom',
+                labels: {
+                    filter: (legendItem, chart) => {
+                        return legendItem.text === '예측 매출';
+                    }
+                } 
+            }
         }
         }
     })

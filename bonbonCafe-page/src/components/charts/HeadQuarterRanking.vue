@@ -86,8 +86,23 @@ onMounted(async () => {
         },
         scales: {
           x: {
+            title: {
+              display: true,
+              text: '만(원)',
+              color: '#444',
+              font: {
+                size: 14,
+                weight: '600'
+              }
+            },
             ticks: {
-              callback: value => Number(value).toLocaleString() + '원',
+              callback: value => {
+                if (value === 0) {
+                  return '0';
+                }
+                return (value / 10_000).toFixed(0);
+              },
+                
               color: '#444',
               font: {
                 size: 13
@@ -98,6 +113,15 @@ onMounted(async () => {
             }
           },
           y: {
+            title: {
+              display: true,
+              text: '가맹점명',
+              color: '#444',
+              font: {
+                size: 14,
+                weight: '600'
+              }
+            },
             ticks: {
               color: '#333',
               font: {

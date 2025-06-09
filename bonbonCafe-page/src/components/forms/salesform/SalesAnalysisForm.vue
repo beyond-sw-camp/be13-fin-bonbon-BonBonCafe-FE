@@ -263,7 +263,6 @@ async function onSearchAndForecast() {
 
 // 지난 매출 차트 그리는 함수
 function initSalesChart() {
-  console.log('▶ initSalesChart 호출: ', salesStore.labels, salesStore.values)
   if (!salesChartRef.value) {
     console.warn('… salesChartRef 값이 없습니다.')
     return
