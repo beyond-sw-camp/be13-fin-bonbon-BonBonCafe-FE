@@ -18,8 +18,9 @@
   <v-card class="ranking-card">
     <SalesRankingForm @searched="handleSearch" />
 
-    <div class="table-wrapper">
+    <div class="table-wrapper" ref="pdfTarget">
       <v-data-table
+        red="dataTable"
         :headers="headers"
         :items="rankingList"
         :items-length="totalItems"
@@ -51,6 +52,7 @@
           </tr>
         </template>
       </v-data-table>
+    </div>
 
       <v-pagination
         v-model="currentPage"
@@ -58,18 +60,28 @@
         :total-visible="7"
         class="pagination-bar"
       />
-
-    </div>
+      
+      <v-row class="mt-4" justify="end">
+      <v-col cols="auto">
+        <v-btn color="#D8DBBD" @click.prevent="downloadAsPdf" rounded>
+          PDF 다운로드
+        </v-btn>
+      </v-col>
+    </v-row>  
   </v-card>
 </template>
 
 <script setup>
-import { ref, reactive, watch, onMounted } from 'vue'
+import { ref, reactive, watch, onMounted, nextTick } from 'vue'
 import SalesRankingForm from '@/components/forms/salesform/SalesRankingForm.vue'
 import { useRankingStore } from '@/stores/rankingStore'
+import { useRegionStore } from '@/stores/regionStore'
+import html2canvas from 'html2canvas'
+import jsPDF from 'jspdf'
 
 
 const rankingStore = useRankingStore()
+const regionStore  = useRegionStore()
 
 const currentPage = ref(1)   
 const pageSize    = ref(10)  // 한 페이지에 보여줄 개수
@@ -77,8 +89,10 @@ const pageSize    = ref(10)  // 한 페이지에 보여줄 개수
 const totalItems  = ref(0)   // 전체 아이템 개수
 const totalPages  = ref(0)   // 전체 페이지 개수
 
-
 const rankingList = ref([])
+
+const generatingPdf = ref(false)
+
 
 const defaultImage =
   'https://bonbon-file-bucket.s3.ap-northeast-2.amazonaws.com/profile-default.jpg'
@@ -91,9 +105,9 @@ function isValidImageUrl(url) {
 const headers = [
   { title: '', align: 'start', key: 'franchiseImage', class: 'header'},
   { title: '순위', key: 'rank', align: 'center' },
-  { title: '가맹점 이름', key: 'franchiseName', align: 'center' },
+  { title: '가맹점명', key: 'franchiseName', align: 'center' },
   { title: '가맹점 주소', align: 'start', key: 'roadAddress', class: 'header' },
-  { title: '점주 이름', key: 'franchiseName', align: 'center' },
+  { title: '점주명', key: 'franchiseName', align: 'center' },
   { title: '총 매출(원)', key: 'totalSales', align: 'center' }
 ]
 
@@ -110,7 +124,7 @@ function handleSearch(filters) {
   lastFilters.month      = filters.month
 
   currentPage.value = 1
-  pageSize.value    = 10
+  pageSize.value    = 20
 
   fetchData(1, pageSize.value, { ...lastFilters })
 }
@@ -141,15 +155,66 @@ watch(
   }
 )
 
-watch(currentPage, (newPage, oldPage) => {
+watch(currentPage, async(newPage) => {
 
-  fetchData(newPage, pageSize.value, { ...lastFilters })
+  if(!generatingPdf.value) {
+    await fetchData(newPage, pageSize.value, { ...lastFilters })
+  }
+  await nextTick()
 })
 
 watch(pageSize, (newSize, oldSize) => {
   currentPage.value = 1
   fetchData(1, newSize, { ...lastFilters })
 })
+
+const dataTable   = ref(null)
+const pdfTarget   = ref(null)
+
+watch(currentPage, async newPage => {
+  await nextTick()
+})
+
+// PDF 다운로드
+async function downloadAsPdf() {
+  generatingPdf.value = true
+
+  if (!pdfTarget.value) return
+  const pdf = new jsPDF('p', 'mm', 'a4')
+  const pageWidth  = pdf.internal.pageSize.getWidth()
+  const pageHeight = pdf.internal.pageSize.getHeight()
+
+  for (let page = 1; page <= totalPages.value; page++) {
+    currentPage.value = page
+
+    await nextTick()
+    await new Promise(resolve => setTimeout(resolve, 300))
+
+    const canvas = await html2canvas(pdfTarget.value, {
+      scale: 2,
+      useCORS: true,
+
+      backgroundColor: '#ffffff'
+    })
+    const imgData = canvas.toDataURL('image/png')
+    const imgWidth  = pageWidth - 20  
+    const imgHeight = (canvas.height * imgWidth) / canvas.width
+
+    // 첫 페이지가 아니면 새 페이지 추가
+    if (page > 1) pdf.addPage()
+    pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight)
+  }
+
+  const major   = regionStore.majors.find(m => m.code === regionStore.selectedMajor)?.name || '매출순위'
+  const sub     = regionStore.subs  .find(s => s.code === lastFilters.regionCode)?.name || '전체군'
+  const y       = lastFilters.year  ? String(lastFilters.year) : ''
+  const m       = lastFilters.month ? String(lastFilters.month).padStart(2,'0') : ''
+  const fileName = `${major}_${sub}_${y}${m}.pdf`
+
+  pdf.save(fileName)
+
+  generatingPdf.value = false
+}
 </script>
 
 <style scoped>

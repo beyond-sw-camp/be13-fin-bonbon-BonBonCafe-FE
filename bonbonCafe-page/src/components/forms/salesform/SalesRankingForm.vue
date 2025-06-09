@@ -46,7 +46,8 @@
           :items="monthItems"
           item-title="label"
           item-value="value"
-          placeholder="월"
+          placeholder="월(선택)"
+          clearable
           density="comfortable"
           variant="outlined"
           hide-details
