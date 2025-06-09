@@ -31,12 +31,12 @@
               style="flex-grow: 1"
             />
           </v-col>
-  
+<!--   
           <v-col cols="12" md="8" class="d-flex justify-end">
             <v-btn color="primary" @click="goToCreateManager" prepend-icon="mdi-plus">
               담당자 신규 등록
             </v-btn>
-          </v-col>
+          </v-col> -->
         </v-row>
   
         <!-- 데이터 테이블 -->

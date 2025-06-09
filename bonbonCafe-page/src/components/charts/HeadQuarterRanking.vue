@@ -1,6 +1,14 @@
 <template>
   <v-card class="pa-6 elevation-2 chart-card">
-    <v-card-text>
+    <v-card-title class="chart-card-title">
+      지난 3개월 가맹점 매출 순위
+    </v-card-title>
+    <v-card-subtitle class="chart-card-subtitle">
+      최근 3개월간 전국 가맹점의 매출 데이터를 바탕으로 집계된 순위입니다.  
+      <br/>
+      가맹점 간 상대적인 매출 규모를 시각적으로 비교할 수 있습니다.
+    </v-card-subtitle>
+    <v-card-text> 
       <div class="ranking-chart-wrapper">
         <canvas ref="chartRef"></canvas>
       </div>
@@ -72,36 +80,8 @@ onMounted(async () => {
         },
         plugins: {
           legend: { display: false },
-          title: {
-            display: true,
-            text: '지난 3개월 가맹점 매출 순위',
-            font: {
-                size: 25,
-                weight: '700',
-                family: "'Noto Sans KR', sans-serif"
-            },
-            color: '#222',
-            padding: {
-                top: 5,
-                bottom: 20
-            },
-            align: 'start'
-            },
           subtitle: {
               display: true,
-              text: [
-                '최근 3개월간 전국 가맹점의 매출 데이터를 바탕으로 집계된 순위입니다.',
-                '가맹점 간 상대적인 매출 규모를 시각적으로 비교할 수 있습니다.'
-              ],
-              font: {
-                  size: 13,
-                  style: 'italic'
-              },
-              color: 'gray',
-              padding: {
-                  bottom: 30
-              },
-              align: 'start'
           }
         },
         scales: {
@@ -151,15 +131,38 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+
+.chart-card-title {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 25px;
+  font-weight: 700;
+  color: #222222;
+  justify-content: flex-start;
+  padding-top: 5px;   
+  padding-bottom: 20px; 
+}
+
+.chart-card-subtitle {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 13px;
+  font-style: italic;
+  color: rgb(26, 26, 26);
+  text-align: left;
+  margin-bottom: 0px;
+  margin-top: 0px;
+}
+
 .chart-card {
-  background-color: #fff;
+  background-color: #ffffff;
   border-radius: 40px;
-  height: 600px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .ranking-chart-wrapper {
   position: relative;
-  width: 100%;
+  width: 90%;
   height: 520px;
 }
 

@@ -66,18 +66,18 @@ const menuGroups = computed(() => [
     items: [{ title: '내 본사 정보' }],
   },
   {
-    title: '메뉴 관리',
-    icon: 'mdi-silverware-fork-knife',
-    items: [
-      ...(userRole.value === 'ROLE_HEADQUARTER' || userRole.value === 'ROLE_FRANCHISEE'
-        ? [{ title: '가맹점 메뉴 조회' }]
-        : []),
-      { title: '전체 메뉴 조회' },
-      ...(userRole.value === 'ROLE_HEADQUARTER'
-        ? [{ title: '메뉴 등록' }]
-        : []),
-    ],
-  },
+  title: '메뉴 관리',
+  icon: 'mdi-silverware-fork-knife',
+  items: [
+    userRole.value === 'ROLE_FRANCHISEE'
+      ? { title: '가맹점 메뉴 조회' }
+      : null,
+    { title: '전체 메뉴 조회' },
+    userRole.value === 'ROLE_HEADQUARTER'
+      ? { title: '메뉴 등록' }
+      : null,
+  ].filter(Boolean), // null 제거
+},
   {
   title: '재고&발주 관리',
   icon: 'mdi-warehouse',
@@ -109,7 +109,7 @@ const menuGroups = computed(() => [
       ],
   },
   {
-    title: '공지사항',
+    title: '게시판',
     icon: 'mdi-clipboard-check-outline',
     items: [
       { title: '공지사항 목록' },
@@ -127,8 +127,8 @@ const menuGroups = computed(() => [
 ])
 
 const routeMap = {
-  '가맹점주 관리': '/franchisee-accounts',
-  '담당자 관리': '/manager-accounts',
+  '가맹점주 관리': {name : 'franchisee-accounts-list' },
+  '담당자 관리': {name :'manager-accounts-list'},
   '가맹점 메뉴 조회': computed(() =>
     userRole.value === 'ROLE_HEADQUARTER'
       ? { name: 'franchise-menu-franchise-list' }

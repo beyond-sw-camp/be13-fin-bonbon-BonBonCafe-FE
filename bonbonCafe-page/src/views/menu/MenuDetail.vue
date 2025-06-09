@@ -32,7 +32,8 @@
 
           <!-- 버튼 -->
           <v-card-actions class="justify-end mt-6">
-            <v-btn v-if="userRole === 'ROLE_HEADQUARTER'" color="secondary" @click="dialog = true">
+            <v-btn v-if="userRole === 'ROLE_HEADQUARTER' || userRole === 'ROLE_MANAGER'" color="secondary"
+              @click="dialog = true">
               가맹점 목록 보기
             </v-btn>
             <v-btn v-if="userRole === 'ROLE_HEADQUARTER'" color="primary" @click="goToEdit">

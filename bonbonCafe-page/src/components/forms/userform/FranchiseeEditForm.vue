@@ -1,5 +1,5 @@
 <template>
-    <v-container class="py-4" fluid>
+    <v-container class="py-4 hei" fluid>
   
       <v-row dense>
         <!-- 수정 카드 -->
@@ -135,6 +135,8 @@
 
 
                 </v-col>
+
+                
                 <v-col cols="12">
                   <v-select
                     v-model="editedInfo.status"
@@ -380,7 +382,7 @@ const fetchDialogFranchiseList = async (page, size, search = '') => {
     const accessToken = localStorage.getItem('accessToken');
 
     // 가맹점주가 지정되지 않은 가맹점 목록 출력
-    const res = await apiClient.get(`/bonbon/user/franchisee/without-owner`, {
+    const res = await apiClient.get(`/bonbon/user/franchisee/without-owner/principal`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       },
@@ -497,5 +499,8 @@ const deleteFranchise = () => {
     font-weight: 600;
     color: gray;
   }
+  .hei {
+  min-height: 900px;
+}
   </style>
   
