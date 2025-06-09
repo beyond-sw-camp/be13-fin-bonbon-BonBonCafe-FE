@@ -1,5 +1,5 @@
 <template>
-  <v-container class="py-4" fluid>
+  <v-container class="py-4 hei"  fluid>
     <!-- 상단 타이틀 -->
     
 
@@ -208,6 +208,9 @@ onMounted(async () => {
   font-size: 16px;
   font-weight: 600;
   color: gray;
+}
+.hei {
+  min-height: 900px;
 }
 </style>
   

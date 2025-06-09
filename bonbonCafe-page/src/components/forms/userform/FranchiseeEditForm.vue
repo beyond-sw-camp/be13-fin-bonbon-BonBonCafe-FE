@@ -1,5 +1,5 @@
 <template>
-    <v-container class="py-4" fluid>
+    <v-container class="py-4 hei" fluid>
   
       <v-row dense>
         <!-- 수정 카드 -->
@@ -499,5 +499,8 @@ const deleteFranchise = () => {
     font-weight: 600;
     color: gray;
   }
+  .hei {
+  min-height: 900px;
+}
   </style>
   

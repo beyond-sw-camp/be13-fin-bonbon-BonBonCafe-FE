@@ -14,14 +14,7 @@
           <div v-if="menu.categories?.length" class="mt-4">
             <p><strong>카테고리:</strong></p>
             <div class="d-flex flex-wrap" style="gap: 6px;">
-              <v-chip
-                v-for="cat in menu.categories"
-                :key="cat.id"
-                color="indigo"
-                text-color="white"
-                label
-                small
-              >
+              <v-chip v-for="cat in menu.categories" :key="cat.id" color="indigo" text-color="white" label small>
                 {{ cat.categoryName }}
               </v-chip>
             </div>
@@ -39,7 +32,8 @@
 
           <!-- 버튼 -->
           <v-card-actions class="justify-end mt-6">
-            <v-btn v-if="userRole === 'ROLE_HEADQUARTER'" color="secondary" @click="dialog = true">
+            <v-btn v-if="userRole === 'ROLE_HEADQUARTER' || userRole === 'ROLE_MANAGER'" color="secondary"
+              @click="dialog = true">
               가맹점 목록 보기
             </v-btn>
             <v-btn v-if="userRole === 'ROLE_HEADQUARTER'" color="primary" @click="goToEdit">
@@ -49,7 +43,10 @@
               삭제
             </v-btn>
             <v-btn v-if="userRole === 'ROLE_FRANCHISEE'" color="primary" @click="addMenu">
-              가맹점에 추가
+              메뉴 추가
+            </v-btn>
+            <v-btn v-if="userRole === 'ROLE_FRANCHISEE'" color="error" @click="removeMenu">
+              메뉴 제거
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -125,7 +122,21 @@ const deleteMenu = async () => {
     router.push({ name: 'menu-list' })
   }
 }
+const removeMenu = async () => {
+  if (!confirm('이 메뉴를 가맹점에서 제거하시겠습니까?')) return;
 
+  try {
+    await apiClient.delete('/franchise-menus', {
+      data: { menuId }, // DELETE에 body 포함 시 data로 감싸야 함
+    });
+    alert('메뉴가 제거되었습니다.');
+    router.push({ name: 'franchise-menu-list' });
+  } catch (e) {
+    console.error('❌ 제거 실패', e);
+    const errorMsg = e.response?.data?.message || '제거에 실패했습니다.';
+    alert(errorMsg);
+  }
+};
 const addMenu = async () => {
   try {
     await apiClient.post('/franchise-menus', { menuId })
@@ -163,15 +174,18 @@ const formatDate = (date) => new Date(date).toLocaleDateString()
   margin-top: 8px;
   border-left: 3px solid #ccc;
 }
+
 .ingredient-list li {
   margin-bottom: 6px;
   padding-left: 4px;
   list-style: '🌿 ';
 }
+
 .image-wrapper {
   position: relative;
   width: 100%;
-  padding-top: 100%;
+  height: 100%;
+  max-height: 100%;
   border-radius: 12px;
   background-color: #f5f5f5;
   overflow: hidden;
@@ -179,6 +193,7 @@ const formatDate = (date) => new Date(date).toLocaleDateString()
   align-items: center;
   justify-content: center;
 }
+
 .menu-img {
   position: absolute;
   top: 0;
@@ -186,6 +201,7 @@ const formatDate = (date) => new Date(date).toLocaleDateString()
   width: 100%;
   height: 100%;
 }
+
 .no-image {
   position: absolute;
   top: 50%;

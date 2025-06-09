@@ -1,5 +1,5 @@
 <template>
-  <v-container class="py-4" fluid>
+  <v-container class="py-4 hei" fluid>
     <!-- 상단 타이틀 -->
     
 
@@ -295,7 +295,9 @@ const fetchFranchiseList = async (page, size, search = '') => {
   font-weight: 500;
   color: black;
 }
-
+.hei {
+  min-height: 900px;
+}
 .list {
   font-size: 16px;
   font-weight: 600;
