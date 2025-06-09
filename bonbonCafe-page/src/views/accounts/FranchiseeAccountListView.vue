@@ -40,46 +40,39 @@
       </v-row>
 
       <!-- 데이터 테이블 -->
-      <v-data-table-server
+      <v-data-table
         :headers="headers"
         :items="items"
+        class="rounded-b rounded-t"
         :items-length="totalItems"
         :items-per-page="pageSize"
         :page="currentPage"
         hide-default-footer
-        class="elevation-1"
         @update:options="onOptionsChange"
       >
 
-        <template #item.franchiseName="{ item }">
-          {{ item.franchiseName || '없음' }}
+        <template #item="{ item, columns }">
+          <tr @click="goToFranchiseeDetail(item.userId)" style="cursor: pointer">
+            <td v-for="column in columns" :key="column.key">
+    
+            <!-- 상태 칩인 경우만 따로 처리 -->
+            <v-chip
+              v-if="column.key === 'status'"
+              variant="tonal"
+              :color="getStatusColor(item.status)"
+            >
+            {{ getStatusText(item.status) }}
+            </v-chip>
+
+            <!-- 일반 텍스트는 항상 출력 -->
+            <span v-if="column.key !== 'status'">
+             {{ item[column.key] }}
+            </span>
+            </td>
+          </tr>
         </template>
 
-        <template #item.status="{ item }">
-          <!-- 계정 상태에 따라 색상과 스타일을 다르게 적용 -->
-          <v-chip
-            :color="getStatusColor(item.status)"
-            text-color="white"
-            outlined
-            small
-          >
-            {{ item.status }}
-          </v-chip>
-        </template>
-
-        <template #item.name="{ item }">
-          <!-- 각 행을 버튼처럼 만들기 위해 v-btn으로 감싸기 -->
-          <v-btn
-            class="d-flex justify-center align-center w-100"
-            @click="goToFranchiseeDetail(item.userId)"
-            outlined
-            style="text-align: center; cursor: pointer;"
-          >
-            {{ item.name }}
-          </v-btn>
-        </template>
-
-      </v-data-table-server>
+      </v-data-table>
 
       <!-- 현재 페이지 정보 및 페이지네이션 -->
       <v-row class="mt-4" align="center" justify="center">
@@ -205,6 +198,26 @@ const getStatusColor = (status) => {
       return 'blue'; // 기본 색상
   }
 };
+
+const getStatusText = (status) => {
+  switch (status) {
+    case 'ACTIVE':
+      return '활성화'
+    case 'INACTIVE':
+      return '비활성화'
+    case 'PENDING':
+      return '승인 대기'
+    case 'EXPIRED':
+      return '만료'
+    case 'PENDING':
+      return '승인 대기'
+    case 'DELETED':
+      return '삭제'
+    default:
+      return '알 수 없음'
+    }
+}
+
 </script>
 
 <style scoped>
@@ -233,5 +246,14 @@ const getStatusColor = (status) => {
   font-size: 16px;
   font-weight: 600;
   color: gray;
+}
+
+::v-deep(.v-data-table__th) {
+  background-color: #f2f5f8 !important;
+}
+
+::v-deep(.v-data-table tbody tr:hover) {
+  background-color: #f4faff;
+  cursor: pointer;
 }
 </style>

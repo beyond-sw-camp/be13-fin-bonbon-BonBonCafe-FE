@@ -35,13 +35,13 @@
               <div class="info-label">가맹점주 이름</div>
               <div class="info-value">{{ managerInfo.name }}</div>
             </v-col>
-            <v-col cols="12" md="12" class="mb-3">
+            <!-- <v-col cols="12" md="12" class="mb-3">
               <div class="info-label">비밀번호</div>
               <div class="d-flex align-center gap-2">
                 <div class="info-value">************</div>
                 <v-btn size="small" variant="outlined" color="primary">비밀번호 확인</v-btn>
               </div>
-            </v-col>
+            </v-col> -->
             <v-col cols="12" md="6" class="mb-3">
               <div class="info-label">전화번호</div>
               <div class="info-value">{{ managerInfo.phone }}</div>
@@ -58,7 +58,7 @@
             <br>
             <v-divider></v-divider>
 
-            <v-col cols="12" class="d-flex justify-end mt-4">
+            <v-col cols="12" class="d-flex justify-center mt-4" style="gap: 10px;">
               <v-btn color="secondary" @click="goToList">목록으로</v-btn>
               <v-btn color="primary" @click="goToEdit">수정하기</v-btn>
             </v-col>

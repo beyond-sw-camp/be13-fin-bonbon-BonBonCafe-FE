@@ -118,10 +118,18 @@ const menuGroups = computed(() => [
   },
   {
     title: '계정 관리',
-    icon: 'mdi-account-circle-outline',
+    icon: 'mdi-account-cog',
     items: [
       { title: '가맹점주 관리' },
       { title: '담당자 관리' },
+    ],
+  },
+  {
+    title: '개인정보',
+    icon: 'mdi-account-circle',
+    items: [
+      { title: '개인정보 조회/수정' },
+      { title: '비밀번호 수정' },
     ],
   },
 ])
@@ -150,6 +158,8 @@ const routeMap = {
   '매출 순위': '/sales-ranking',
   '공지사항 목록': '/notice-list',
   '이벤트': '/event-list',
+  '개인정보 조회/수정': {name : 'user-account' },
+  '비밀번호 수정': {name : 'password-modify' },
 }
 
 const navigate = (title) => {
