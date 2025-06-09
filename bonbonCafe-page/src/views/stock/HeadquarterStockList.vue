@@ -1,5 +1,5 @@
 <template>
-  <v-container class="py-4" fluid>
+  <v-container class="py-4 hei" fluid>
     <v-row dense>
       <v-col cols="12" md="10" offset-md="1">
         <v-card class="pa-6 elevation-2" style="min-height: 650px;">
@@ -11,67 +11,39 @@
           <!-- 🔍 검색 + 추가 버튼 -->
           <v-row class="mb-6" align="center" justify="space-between">
             <v-col cols="12" md="8">
-              <v-text-field
-                v-model="search"
-                label="재료명 검색"
-                prepend-inner-icon="mdi-magnify"
-                variant="outlined"
-                density="comfortable"
-                hide-details
-                @keyup.enter="onSearch"
-              />
+              <v-text-field v-model="search" label="재료명 검색" prepend-inner-icon="mdi-magnify" variant="outlined"
+                density="comfortable" hide-details @keyup.enter="onSearch" />
             </v-col>
             <v-col cols="12" md="4" class="text-right">
-              <v-btn
-  color="primary"
-  @click="goToRegister"
-  v-if="userRole === 'ROLE_HEADQUARTER'"
->
-  <v-icon start>mdi-plus</v-icon>
-  재고 추가
-</v-btn>
+              <v-btn color="primary" @click="goToRegister" v-if="userRole === 'ROLE_HEADQUARTER'">
+                <v-icon start>mdi-plus</v-icon>
+                재고 추가
+              </v-btn>
             </v-col>
           </v-row>
 
           <!-- 📋 테이블 -->
-          <v-data-table
-            :headers="headers"
-            :items="stocks"
-            class="rounded-table"
-            density="comfortable"
-            hide-default-footer
-          >
+          <v-data-table :headers="headers" :items="stocks" class="rounded-table" density="comfortable"
+            hide-default-footer>
             <template #item="{ item }">
               <tr @click="goToStockDetail(item)" style="cursor: pointer;">
-                <td>{{ item.ingredientName }}</td>
-                <td>{{ item.quantity }} {{ item.unit }}</td>
-                <td>{{ formatPrice(item.unitPrice) }}원</td>
-                <td>{{ formatPrice(item.retailPrice) }}원</td>
+                <td class="text-center">{{ item.ingredientName }}</td>
+                <td class="text-center">{{ item.quantity }} {{ item.unit }}</td>
+                <td class="text-center">{{ formatPrice(item.unitPrice) }}원</td>
+                <td class="text-center">{{ formatPrice(item.retailPrice) }}원</td>
               </tr>
             </template>
           </v-data-table>
 
           <!-- 📄 페이징 및 페이지 수 -->
           <v-row class="mt-4 align-center justify-space-between">
-            <v-col cols="auto">
-              <v-select
-                v-model="pageSize"
-                :items="[5, 10]"
-                density="compact"
-                variant="outlined"
-                hide-details
-                @update:model-value="onPageSizeChange"
-                style="max-width: 100px"
-              />
-            </v-col>
-            <v-col cols="auto">
-              <v-pagination
-                v-model="page"
-                :length="totalPages"
-                color="primary"
-                @input="fetchStocks"
-              />
-            </v-col>
+            <v-row class="mt-4 justify-end">
+              <v-col cols="auto">
+                <v-pagination v-model="page" :length="totalPages" :total-visible="5" color="primary"
+                  @input="fetchStocks" />
+              </v-col>
+            </v-row>
+
           </v-row>
         </v-card>
       </v-col>
@@ -88,6 +60,7 @@ import { useAuthStore } from '@/stores/auth'
 const authStore = useAuthStore()
 const userRole = authStore.userInfo.role
 const router = useRouter()
+
 const stocks = ref([])
 const page = ref(1)
 const pageSize = ref(10)
@@ -95,10 +68,10 @@ const totalPages = ref(1)
 const search = ref('')
 
 const headers = [
-  { title: '재료명', key: 'ingredientName' },
-  { title: '수량', key: 'quantity' },
-  { title: '단가', key: 'unitPrice' },
-  { title: '소비자가', key: 'retailPrice' }
+  { title: '재료명', key: 'ingredientName', align: 'center', sortable: false },
+  { title: '수량', key: 'quantity', align: 'center', sortable: false },
+  { title: '단가', key: 'unitPrice', align: 'center', sortable: false },
+  { title: '소비자가', key: 'retailPrice', align: 'center', sortable: false }
 ]
 
 const fetchStocks = async () => {
@@ -128,15 +101,8 @@ const onPageSizeChange = () => {
 }
 
 const goToStockDetail = (item) => {
-  if (userRole !== 'ROLE_HEADQUARTER') {
-    // 상세 이동 막고 무반응
-    return
-  }
-
-  if (!item?.stockId) {
-    alert('stockId가 없습니다.')
-    return
-  }
+  if (userRole !== 'ROLE_HEADQUARTER') return
+  if (!item?.stockId) return alert('stockId가 없습니다.')
 
   router.push({
     name: 'headquarter-stock-detail',
@@ -169,8 +135,17 @@ watch(page, fetchStocks)
   color: gray;
 }
 
+.hei {
+  min-height: 900px;
+}
+
 :deep(.rounded-table thead) {
   background-color: #f2f5f8;
+}
+
+:deep(.rounded-table td),
+:deep(.rounded-table th) {
+  text-align: center;
 }
 
 :deep(.rounded-table tbody tr:hover) {

@@ -1,5 +1,5 @@
 <template>
-    <v-container class="py-4" fluid>
+    <v-container class="py-4 hei" fluid>
       <v-row dense>
         <!-- 등록 카드 -->
         <v-col cols="12" md="6">
@@ -417,6 +417,9 @@
     font-weight: 600;
     color: gray;
   }
+  .hei {
+  min-height: 900px;
+}
 /* 헤더 가운데 정렬 */
 ::v-deep(.v-data-table .v-data-table-header__content) {
    font-size: 14px;

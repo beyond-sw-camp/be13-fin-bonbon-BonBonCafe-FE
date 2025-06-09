@@ -1,43 +1,50 @@
 <template>
-  <div class="stock-wrapper ma-16 mt-4 pa-10">
-    <h3 class="text-2xl font-semibold mb-6">📦 가맹점 재고 목록</h3>
+  <v-container class="py-4 hei" fluid>
+    <v-row dense>
+      <v-col cols="12" md="10" offset-md="1">
+        <v-card class="pa-6 elevation-2" style="min-height: 650px;">
+          <v-typography class="list" align="center">재고&발주 관리 /</v-typography>
+          <v-typography class="title" align="center">가맹점 재고 목록</v-typography>
 
-    <!-- 🔘 재고 주문 버튼 -->
-    <div class="d-flex justify-end mb-4">
-      <v-btn color="#D8DBBD" variant="flat" @click="goToStockOrder">재고 주문</v-btn>
-    </div>
+          <br /><br />
 
-    <!-- 📋 테이블 -->
-    <v-card class="rounded-table-card elevation-1">
-      <v-data-table
-        :headers="headers"
-        :items="stocks"
-        class="rounded-table"
-        density="comfortable"
-        hide-default-footer
-      >
-        <template #item.unitPrice="{ item }">
-          {{ formatPrice(item.unitPrice) }}원
-        </template>
+          <!-- 🔘 재고 주문 버튼 -->
+          <v-row class="mb-4" justify="end">
+            <v-btn color="primary" variant="flat" @click="goToStockOrder">재고 주문</v-btn>
+          </v-row>
 
-        <template #item.retailPrice="{ item }">
-          {{ formatPrice(item.retailPrice) }}원
-        </template>
+          <!-- 📋 테이블 -->
+          <v-data-table
+            :headers="headers"
+            :items="stocks"
+            class="rounded-table"
+            density="comfortable"
+            hide-default-footer
+          >
+            <template #item="{ item }">
+              <tr>
+                <td class="text-center">{{ item.ingredientName }}</td>
+                <td class="text-center">{{ item.quantity }} {{ item.unit }}</td>
+                <td class="text-center">{{ formatPrice(item.unitPrice) }}원</td>
+                <td class="text-center">{{ formatPrice(item.retailPrice) }}원</td>
+              </tr>
+            </template>
+          </v-data-table>
 
-        <template #item.quantity="{ item }">
-          {{ item.quantity }} {{ item.unit }}
-        </template>
-      </v-data-table>
-    </v-card>
-
-    <!-- ✅ 사용자 정의 페이징 -->
-    <v-pagination
-      v-model="page"
-      :length="totalPages"
-      class="mt-4 custom-pagination"
-      @input="fetchFranchiseStocks"
-    />
-  </div>
+          <!-- 📄 페이지네이션 -->
+          <v-row class="mt-4 justify-end">
+            <v-pagination
+              v-model="page"
+              :length="totalPages"
+              :total-visible="5"
+              color="primary"
+              @input="fetchFranchiseStocks"
+            />
+          </v-row>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script setup>
@@ -52,18 +59,16 @@ const page = ref(1)
 const totalPages = ref(1)
 
 const headers = [
-  { title: '재료명', key: 'ingredientName' },
-  { title: '수량', key: 'quantity' },
-  { title: '단가', key: 'unitPrice' },
-  { title: '소비자가', key: 'retailPrice' },
+  { title: '재료명', key: 'ingredientName', align: 'center', sortable: false },
+  { title: '수량', key: 'quantity', align: 'center', sortable: false },
+  { title: '단가', key: 'unitPrice', align: 'center', sortable: false },
+  { title: '소비자가', key: 'retailPrice', align: 'center', sortable: false }
 ]
 
 const fetchFranchiseStocks = async () => {
   try {
     const res = await apiClient.get('/franchise-stocks', {
-      params: {
-        page: page.value - 1
-      }
+      params: { page: page.value - 1 }
     })
     stocks.value = res.data.content
     totalPages.value = res.data.totalPages
@@ -86,21 +91,34 @@ watch(page, fetchFranchiseStocks)
 </script>
 
 <style scoped>
-.stock-wrapper {
-  background-color: #f5f5f5;
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #3f51b5;
 }
 
-.rounded-table-card {
-  border-radius: 12px 12px 0 0;
-  overflow: hidden;
+.list {
+  font-size: 16px;
+  font-weight: 600;
+  color: gray;
 }
 
-::v-deep(.rounded-table thead) {
-  background-color: #D8DBBD;
+.hei {
+  min-height: 900px;
 }
 
-.custom-pagination {
-  justify-content: center;
+:deep(.rounded-table thead) {
+  background-color: #f2f5f8;
+}
+
+:deep(.rounded-table td),
+:deep(.rounded-table th) {
+  text-align: center;
+}
+
+:deep(.rounded-table tbody tr:hover) {
+  background-color: #f4faff;
+  cursor: pointer;
 }
 
 ::v-deep(.v-pagination) {
@@ -115,7 +133,7 @@ watch(page, fetchFranchiseStocks)
 }
 
 ::v-deep(.v-pagination .v-btn.v-btn--active) {
-  background-color: #D8DBBD !important;
+  background-color: #caddf0 !important;
   color: black !important;
 }
 </style>

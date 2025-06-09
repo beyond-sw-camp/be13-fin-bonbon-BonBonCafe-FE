@@ -1,5 +1,5 @@
 <template>
-  <v-container class="py-4" fluid>
+  <v-container class="py-4 hei" fluid>
     <v-row dense>
       <v-col cols="12" md="10" offset-md="1">
         <v-card class="pa-6 elevation-2" style="min-height: 650px;">
@@ -11,61 +11,35 @@
           <!-- 🔍 검색 + 상태 필터 -->
           <v-row class="mb-4" align="center" justify="space-between" style="gap: 12px;">
             <v-col cols="12" md="6">
-              <v-text-field
-                v-model="search"
-                label="가맹점 이름 검색"
-                prepend-inner-icon="mdi-magnify"
-                variant="outlined"
-                density="comfortable"
-                hide-details
-                @keyup.enter="fetchHistories"
-              />
+              <v-text-field v-model="search" label="가맹점 이름 검색" prepend-inner-icon="mdi-magnify" variant="outlined"
+                density="comfortable" hide-details @keyup.enter="fetchHistories" />
             </v-col>
 
             <v-col cols="12" md="4">
-              <v-select
-                v-model="selectedStatus"
-                :items="statusOptions"
-                label="신청 처리 현황"
-                item-title="label"
-                item-value="value"
-                clearable
-                density="comfortable"
-                variant="outlined"
-                hide-details
-                @update:model-value="onStatusChange"
-              />
+              <v-select v-model="selectedStatus" :items="statusOptions" label="신청 처리 현황" item-title="label"
+                item-value="value" clearable density="comfortable" variant="outlined" hide-details
+                @update:model-value="onStatusChange" />
             </v-col>
           </v-row>
 
           <!-- 📋 테이블 -->
-          <v-data-table
-            :headers="headers"
-            :items="filteredHistories"
-            class="rounded-table"
-            density="comfortable"
-            hide-default-footer
-          >
+          <v-data-table :headers="headers" :items="filteredHistories" class="rounded-table" density="comfortable"
+            hide-default-footer>
             <template #item="{ item, index }">
               <tr @click="goToDetailPage(item)" style="cursor: pointer;">
-                <td>{{ totalElements - (page - 1) * pageSize - index }}</td>
-                <td>{{ item.franchiseName }}</td>
-                <td>{{ item.ingredientName }}</td>
-                <td>{{ item.quantity }} {{ item.unit || '' }}</td>
-                <td>{{ formatDate(item.date) }}</td>
-                <td>{{ statusLabel(item.historyStatus) }}</td>
+                <td class="text-center">{{ totalElements - (page - 1) * pageSize - index }}</td>
+                <td class="text-center">{{ item.franchiseName }}</td>
+                <td class="text-center">{{ item.ingredientName }}</td>
+                <td class="text-center">{{ item.quantity }} {{ item.unit || '' }}</td>
+                <td class="text-center">{{ formatDate(item.date) }}</td>
+                <td class="text-center">{{ statusLabel(item.historyStatus) }}</td>
               </tr>
             </template>
           </v-data-table>
 
           <!-- 📄 페이지네이션 -->
           <v-row class="mt-4 justify-end">
-            <v-pagination
-              v-model="page"
-              :length="totalPages"
-              @input="fetchHistories"
-              color="primary"
-            />
+            <v-pagination v-model="page" :length="totalPages" :total-visible="5" color="primary" @input="fetchStocks" />
           </v-row>
         </v-card>
       </v-col>
@@ -99,12 +73,12 @@ const statusOptions = [
 ]
 
 const headers = [
-  { title: '번호', key: 'number' },
-  { title: '가맹점명', key: 'franchiseName' },
-  { title: '재료명', key: 'ingredientName' },
-  { title: '수량', key: 'quantity' },
-  { title: '신청일', key: 'date' },
-  { title: '상태', key: 'historyStatus' }
+  { title: '번호', key: 'number', align: 'center', sortable: false },
+  { title: '가맹점명', key: 'franchiseName', align: 'center', sortable: false },
+  { title: '재료명', key: 'ingredientName', align: 'center', sortable: false },
+  { title: '수량', key: 'quantity', align: 'center', sortable: false },
+  { title: '신청일', key: 'date', align: 'center', sortable: false },
+  { title: '상태', key: 'historyStatus', align: 'center', sortable: false }
 ]
 
 const fetchHistories = async () => {
@@ -183,5 +157,9 @@ watch(page, fetchHistories)
 :deep(.rounded-table tbody tr:hover) {
   background-color: #f4faff;
   cursor: pointer;
+}
+
+.hei {
+  min-height: 900px;
 }
 </style>
