@@ -4,7 +4,8 @@ import apiClient from '@/api'
 export const useRegionStore = defineStore('region', {
   state: () => ({
     majors: [], subs: [], franchises: [],
-    selectedMajor: null, selectedSub: null, selectedFranchise: null
+    selectedMajor: null, selectedSub: null, selectedFranchise: null,
+    franchiseCache: {}
   }),
   actions: {
     async fetchMajors() {
@@ -16,8 +17,16 @@ export const useRegionStore = defineStore('region', {
       this.subs = res.data
     },
     async fetchFranchises(regionCode) {
-      const res = await apiClient.get('/regions/franchises', { params: { regionCode } })
+      if (this.franchiseCache[regionCode]) {
+        this.franchises = this.franchiseCache[regionCode]
+        return
+      }
+      const res = await apiClient.get('/regions/franchises', {
+        params: {regionCode}
+      })
+
       this.franchises = res.data
+      this.franchiseCache[regionCode] = res.data
     }
   }
 })

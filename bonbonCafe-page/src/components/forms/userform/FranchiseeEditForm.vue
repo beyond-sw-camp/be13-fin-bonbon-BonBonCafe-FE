@@ -1,10 +1,10 @@
 <template>
-    <v-container class="py-4" fluid>
+    <v-container class="py-4 hei" fluid>
   
       <v-row dense>
         <!-- 수정 카드 -->
         <v-col cols="12" md="6">
-          <v-card class="pa-6" elevation="2" style="width: 100%; height: 760px;">
+          <v-card class="pa-6" elevation="2" style="width: 100%;">
 
             <v-typography class="list"  align="center">
             계정 관리 / 
@@ -77,18 +77,27 @@
                   </v-btn>
 
 
-                  <v-dialog v-model="dialogVisible" max-width="600px" eager>
+                  <v-dialog v-model="dialogVisible" max-width="800px" eager>
                     <v-card>
-                      <v-card-title class="text-h6">가맹점 선택</v-card-title>
+                      <br>
+                      <v-card-title class="text-h6 py-4 px-6">가맹점 선택</v-card-title>
                       <v-card-text>
-                        <v-text-field
-                          v-model="dialogSearch"
-                          prepend-inner-icon="mdi-magnify"
-                          placeholder="가맹점명으로 검색"
-                          clearable
-                          density="compact"
-                          variant="outlined"
-                        />
+                        <v-row dense>
+                          <v-col cols="9">
+                            <v-text-field
+                              v-model="dialogSearch"
+                              prepend-inner-icon="mdi-magnify"
+                              placeholder="가맹점명으로 검색"
+                              clearable
+                              density="compact"
+                              variant="outlined"
+                            />
+                          </v-col>
+                          <v-col cols="3" class="d-flex justify-end">
+                            <v-btn color="primary" class="me-2" @click="handleSearch">검색</v-btn>
+                            <v-btn color="grey" @click="handleClearSearch">초기화</v-btn>
+                          </v-col>
+                        </v-row>
 
                         <v-data-table-server
                           v-if="dialogVisible"
@@ -113,18 +122,7 @@
                             />
                           </v-col>
                         </v-row>
-
-                        <!-- 페이지 사이즈 선택 -->
-                        <v-select
-                          v-model="dialogPageSize"
-                          :items="[5, 10, 20]"
-                          label="Rows per page"
-                          density="compact"
-                          variant="outlined"
-                          class="mt-2"
-                          hide-details
-                          @update:model-value="onDialogPageSizeChange"
-                        />
+                        
                       </v-card-text>
                       <v-card-actions>
                         <v-spacer />
@@ -135,6 +133,8 @@
 
 
                 </v-col>
+
+                
                 <v-col cols="12">
                   <v-select
                     v-model="editedInfo.status"
@@ -380,7 +380,7 @@ const fetchDialogFranchiseList = async (page, size, search = '') => {
     const accessToken = localStorage.getItem('accessToken');
 
     // 가맹점주가 지정되지 않은 가맹점 목록 출력
-    const res = await apiClient.get(`/bonbon/user/franchisee/without-owner`, {
+    const res = await apiClient.get(`/bonbon/user/franchisee/without-owner/principal`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       },
@@ -423,10 +423,21 @@ watch(dialogVisible, async (visible) => {
 });
 
 // 검색어 입력 시 첫 페이지부터 다시 검색된 목록 보여줌
-watch(dialogSearch, () => {
+// watch(dialogSearch, () => {
+//   dialogCurrentPage.value = 1;
+//   fetchDialogFranchiseList(1, dialogPageSize.value, dialogSearch.value);
+// });
+
+const handleSearch = () => {
   dialogCurrentPage.value = 1;
   fetchDialogFranchiseList(1, dialogPageSize.value, dialogSearch.value);
-});
+};
+
+const handleClearSearch = () => {
+  dialogSearch.value = '';  // 검색어 초기화
+  dialogCurrentPage.value = 1;  // 페이지도 첫 번째 페이지로 초기화
+  fetchDialogFranchiseList(1, dialogPageSize.value);  // 조건 없는 전체 리스트 조회
+};
 
 // 페이지네이션에서 페이지 변경 시 필요
 const onDialogPageChange = (page) => {
@@ -497,5 +508,8 @@ const deleteFranchise = () => {
     font-weight: 600;
     color: gray;
   }
+  .hei {
+  min-height: 900px;
+}
   </style>
   

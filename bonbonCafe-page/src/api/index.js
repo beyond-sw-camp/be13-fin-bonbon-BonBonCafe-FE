@@ -4,8 +4,8 @@ import axios from "axios";  // axios 라이브러리를 사용해 HTTP 통신 �
 // 커스텀한 axios 인스턴스
 const apiClient = axios.create({
     // API 요청 기본 URL 설정
-    baseURL: 'http://localhost:8080',
-    timeout: 2000   // 2초를 넘기면 타임아웃 발생 
+    baseURL: 'http://3.34.179.79:8080',
+    timeout: 20000   // 2초를 넘기면 타임아웃 발생 
 });
 
 
@@ -48,6 +48,7 @@ apiClient.interceptors.response.use(
 
         // 이전 요청에 대한 config 객체
         const originalRequest = error.config;
+        console.log(error);
 
         if (
             originalRequest.url === '/bonbon/user/refresh' // 이미 재시도 한 요청

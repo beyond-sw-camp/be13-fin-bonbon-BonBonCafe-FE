@@ -1,78 +1,85 @@
 <template>
-  <div class="stock-wrapper ma-10 pa-8">
-    <h3 class="text-2xl font-semibold mb-6">🏢 본사 재고 조회</h3>
+  <v-container class="py-4 hei" fluid>
+    <v-row dense>
+      <v-col cols="12" md="10" offset-md="1">
+        <v-card class="pa-6 elevation-2" style="min-height: 650px;">
+          <v-typography class="list" align="center">재고&발주 관리 /</v-typography>
+          <v-typography class="title" align="center">본사 재고 조회</v-typography>
 
-    <!-- 🔍 검색 + 추가 버튼 -->
-    <div class="d-flex justify-between align-center mb-6 flex-wrap" style="gap: 12px;">
-      <v-text-field
-        v-model="search"
-        label="재료명 검색"
-        prepend-inner-icon="mdi-magnify"
-        variant="outlined"
-        density="comfortable"
-        hide-details
-        class="flex-grow-1"
-        @keyup.enter="onSearch"
-      />
+          <br /><br />
 
-      <v-btn color="#D8DBBD" variant="flat" @click="goToRegister">재고 추가</v-btn>
-    </div>
+          <!-- 🔍 검색 + 추가 버튼 -->
+          <v-row class="mb-6" align="center" justify="space-between">
+            <v-col cols="12" md="8">
+              <v-text-field v-model="search" label="재료명 검색" prepend-inner-icon="mdi-magnify" variant="outlined"
+                density="comfortable" hide-details @keyup.enter="onSearch" />
+            </v-col>
+            <v-col cols="12" md="4" class="text-right">
+              <v-btn color="primary" @click="goToRegister" v-if="userRole === 'ROLE_HEADQUARTER'">
+                <v-icon start>mdi-plus</v-icon>
+                재고 추가
+              </v-btn>
+            </v-col>
+          </v-row>
 
-    <!-- 📦 재고 카드 목록 -->
-    <v-row>
-      <v-col
-        v-for="stock in stocks"
-        :key="stock.stockId"
-        cols="12"
-        sm="6"
-        md="4"
-      >
-        <v-card class="stock-card hoverable" @click="goToStockDetail(stock.stockId)">
-          <v-card-title class="text-lg font-semibold">
-            {{ stock.ingredientName }}
-          </v-card-title>
+          <!-- 📋 테이블 -->
+          <v-data-table :headers="headers" :items="stocks" class="rounded-table" density="comfortable"
+            hide-default-footer>
+            <template #item="{ item }">
+              <tr @click="goToStockDetail(item)" style="cursor: pointer;">
+                <td class="text-center">{{ item.ingredientName }}</td>
+                <td class="text-center">{{ item.quantity }} {{ item.unit }}</td>
+                <td class="text-center">{{ formatPrice(item.unitPrice) }}원</td>
+                <td class="text-center">{{ formatPrice(item.retailPrice) }}원</td>
+              </tr>
+            </template>
+          </v-data-table>
 
-          <v-card-subtitle class="text-sm mb-2">
-            {{ stock.quantity }} {{ stock.unit }}
-          </v-card-subtitle>
+          <!-- 📄 페이징 및 페이지 수 -->
+          <v-row class="mt-4 align-center justify-space-between">
+            <v-row class="mt-4 justify-end">
+              <v-col cols="auto">
+                <v-pagination v-model="page" :length="totalPages" :total-visible="5" color="primary"
+                  @input="fetchStocks" />
+              </v-col>
+            </v-row>
 
-          <v-card-text class="text-sm">
-            <div>단가: {{ formatPrice(stock.unitPrice) }}원</div>
-            <div>소비자가: {{ formatPrice(stock.retailPrice) }}원</div>
-            <div class="mt-2 text-caption text-grey-darken-1">본사: {{ stock.headquarterName }}</div>
-          </v-card-text>
+          </v-row>
         </v-card>
       </v-col>
     </v-row>
-
-    <!-- 📄 페이징 -->
-    <v-pagination
-      v-model="page"
-      :length="totalPages"
-      class="mt-8"
-      color="primary"
-      @input="fetchStocks"
-    />
-  </div>
+  </v-container>
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import apiClient from '@/api'
+import { useAuthStore } from '@/stores/auth'
 
+const authStore = useAuthStore()
+const userRole = authStore.userInfo.role
 const router = useRouter()
 
 const stocks = ref([])
 const page = ref(1)
+const pageSize = ref(10)
 const totalPages = ref(1)
 const search = ref('')
+
+const headers = [
+  { title: '재료명', key: 'ingredientName', align: 'center', sortable: false },
+  { title: '수량', key: 'quantity', align: 'center', sortable: false },
+  { title: '단가', key: 'unitPrice', align: 'center', sortable: false },
+  { title: '소비자가', key: 'retailPrice', align: 'center', sortable: false }
+]
 
 const fetchStocks = async () => {
   try {
     const { data } = await apiClient.get(`/headquarter-stocks`, {
       params: {
         page: page.value - 1,
+        size: pageSize.value,
         search: search.value || null
       }
     })
@@ -88,8 +95,19 @@ const onSearch = () => {
   fetchStocks()
 }
 
-const goToStockDetail = (stockId) => {
-  router.push({ name: 'headquarter-stock-detail', params: { headquarterStockId: stockId } })
+const onPageSizeChange = () => {
+  page.value = 1
+  fetchStocks()
+}
+
+const goToStockDetail = (item) => {
+  if (userRole !== 'ROLE_HEADQUARTER') return
+  if (!item?.stockId) return alert('stockId가 없습니다.')
+
+  router.push({
+    name: 'headquarter-stock-detail',
+    params: { headquarterStockId: item.stockId }
+  })
 }
 
 const goToRegister = () => {
@@ -105,22 +123,49 @@ watch(page, fetchStocks)
 </script>
 
 <style scoped>
-.stock-wrapper {
-  background-color: #f5f5f5;
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #3f51b5;
 }
 
-.hoverable {
+.list {
+  font-size: 16px;
+  font-weight: 600;
+  color: gray;
+}
+
+.hei {
+  min-height: 900px;
+}
+
+:deep(.rounded-table thead) {
+  background-color: #f2f5f8;
+}
+
+:deep(.rounded-table td),
+:deep(.rounded-table th) {
+  text-align: center;
+}
+
+:deep(.rounded-table tbody tr:hover) {
+  background-color: #f4faff;
   cursor: pointer;
-  transition: transform 0.2s ease;
-}
-.hoverable:hover {
-  transform: scale(1.02);
 }
 
-.stock-card {
-  background-color: white;
-  border-radius: 12px;
-  padding: 12px;
-  min-height: 160px;
+::v-deep(.v-pagination) {
+  gap: 4px;
+}
+
+::v-deep(.v-pagination .v-btn) {
+  min-width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+::v-deep(.v-pagination .v-btn.v-btn--active) {
+  background-color: #caddf0 !important;
+  color: black !important;
 }
 </style>

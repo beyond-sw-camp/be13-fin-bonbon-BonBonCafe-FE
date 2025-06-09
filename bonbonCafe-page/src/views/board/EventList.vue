@@ -1,61 +1,96 @@
 <template>
-  <div class="event-wrapper ma-10 pa-8">
-    <div class="d-flex justify-space-between align-center mb-6">
-      <h2 class="text-2xl font-semibold">🎉 이벤트 게시판</h2>
-      <v-btn color="primary" @click="goToRegister" prepend-icon="mdi-plus">
-        이벤트 등록
-      </v-btn>
-    </div>
+  <v-container class="py-4 hei" fluid>
+    <v-row dense>
+      <v-col cols="12" md="10" offset-md="1">
+        <v-card class="pa-6 elevation-2" style="min-height: 650px;">
+          <v-row class="mb-4" align="center" justify="space-between">
+            <v-col>
+              <v-typography class="list">게시판 /</v-typography>
+              <v-typography class="title">🎉 이벤트 게시판</v-typography>
+            </v-col>
+            <v-col class="text-right" v-if="userRole === 'ROLE_HEADQUARTER'">
+              <v-btn color="primary" @click="goToRegister">
+                <v-icon start>mdi-plus</v-icon>
+                이벤트 등록
+              </v-btn>
+            </v-col>
+          </v-row>
 
-    <v-card class="event-card elevation-1">
-      <v-table class="rounded-header-table">
-        <thead>
-          <tr>
-            <th>번호</th>
-            <th>제목</th>
-            <th>작성자</th>
-            <th>작성일</th>
-            <th class="text-center">문자전송</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="(event, index) in events"
-            :key="event.noticeId"
-            @click="goToDetail(event.noticeId)"
-            style="cursor: pointer"
+          <!-- 📋 테이블 -->
+          <v-data-table
+            :headers="headers"
+            :items="events"
+            class="rounded-table"
+            density="comfortable"
+            hide-default-footer
           >
-            <td>{{ totalElements - (page - 1) * pageSize - index }}</td>
-            <td>{{ event.title }}</td>
-            <td>{{ event.author }}</td>
-            <td>{{ formatDate(event.createTime) }}</td>
-            <td class="text-center">{{ event.sent ? '✅' : '❌' }}</td>
-          </tr>
-        </tbody>
-      </v-table>
-    </v-card>
+            <template #item="{ item, index }">
+              <tr @click="goToDetail(item.noticeId)" style="cursor: pointer;">
+                <td class="text-center">{{ totalElements - (page - 1) * pageSize - index }}</td>
+                <td class="text-center">{{ item.title }}</td>
+                <td class="text-center">{{ item.author }}</td>
+                <td class="text-center">{{ formatDate(item.createTime) }}</td>
+                <td
+                  v-if="userRole === 'ROLE_HEADQUARTER'"
+                  class="text-center"
+                >
+                  <v-chip
+                    :color="item.sent ? 'success' : 'error'"
+                    text-color="white"
+                    size="small"
+                    label
+                  >
+                    {{ item.sent ? '전송 완료' : '미전송' }}
+                  </v-chip>
+                </td>
+              </tr>
+            </template>
+          </v-data-table>
 
+          <!-- 📄 페이지네이션 -->
+          <v-row class="mt-4 justify-end">
+  <v-col cols="auto">
     <v-pagination
       v-model="page"
       :length="totalPages"
-      @input="fetchEvents"
-      class="mt-4"
+      :total-visible="10"
+      @update:model-value="fetchEvents"
+      class="custom-pagination"
+      color="#2A3663"
     />
-  </div>
+  </v-col>
+</v-row>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 import apiClient from '@/api'
 
 const router = useRouter()
+const authStore = useAuthStore()
+const userRole = computed(() => authStore.userInfo.role)
 
 const events = ref([])
 const page = ref(1)
 const pageSize = 10
 const totalPages = ref(1)
 const totalElements = ref(0)
+
+const headers = [
+  { title: '번호', key: 'number', align: 'center', sortable: false },
+  { title: '제목', key: 'title', align: 'center', sortable: false },
+  { title: '작성자', key: 'author', align: 'center', sortable: false },
+  { title: '작성일', key: 'createTime', align: 'center', sortable: false },
+  ...(userRole.value === 'ROLE_HEADQUARTER'
+    ? [{ title: '문자 전송', key: 'sent', align: 'center', sortable: false }]
+    : [])
+]
 
 const fetchEvents = async () => {
   try {
@@ -90,26 +125,31 @@ watch(page, fetchEvents)
 </script>
 
 <style scoped>
-.event-wrapper {
-  background-color: #f9f9f9;
-  border-radius: 12px;
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #3f51b5;
 }
-
-.event-card {
-  border-radius: 12px 12px 0 0; /* 상단만 둥글게 */
-  overflow: hidden;
+.hei {
+  min-height: 900px;
 }
-
-.rounded-header-table thead {
-  background-color: #D8DBBD;
+.list {
+  font-size: 16px;
+  font-weight: 600;
+  color: gray;
 }
-
-.rounded-header-table thead th {
+.custom-pagination >>> .v-pagination__item.v-pagination__item--is-active {
+  background-color: #caddf0 !important;
+  color: white !important;
   font-weight: bold;
+  border-radius: 8px;
+}
+:deep(.rounded-table thead) {
+  background-color: #f2f5f8;
 }
 
-.rounded-header-table tbody tr:hover {
-  background-color: #f0f8ff;
-  transition: background-color 0.2s;
+:deep(.rounded-table tbody tr:hover) {
+  background-color: #f4faff;
+  cursor: pointer;
 }
 </style>

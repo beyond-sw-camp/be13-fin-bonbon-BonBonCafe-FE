@@ -2,27 +2,27 @@
     <div class = "shrink-wrapper">
         
     <v-container>
-        <div>
-            <h2>Project BonBon1 ver.2</h2>
-        </div>
         <v-row class="mainC ma-4">
-            <v-col cols="6">
-                <HeadQuarterSalesChart/>
+            <!-- 지난 가맹점 순위 -->
+            <v-col cols="5 ">
+                <HeadQuarterRanking/>
             </v-col>
-            <v-col cols="6">
-                <HeadQuarterForecastChart/>
+                
+            <!-- 지난 3개월 메뉴별 판매 비율 -->
+            <v-col cols="7">
+                <HeadQuarterMenuChart/>
             </v-col>
         </v-row>
         <v-row class="mainC ma-4">
-            <v-col cols="4">
-                <HeadQuarterRanking/>
+            <!-- 지난 매출 추이 -->
+            <v-col cols="6">
+                <HeadQuarterSalesChart/>
             </v-col>
-            <v-col cols="4">
-                <HeadQuarterMenuChart/>
+            <!-- 전국 가맹점 예상 매출 -->
+            <v-col cols="6">
+                <HeadQuarterForecastChart/>
             </v-col>
-            <v-col cols="4">
-                <v-card  class="tt"></v-card>
-            </v-col>
+         
         </v-row>
 
     </v-container>

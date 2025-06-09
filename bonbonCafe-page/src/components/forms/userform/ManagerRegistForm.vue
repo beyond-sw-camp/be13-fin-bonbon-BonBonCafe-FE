@@ -1,5 +1,5 @@
 <template>
-    <v-container class="py-4" fluid>
+    <v-container class="py-4 hei" fluid>
   
       <v-row dense>
         <!-- 수정 카드 -->
@@ -451,11 +451,8 @@ const fetchDialogFranchiseList = async (page, size, search = '') => {
   try {
     const accessToken = localStorage.getItem('accessToken');
 
-    // 가맹점주가 지정되지 않은 가맹점 목록 출력
+    // 지역 목록 조회 
     const res = await apiClient.get(`/bonbon/user/region`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      },
       params: {
         page: page - 1,
         size,
@@ -651,5 +648,8 @@ const fetchFranchiseList = async (page, size, search = '') => {
     font-weight: 600;
     color: gray;
   }
+  .hei {
+  min-height: 900px;
+}
   </style>
   

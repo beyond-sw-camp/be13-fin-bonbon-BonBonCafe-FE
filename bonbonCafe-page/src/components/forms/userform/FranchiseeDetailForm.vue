@@ -1,5 +1,5 @@
 <template>
-  <v-container class="py-4" fluid>
+  <v-container class="py-4 hei"  fluid>
     <!-- 상단 타이틀 -->
     
 
@@ -35,13 +35,13 @@
               <div class="info-label">가맹점주 이름</div>
               <div class="info-value">{{ franchiseeInfo.name }}</div>
             </v-col>
-            <v-col cols="12" md="12" class="mb-3">
+            <!-- <v-col cols="12" md="12" class="mb-3">
               <div class="info-label">비밀번호</div>
               <div class="d-flex align-center gap-2">
                 <div class="info-value">************</div>
                 <v-btn size="small" variant="outlined" color="primary">비밀번호 확인</v-btn>
               </div>
-            </v-col>
+            </v-col> -->
             <v-col cols="12" md="6" class="mb-3">
               <div class="info-label">전화번호</div>
               <div class="info-value">{{ franchiseeInfo.phone }}</div>
@@ -59,7 +59,8 @@
             <br>
             <v-divider></v-divider>
 
-            <v-col cols="12" class="d-flex justify-end mt-4">
+            <v-col cols="12" class="d-flex justify-center mt-4" style="gap: 10px;">
+              <v-btn color="secondary" @click="goToList">목록으로</v-btn>
               <v-btn color="primary" @click="goToEdit">수정하기</v-btn>
             </v-col>
 
@@ -103,6 +104,10 @@ onMounted(() => {
   kakaoMapElement.style.height = `${parentHeight}px`;
   kakaoMapElement.style.width = '100%';
 });
+
+const goToList = () => {
+  router.push({name : 'franchisee-accounts-list'}); // 원하는 목록 페이지 경로로 변경
+};
 
 const goToEdit = () => {
   router.push(`/franchisee-accounts/${userId}/edit`);
@@ -203,6 +208,9 @@ onMounted(async () => {
   font-size: 16px;
   font-weight: 600;
   color: gray;
+}
+.hei {
+  min-height: 900px;
 }
 </style>
   

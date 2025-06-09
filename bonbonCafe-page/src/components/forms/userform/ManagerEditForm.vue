@@ -1,5 +1,5 @@
 <template>
-    <v-container class="py-4" fluid>
+    <v-container class="py-4 hei" fluid>
   
       <v-row dense>
         <!-- 수정 카드 -->
@@ -63,64 +63,31 @@
                 <v-col cols="12">
                   <v-text-field v-model="editedInfo.phone" label="전화번호" @input="isDirty = true"/>
                 </v-col>
-                <v-col cols="12">
-                  <v-text-field v-model="editedInfo.region" label="담당 지역구" readOnly @click="dialogVisible = true"/>
-                  <v-btn
-                    v-if="editedInfo.region"
-                    color="error"
-                    size="small"
-                    @click="deleteFranchise"
-                  >
-                    지역구 삭제
-                  </v-btn>
-
-
-                  <v-dialog v-model="dialogVisible" max-width="600px" eager>
-                    <v-card>
-                      <v-card-title class="text-h6">지역구 선택</v-card-title>
-                      <v-card-text>
-                        <v-text-field
-                          v-model="dialogSearch"
-                          prepend-inner-icon="mdi-magnify"
-                          placeholder="지역명으로 검색"
-                          clearable
-                          density="compact"
-                          variant="outlined"
-                        />
-
-                        <v-data-table-server
-                          v-if="dialogVisible"
-                          :headers="dialogHeaders"
-                          :items="dialogItems"
-                          :items-length="dialogTotalItems"
-                          :items-per-page="dialogPageSize"
-                          :page="dialogCurrentPage"
-                          @click:row="(event, item) => selectRegion(item)"
-                          @update:options="onDialogOptionsChange"
-                          class="elevation-1"
-                          hide-default-footer
-                        />
-                        <!-- 페이지네이션 -->
-                        <v-row class="mt-4" align="center" justify="center">
-                          <v-col cols="auto" class="text-center">
-                            <v-pagination
-                              v-model="dialogCurrentPage"
-                              :length="dialogTotalPages"
-                              :total-visible="3"
-                              @input="onDialogPageChange"
-                            />
-                          </v-col>
-                        </v-row>
-                      </v-card-text>
-                      <v-card-actions>
-                        <v-spacer />
-                        <v-btn text @click="dialogVisible = false">닫기</v-btn>
-                      </v-card-actions>
-                    </v-card>
-                  </v-dialog>
-
-
+                
+                <v-col cols="6">
+                  <v-select
+                    v-model="selectedMajor"
+                    :items="majors"
+                    label="시/도 선택"
+                    @update:modelValue="fetchSubs"
+                    variant="outlined"
+                    density="compact"
+                    class="mb-4"
+                  />
                 </v-col>
+                <v-col cols="6">
+                  <v-select
+                    v-model="selectedSub"
+                    :items="subs"
+                    item-title="regionName"
+                    item-value="regionName"
+                    label="구/군 선택"
+                    variant="outlined"
+                    density="compact"
+                  />
+                </v-col>
+                  
+
                 <v-col cols="12">
                   <v-select
                     v-model="editedInfo.status"
@@ -174,14 +141,14 @@
             </div>
             <v-card-text>
                 <!-- 검색창 -->
-                <v-text-field
+                <!-- <v-text-field
                     v-model="search"
                     prepend-inner-icon="mdi-magnify"
                     placeholder="가맹점명으로 검색"
                     clearable
                     density="compact"
                     variant="outlined"
-                />
+                /> -->
 
                 <!-- 목록 -->
                 <v-data-table-server
@@ -226,6 +193,12 @@
   import { ref, onMounted, watch, nextTick } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import apiClient from '@/api';
+
+  const majors = ref([]);
+  const subs = ref([]);
+
+  const selectedMajor = ref('')
+  const selectedSub = ref('')
   
   const route = useRoute();
   const router = useRouter();
@@ -239,7 +212,7 @@
   const items = ref([]);
   const search = ref('');
   const currentPage = ref(1);
-  const pageSize = ref(8);
+  const pageSize = ref(10);
   const totalItems = ref(0);
   const totalPages = ref(0);
 
@@ -278,7 +251,38 @@
     }
 
     fetchFranchiseList(1, pageSize.value, search.value);
+    await fetchMajors();
   });
+
+  const fetchMajors = async () => {
+    try {
+      const res = await apiClient.get('/regions/majors');
+      majors.value = res.data;
+      console.log(majors.value);
+    } catch (error) {
+      console.error('시도 목록 조회 실패:', error);
+    }
+  };
+
+  const fetchSubs = async (major) => {
+    selectedSub.value = '';
+    try {
+      const res = await apiClient.get('/regions/sub', {
+        params: { major },
+      });
+
+      subs.value = res.data.map(item => ({
+        regionName: item.name.split(' ').pop(),  // 구/군만 표시
+        regionCode: item.code                    // 실제 regionCode 저장
+      }));
+
+      console.log(subs.value);
+        
+    } catch (error) {
+      console.error('구군 목록 조회 실패:', error);
+    }
+  };
+
 
   // 이미지 삭제 로직
   const deleteImage = async () => {
@@ -399,6 +403,12 @@ const onFileChange = (files) => {
     { text: '지역명', align: 'center', value: 'regionName' },
   ];
 
+  const headers = ref([
+    { title: '가맹점명', key: 'name', align: 'center' },
+    { title: '전화번호', key: 'franchiseTel', align: 'center' },
+    { title: '도로명주소', key: 'roadAddress', align: 'center' }
+  ]);
+
 const dialogVisible = ref(false);
 const dialogItems = ref([]);    
 const dialogSearch = ref('');
@@ -440,8 +450,8 @@ const fetchDialogFranchiseList = async (page, size, search = '') => {
 const selectRegion = (item) => {
   console.log("선택된 지역구:", item);
 
-  editedInfo.value.region = item.item.regionName;
-  editedInfo.value.regionCode = item.item.regionCode;
+  editedInfo.value.region = item.regionName;
+  editedInfo.value.regionCode = item.regionCode;
 
   isDirty.value = true;
   dialogVisible.value = false;
@@ -553,6 +563,15 @@ const fetchFranchiseList = async (page, size, search = '') => {
     fetchFranchiseList(options.page, options.itemsPerPage, search.value);
   };
 
+  watch(selectedSub, (regionName) => {
+    const selected = subs.value.find(s => s.regionName === regionName);
+    if (selected) {
+      editedInfo.value.region = selected.regionName;
+      editedInfo.value.regionCode = selected.regionCode;
+      isDirty.value = true;
+      fetchFranchiseList(1, pageSize.value, search.value);
+    }
+  });
 
 
   </script>
@@ -588,5 +607,8 @@ const fetchFranchiseList = async (page, size, search = '') => {
     font-weight: 600;
     color: gray;
   }
+  .hei {
+  min-height: 900px;
+}
   </style>
   

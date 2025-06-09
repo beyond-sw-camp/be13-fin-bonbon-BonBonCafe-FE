@@ -79,7 +79,8 @@ export const useAuthStore = defineStore('auth', () => {
                 alert(error.response.data.message);
             } else {
                 // 401 이외의 오류 발생 시 일반적인 에러 메시지 표시
-                alert('에러가 발생했습니다.');
+                alert(error.response.data.message);
+                // alert('에러가 발생했습니다.');
             }
         }
     };

@@ -4,95 +4,54 @@
 
     <v-form ref="formRef" @submit.prevent="submitUpdate">
       <v-row>
-        <!-- 왼쪽 입력 -->
         <v-col cols="12" md="8">
           <v-text-field v-model="menu.name" label="메뉴 이름" required />
-          <v-text-field v-model="menu.price" label="가격" type="number" required />
+          <v-text-field v-model="menu.price" label="가격" type="number" step="50" required />
           <v-text-field v-model="menu.description" label="설명" />
           <v-row>
             <v-col cols="12" md="6">
-              <v-select
-                v-model="menu.status"
-                :items="['ACTIVE', 'INACTIVE']"
-                label="상태"
-                required
-              />
+              <v-select v-model="menu.status" :items="[
+                { label: '활성화', value: 'ACTIVE' },
+                { label: '비활성화', value: 'INACTIVE' }
+              ]" label="상태" item-title="label" item-value="value" required />
             </v-col>
             <v-col cols="12" md="6">
-              <v-select
-                v-model="selectedCategories"
-                :items="allCategories"
-                label="카테고리"
-                item-title="categoryName"
-                item-value="id"
-                multiple
-                chips
-                return-object
-              />
+              <v-select v-model="selectedCategories" :items="allCategories" label="카테고리" item-title="categoryName"
+                item-value="id" multiple chips return-object />
             </v-col>
           </v-row>
         </v-col>
 
-        <!-- 오른쪽 이미지 -->
-        <!-- 오른쪽 이미지 -->
         <v-col cols="12" md="4">
-  <input
-    type="file"
-    ref="fileInput"
-    accept="image/*"
-    class="d-none"
-    @change="onFileChange"
-  />
-
-  <div class="upload-box" @click="triggerFileInput">
-    <v-img
-      v-if="menu.image"
-      :src="menu.image"
-      aspect-ratio="1"
-      cover
-      class="rounded"
-    />
-    <div class="upload-label">
-      <v-icon size="32" class="mb-1">mdi-camera</v-icon>
-      <div class="text-caption">이미지 등록</div>
-    </div>
-  </div>
-</v-col>
+          <input type="file" ref="fileInput" accept="image/*" class="d-none" @change="onFileChange" />
+          <div class="upload-box" @click="triggerFileInput">
+            <v-img v-if="menu.image" :src="menu.image" aspect-ratio="1" cover class="rounded" />
+            <div class="upload-label">
+              <v-icon size="32" class="mb-1">mdi-camera</v-icon>
+              <div class="text-caption">이미지</div>
+            </div>
+          </div>
+        </v-col>
       </v-row>
 
       <!-- 재료 테이블 -->
-<!-- 재료 테이블 -->
-<div class="mt-4">
-  <p><strong>재료 선택 및 수량 입력</strong></p>
-  <v-data-table
-    :headers="headers"
-    :items="currentIngredients"
-    item-key="ingredientId"
-    class="elevation-1"
-    density="compact"
-    :items-per-page="itemsPerPage"
-    hide-default-footer
-  >
-    <template v-slot:item.quantity="{ item }">
-      {{ item.quantity }}
-    </template>
-    <template v-slot:item.actions="{ item }">
-      <v-icon
-        color="primary"
-        icon="mdi-pencil"
-        size="small"
-        @click="openEditDialog(item)"
-      ></v-icon>
-    </template>
-  </v-data-table>
+      <div class="mt-4">
+        <p><strong>재료 선택 및 수량 입력</strong></p>
 
-  <!-- ✅ 페이징 컴포넌트 -->
-  <v-pagination
-    v-model="page"
-    :length="totalPages"
-    class="mt-2"
-  />
-</div>
+        <v-text-field v-model="searchKeyword" label="재료명 검색" append-inner-icon="mdi-magnify" class="mb-2" />
+
+        <v-data-table :headers="headers" :items="currentIngredients" item-key="ingredientId" class="elevation-1"
+          density="compact" :items-per-page="itemsPerPage" hide-default-footer>
+          <template v-slot:item.quantity="{ item }">
+            {{ item.quantity }}
+          </template>
+          <template v-slot:item.actions="{ item }">
+            <v-icon color="primary" icon="mdi-pencil" size="small" @click="openEditDialog(item)"></v-icon>
+          </template>
+        </v-data-table>
+
+        <v-pagination v-model="page" :length="totalPages" class="mt-2" />
+      </div>
 
       <div class="d-flex justify-end mt-4" style="gap: 8px;">
         <v-btn color="primary" type="submit">수정 완료</v-btn>
@@ -103,12 +62,7 @@
     <v-dialog v-model="dialog" max-width="400">
       <v-card title="재료 수량 수정">
         <v-card-text>
-          <v-text-field
-            v-model="editingItem.quantity"
-            label="수량"
-            type="number"
-            :suffix="`단위: ${editingItem.unit}`"
-          />
+          <v-text-field v-model="editingItem.quantity" label="수량" type="number" :suffix="`단위: ${editingItem.unit}`" />
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -121,40 +75,23 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import apiClient from '@/api'
-import { computed } from 'vue'
 
 const page = ref(1)
 const itemsPerPage = 10
+const searchKeyword = ref('')
 
-const totalPages = computed(() =>
-  Math.ceil(ingredientInputs.value.length / itemsPerPage)
-)
-
-const currentIngredients = computed(() => {
-  const start = (page.value - 1) * itemsPerPage
-  const end = start + itemsPerPage
-  return ingredientInputs.value.slice(start, end)
-})
 const route = useRoute()
 const router = useRouter()
 const menuId = route.params.menuId
 
 const formRef = ref(null)
-const menu = ref({
-  name: '',
-  price: 0,
-  description: '',
-  status: 'ACTIVE',
-  image: '',
-  menuDetails: []
-})
+const menu = ref({ name: '', price: 0, description: '', status: 'ACTIVE', image: '', menuDetails: [] })
 const selectedCategories = ref([])
 const allCategories = ref([])
 const ingredientInputs = ref([])
-const imageFile = ref(null)
 const fileInput = ref(null)
 const dialog = ref(false)
 const editingItem = ref({})
@@ -186,15 +123,29 @@ const headers = [
   { title: '', key: 'actions', sortable: false }
 ]
 
+const filteredIngredients = computed(() => {
+  return ingredientInputs.value.filter(item =>
+    item.ingredientName.toLowerCase().includes(searchKeyword.value.toLowerCase())
+  )
+})
+
+const totalPages = computed(() =>
+  Math.ceil(filteredIngredients.value.length / itemsPerPage)
+)
+
+const currentIngredients = computed(() => {
+  const start = (page.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return filteredIngredients.value.slice(start, end)
+})
+
 const openEditDialog = (item) => {
   editingItem.value = { ...item }
   dialog.value = true
 }
 
 const saveQuantity = () => {
-  const index = ingredientInputs.value.findIndex(
-    (i) => i.ingredientId === editingItem.value.ingredientId
-  )
+  const index = ingredientInputs.value.findIndex(i => i.ingredientId === editingItem.value.ingredientId)
   if (index !== -1) {
     ingredientInputs.value[index].quantity = editingItem.value.quantity
   }
@@ -241,10 +192,7 @@ const submitUpdate = async () => {
       categoryIds: selectedCategories.value.map(cat => cat.id),
       menuDetails: ingredientInputs.value
         .filter(item => item.quantity > 0)
-        .map(item => ({
-          ingredientId: item.ingredientId,
-          quantity: item.quantity
-        }))
+        .map(item => ({ ingredientId: item.ingredientId, quantity: item.quantity }))
     })
     alert('수정되었습니다.')
     router.push({ name: 'menu-detail', params: { menuId } })
@@ -258,6 +206,30 @@ const goBack = () => router.back()
 </script>
 
 <style scoped>
+.upload-box {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  background-color: #f5f5f5;
+  border: 1px dashed #bbb;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.upload-label {
+  position: absolute;
+  z-index: 2;
+  text-align: center;
+  color: #666;
+  background-color: rgba(255, 255, 255, 0.6);
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
 .upload-placeholder {
   height: 250px;
   background-color: #f0f0f0;

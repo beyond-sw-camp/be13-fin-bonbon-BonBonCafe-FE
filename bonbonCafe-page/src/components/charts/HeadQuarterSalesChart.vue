@@ -1,11 +1,16 @@
 <!-- src/components/charts/HeadQuarterSalesChart.vue -->
 <template>
-  <v-card class="chart-card fill-height pa-3 elevation-2">
-    <v-card-title class="chart-title ">
-      지난 매출 추이
+  <v-card class="pa-6 elevation-2 chart-card">
+    <v-card-title class="chart-card-title">
+      지난 3개월 매출 현황
     </v-card-title>
-    <v-card-text class="fixed-chart-height"> 
-      <div class = "chart-container">
+    <v-card-subtitle class="chart-card-subtitle">
+      최근 3개월간 전국 가맹점의 일별 매출 데이터를 한눈에 살펴보고
+      <br/>
+      매출의 흐름과 변화를 빠르게 파악할 수 있도록 제공합니다.
+    </v-card-subtitle>
+    <v-card-text class="fixed-chart-height pt-10"> 
+      <div class = "chart-wrapper">
         <canvas ref="chartRef"></canvas>
       </div>
     </v-card-text>
@@ -13,12 +18,15 @@
 </template>
 
 <script setup>
+import { useSalesStore } from '@/stores/salesStore'
+
 import 'chartjs-adapter-date-fns'
 import { ref, onMounted, nextTick } from 'vue'
 import dayjs from 'dayjs'
 import apiClient from '@/api'
 import Chart from 'chart.js/auto'
 
+const salesStore = useSalesStore()
 const chartRef = ref(null)
 let chart = null
 
@@ -45,30 +53,31 @@ onMounted(async () => {
     type: 'line',
     data: {
       datasets: [
-        {
-          label: '올해 매출 (원)',
+       {
+          label: '올해 매출',
           data: points,
-          borderColor: '#F98084',
-          backgroundColor: 'rgba(249,128,132,0.2)',
-          fill: true,
-          borderWidth: 1,
-          pointRadius: ctx => {
-            const ticks = ctx.chart.scales.x.ticks.map(t => t.value)
-            return ticks.includes(ctx.parsed.x) ? 2 : 0
-          }
+          borderColor: 'rgb(75, 192, 192)',
+          fill: false,
+          pointRadius: (context) => {
+            const ticks = context.chart.scales.x.ticks.map(t => dayjs(t.value).format('YYYY-MM-DD'))
+            const currentX = dayjs(context.parsed.x).format('YYYY-MM-DD')
+            return ticks.includes(currentX) ? 3 : 0  
+          },
+          pointBackgroundColor: 'rgb(75, 192, 192)',
+          pointHoverRadius: 2
         },
-        {
-          label: '작년 매출 (원)',
-          data: pointsLast,
-          borderColor: '#E35A7A',
-          backgroundColor: 'rgba(227,90,122,0.2)',
-          fill: true,
-          borderWidth: 1,
-          pointRadius: ctx => {
-            const ticks = ctx.chart.scales.x.ticks.map(t => t.value)
-            return ticks.includes(ctx.parsed.x) ? 2 : 0
-          }
-        }
+        // {
+        //   label: '작년 매출 (원)',
+        //   data: pointsLast,
+        //   borderColor: '#E35A7A',
+        //   backgroundColor: 'rgba(227,90,122,0.2)',
+        //   fill: true,
+        //   borderWidth: 1,
+        //   pointRadius: ctx => {
+        //     const ticks = ctx.chart.scales.x.ticks.map(t => t.value)
+        //     return ticks.includes(ctx.parsed.x) ? 2 : 0
+        //   }
+        // }
       ]
     },
     options: {
@@ -82,10 +91,37 @@ onMounted(async () => {
             tooltipFormat: 'yyyy-MM-dd',
             displayFormats: { week: 'MM-dd' }
           },
+          title: {
+            display: true,
+            text: '날짜',
+            font: {size: 14, weight: '600'},
+            color: '#444',
+          },
           ticks: { autoSkip: false, stepSize: 1 },
           grid: { display: false }
         },
-        y: { beginAtZero: true }
+        y: { 
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: '만(원)',
+            font: {size: 14, weight: '600'},
+            color: '#444',
+          },
+          ticks: {
+              callback: value => {
+                if (value === 0) {
+                  return '0';
+                }
+                return (value / 10_000).toFixed(0);
+              },
+                
+              color: '#444',
+              font: {
+                size: 13
+              }
+            },
+        }
       },
       plugins: { legend: { display: true, position: 'bottom' } }
     }
@@ -95,6 +131,25 @@ onMounted(async () => {
 
 <style scoped>
 
+.chart-card-title {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 25px;
+  font-weight: 700;
+  color: #222222;
+  justify-content: flex-start;
+  padding-top: 5px;   
+  padding-bottom: 20px; 
+}
+
+.chart-card-subtitle {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 13px;
+  font-style: italic;
+  color: rgb(26, 26, 26);
+  text-align: left;
+  margin-bottom: 0px;
+  margin-top: 0px;
+}
 
 .chart-card {
   display: flex;
@@ -102,19 +157,15 @@ onMounted(async () => {
   border-radius: 40px;
   background-color: #F9F9F9;
   }
-  /* 타이틀만 살짝 아래 패딩 */
-.chart-title {
-  padding: 16px;
-  font-weight: bold;
 
+.chart-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
 }
-
-.chart-container {
-  padding: 0 4%;     /* 좌우 10% 씩 여백 */
-  box-sizing: border-box;     /* v-card-text 영역을 꽉 채우도록 */
-  position: relative;
-  width: 100%;
-  height: 100%;
+.chart-wrapper canvas {
+    width: 100% !important;
+    height: 100% !important;
 }
 
 </style>

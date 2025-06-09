@@ -80,7 +80,7 @@ export const useSalesStore = defineStore('sales', {
         const status  = error.response?.status
         const message = error.response?.data?.message
         if (status === 400 || status === 404) alert(message)
-        else alert('예측 조회 중 오류가 발생했습니다.')
+        else alert('해당 가맹점에 대한 매출 기록이 없습니다.')
       }
     }             
   }

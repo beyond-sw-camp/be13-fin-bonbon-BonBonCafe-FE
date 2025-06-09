@@ -1,113 +1,154 @@
 <template>
-  <v-form @submit.prevent="onSearch">
-    <v-row dense align="center" class="mb-4">
-      <!-- 1) 시/도 선택 -->
-      <v-col cols="12" sm="3">
+  <div class="mt-4 pa-0 Tdiv">
+    <!-- 필터영역 -->
+    <div id="div0">
+      <div id="div1">
+        <!-- 시/도 -->
         <v-select
           v-model="selectedMajor"
           :items="regionStore.majors"
           item-title="name"
           item-value="code"
-          label="시/도"
-          clearable
-          dense
+          placeholder="시/도"
+          density="comfortable"
+          variant="outlined"
+          hide-details
+          class="selectBox select-region"
         />
-      </v-col>
-
-      <!-- 2) 구/군 선택 -->
-      <v-col cols="12" sm="3">
+        <!-- 구/군 -->
         <v-select
           v-model="selectedSubCode"
           :items="regionStore.subs"
           item-title="name"
           item-value="code"
-          label="구/군"
-          clearable
-          dense
+          placeholder="구/군"
+          density="comfortable"
+          variant="outlined"
+          hide-details
           :disabled="!regionStore.subs.length"
+          class="selectBox select-district"
         />
-      </v-col>
-
-      <!-- 3) 연도 입력 -->
-      <v-col cols="12" sm="2">
-        <v-text-field
-          v-model.number="year"
-          label="연도"
-          type="number"
-          required
-          dense
-        />
-      </v-col>
-
-      <!-- 4) 월 선택 -->
-      <v-col cols="12" sm="2">
+        <!-- 연도 -->
         <v-select
-          v-model.number="selectedMonth"
-          :items="monthItems"
-          item-title="text"
+          v-model="year"
+          :items="yearItems"
+          item-title="label"
           item-value="value"
-          label="월(선택)"
-          clearable
-          dense
+          placeholder="연도"
+          density="comfortable"
+          variant="outlined"
+          hide-details
+          class="selectBox select-year"
         />
-      </v-col>
-
-      <!-- 5) 조회 버튼 -->
-      <v-col cols="12" sm="2" class="text-right">
+        <!-- 월 -->
+        <v-select
+          v-model="selectedMonth"
+          :items="monthItems"
+          item-title="label"
+          item-value="value"
+          placeholder="월(선택)"
+          clearable
+          density="comfortable"
+          variant="outlined"
+          hide-details
+          class="selectBox select-month"
+        />
         <v-btn
-          type="submit"
+          rounded
           color="primary"
-          :disabled="!selectedSubCode || !year"
-          dense
-        >조회</v-btn>
-      </v-col>
-    </v-row>
-  </v-form>
+          @click="onSearch"
+          class="search-btn"
+        >
+          조회
+        </v-btn>
+        
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, watch, onMounted } from 'vue'
-import { useRegionStore }  from '@/stores/regionStore'
-import { useRankingStore } from '@/stores/rankingStore'
+import { useRegionStore } from '@/stores/regionStore'
 
-const regionStore   = useRegionStore()
-const rankingStore  = useRankingStore()
+const emit = defineEmits(['searched'])
+const regionStore = useRegionStore()
 
-// 바인딩할 값들
-const selectedMajor   = ref(null)            // 시/도 코드
-const selectedSubCode = ref(null)            // 구/군 코드
-const year            = ref(new Date().getFullYear())
-const selectedMonth   = ref(null)            // 1~12
+const selectedMajor   = ref(null)
+const selectedSubCode = ref(null)
+const year            = ref(null)
+const selectedMonth   = ref(null)
 
-// 월 Select 아이템
-const monthItems = Array.from({ length: 12 }, (_, i) => ({
-  value: i + 1,
-  text:  `${i + 1}월`
+
+// 연도 리스트 (현재 연도부터 과거 9년)
+const currentYear = new Date().getFullYear()
+const yearItems = Array.from({ length: 10 }, (_, i) => ({
+  label: `${currentYear - i}년`,
+  value: currentYear - i
 }))
 
-// 초기: 시/도 목록 로드
+// 월 리스트
+const monthItems = Array.from({ length: 12 }, (_, i) => ({
+  label: `${i + 1}월`,
+  value: i + 1
+}))
+
 onMounted(() => {
   regionStore.fetchMajors()
 })
 
-// 시/도가 바뀌면 subs 갱신
 watch(selectedMajor, code => {
   selectedSubCode.value = null
   if (code != null) regionStore.fetchSubs(code)
 })
 
-// 조회 실행
-async function onSearch() {
+function onSearch() {
   if (!selectedMajor.value || !selectedSubCode.value || !year.value) {
     alert('시/도, 구/군, 연도는 필수 선택입니다.')
     return
   }
-  await rankingStore.fetchRanking({
+
+  // 부모 컴포넌트로 필터값만 emit
+  emit('searched', {
     regionCode: selectedSubCode.value,
     year:       year.value,
-    month:      selectedMonth.value,
-    page:       0,
-    size:       10
+    month:      selectedMonth.value
   })
 }
 </script>
+
+<style scoped>
+
+.sales-analysis-container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+#div0 {
+  display: flex;
+  width: 100%;
+}
+#div1 {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-left: 170px;
+  margin-bottom: 30px;
+}
+/* SelectBox 디자인  */
+.selectBox {
+  background-color: white;
+  height: 48px;
+}
+/* 너비 지정 */
+.select-region   { width: 180px; }
+.select-district { width: 180px; }
+.select-year     { width: 120px; }
+.select-month    { width: 120px; }
+/* 조회 버튼 높이 맞추기 */
+.search-btn {
+  height: 48px;
+  min-width: 80px;
+  font-weight: bold;
+}
+</style>

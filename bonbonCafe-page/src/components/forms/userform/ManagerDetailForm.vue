@@ -1,5 +1,5 @@
 <template>
-  <v-container class="py-4" fluid>
+  <v-container class="py-4 hei" fluid>
     <!-- 상단 타이틀 -->
     
 
@@ -7,7 +7,7 @@
     <v-row dense>
       <!-- 회원 정보 카드 -->
       <v-col cols="12" md="6">
-        <v-card class="pa-6" elevation="2" style="width: 100%; height: 650px;">
+        <v-card class="pa-6" elevation="2" style="width: 100%; height: 680px;">
  
             <v-typography class="list"  align="center">
             계정 관리 / 
@@ -35,18 +35,18 @@
               <div class="info-label">가맹점주 이름</div>
               <div class="info-value">{{ managerInfo.name }}</div>
             </v-col>
-            <v-col cols="12" md="12" class="mb-3">
+            <!-- <v-col cols="12" md="12" class="mb-3">
               <div class="info-label">비밀번호</div>
               <div class="d-flex align-center gap-2">
                 <div class="info-value">************</div>
                 <v-btn size="small" variant="outlined" color="primary">비밀번호 확인</v-btn>
               </div>
-            </v-col>
-            <v-col cols="12" md="6" class="mb-3">
+            </v-col> -->
+            <v-col cols="12" md="12" class="mb-3">
               <div class="info-label">전화번호</div>
               <div class="info-value">{{ managerInfo.phone }}</div>
             </v-col>
-            <v-col cols="12" md="6" class="mb-3">
+            <v-col cols="12" md="12" class="mb-3">
               <div class="info-label">담당 지역</div>
               <div class="info-value">{{ managerInfo.region }}</div>
             </v-col>
@@ -58,7 +58,8 @@
             <br>
             <v-divider></v-divider>
 
-            <v-col cols="12" class="d-flex justify-end mt-4">
+            <v-col cols="12" class="d-flex justify-center mt-4" style="gap: 10px;">
+              <v-btn color="secondary" @click="goToList">목록으로</v-btn>
               <v-btn color="primary" @click="goToEdit">수정하기</v-btn>
             </v-col>
 
@@ -68,7 +69,7 @@
 
       <!-- 추가 카드 -->
       <v-col cols="12" md="6">
-        <v-card class="pa-6" elevation="2" style="width: 100%; height: 650px;">
+        <v-card class="pa-6" elevation="2" style="width: 100%; height: 680px;">
           <div>
             <v-typography class="title2"  align="center">
               {{ managerInfo.region }} 가맹점 목록
@@ -76,14 +77,26 @@
           </div>
           <v-card-text>
             <!-- 검색창 -->
-            <v-text-field
+            <v-row align="center" no-gutters>
+            <!-- 검색 필드 -->
+            <v-col cols="12" md="8" class="d-flex mt-5">
+              <v-text-field
                 v-model="search"
-                prepend-inner-icon="mdi-magnify"
-                placeholder="가맹점명으로 검색"
-                clearable
                 density="compact"
                 variant="outlined"
-            />
+                placeholder="가맹점명, 도로명 주소 검색"
+                prepend-inner-icon="mdi-magnify"
+                clearable
+                class="me-2"
+                dense
+                style="flex-grow: 1"
+              />
+            </v-col>
+            <v-col cols="3" class="d-flex justify-left">
+              <v-btn color="primary" class="me-1" @click="handleSearch">검색</v-btn>
+              <v-btn color="grey" @click="handleClearSearch">초기화</v-btn>
+            </v-col>
+          </v-row>
 
             <!-- 목록 -->
             <v-data-table-server
@@ -133,6 +146,10 @@ const route = useRoute();
 const router = useRouter();
 const userId = route.params.userId;
 const managerInfo = ref({});
+
+const goToList = () => {
+  router.push({name : 'manager-accounts-list'}); // 원하는 목록 페이지 경로로 변경
+};
 
 const goToEdit = () => {
   router.push(`/manager-accounts/${userId}/edit`);
@@ -226,28 +243,33 @@ const fetchFranchiseList = async (page, size, search = '') => {
     }
   };
 
-  watch(visible, async (visible) => {
-    if (visible) {
-      await nextTick();
-      fetchFranchiseList(currentPage.value, pageSize.value, search.value);
-    }
-  });
+  // watch(visible, async (visible) => {
+  //   if (visible) {
+  //     await nextTick();
+  //     fetchFranchiseList(currentPage.value, pageSize.value, search.value);
+  //   }
+  // });
   
-  watch(search, () => {
+  watch(currentPage, (newPage) => {
+  fetchFranchiseList(newPage, pageSize.value, search.value);
+});
+  // const onOptionsChange = (options) => {
+  //   currentPage.value = options.page;
+  //   pageSize.value = options.itemsPerPage;
+  //   fetchFranchiseList(options.page, options.itemsPerPage, search.value);
+  // };
+
+  const handleSearch = () => {
     currentPage.value = 1;
     fetchFranchiseList(1, pageSize.value, search.value);
-  });
-  
-  const onPageChange = (page) => {
-    currentPage.value = page;
-    fetchFranchiseList(page, pageSize.value, search.value);
   };
 
-  const onOptionsChange = (options) => {
-    currentPage.value = options.page;
-    pageSize.value = options.itemsPerPage;
-    fetchFranchiseList(options.page, options.itemsPerPage, search.value);
+  const handleClearSearch = () => {
+    search.value = '';  // 검색어 초기화
+    currentPage.value = 1;  // 페이지도 첫 번째 페이지로 초기화
+    fetchFranchiseList(1, pageSize.value);  // 조건 없는 전체 리스트 조회
   };
+
 
 </script>
 
@@ -289,7 +311,9 @@ const fetchFranchiseList = async (page, size, search = '') => {
   font-weight: 500;
   color: black;
 }
-
+.hei {
+  min-height: 900px;
+}
 .list {
   font-size: 16px;
   font-weight: 600;

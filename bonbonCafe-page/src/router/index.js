@@ -1,6 +1,7 @@
 
 // Vue Router 설정 코드 - 페이지 간 이동 처리 라이브러리
 
+import ManagerJoinForm from '@/components/forms/userform/ManagerJoinForm.vue';
 import { useAuthStore } from '@/stores/auth'
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -15,9 +16,17 @@ const FranchiseeAccountListView = () => import('@/views/accounts/FranchiseeAccou
 const ManagerAccount = () => import('@/views/accounts/ManagerAccount.vue')
 const ManagerAccountListView = () => import('@/views/accounts/ManagerAccountListView.vue')
 const FranchiseeAccountEditView = () => import('@/views/accounts/FranchiseeAccountEditView.vue')
-const FranchiseeRegisterView = () => import('@/views/accounts/FranchiseeRegisterView.vue')
+// const FranchiseeRegisterView = () => import('@/views/accounts/FranchiseeRegisterView.vue')
 const ManagerAccountEditView = () => import('@/views/accounts/ManagerAccountEditView.vue')
-const ManagerRegistView = () => import('@/views/accounts/ManagerRegistView.vue')
+// const ManagerRegistView = () => import('@/views/accounts/ManagerRegistView.vue')
+
+const UserAccount = () => import('@/views/accounts/UserAccount.vue')
+const UserAccountModifyView = () => import('@/views/accounts/UserAccountModifyView.vue')
+const PasswordModifyView = () => import('@/views/accounts/PasswordModifyView.vue')
+
+const FranchiseeJoin = () => import('@/views/auth/FranchiseeJoin.vue')
+const ManagerJoin = () => import('@/views/auth/ManagerJoin.vue')
+
 
 const FranchiseListForMenu = () => import('@/views/franchise/FranchiseListForMenu.vue')
 const FranchiseMenuList = () => import('@/views/menu/FranchiseMenuList.vue')
@@ -26,6 +35,7 @@ const MenuRegister = () => import('@/views/menu/MenuRegister.vue')
 const MenuDetail = () => import('@/views/menu/MenuDetail.vue')
 const MenuEdit = () => import('@/views/menu/MenuEdit.vue')
 const FranchiseMenuById = () => import('@/views/menu/FranchiseMenuById.vue')
+const FranchiseListByMenu = () => import('@/views/menu/FranchiseListByMenu.vue')
 
 const MyHeadquarterInfo = () => import('@/views/headquarter/MyHeadquarterInfo.vue')
 const EditHeadquarter = () => import('@/views/headquarter/EditHeadquarter.vue')
@@ -43,12 +53,11 @@ const HeadquarterStockEdit = () => import('@/views/stock/HeadquarterStockEdit.vu
 
 const FranchiseList = () => import('@/views/franchise/FranchiseList.vue')
 const FranchiseDetail = () => import('@/views/franchise/FranchiseDetail.vue')
-const FranchiseRegister = () => import('@/views/franchise/FranchiseRegister.vue')
 const FranchiseEdit = () => import('@/views/franchise/FranchiseEdit.vue')
+const FranchiseRegister = () => import('@/views/franchise/FranchiseRegister.vue')
 const MapView = () => import('@/views/franchise/MapView.vue')
 
 const SalesAnalysis = () => import('@/views/sales/SalesAnalysis.vue')
-const SalesForecast = () => import('@/views/sales/SalesForecast.vue')
 const SalesRanking = () => import('@/views/sales/SalesRanking.vue')
 
 const NoticeList = () => import('@/views/board/NoticeList.vue')
@@ -89,6 +98,21 @@ const router = createRouter({
           component: MainView,
         },
         {
+          path:'user-account',
+          name: 'user-account',
+          component: UserAccount,
+        },
+        {
+          path:'user-account-modify',
+          name: 'user-account-modify',
+          component: UserAccountModifyView,
+        },
+        {
+          path:'password-modify',
+          name: 'password-modify',
+          component: PasswordModifyView,
+        },
+        {
           path:'franchisee-accounts/:userId',
           name: 'franchisee-accounts',
           component: FranchiseeAccount,
@@ -102,11 +126,6 @@ const router = createRouter({
           path:'franchisee-accounts/:userId/edit',
           name:'franchisee-accounts-edit',
           component: FranchiseeAccountEditView
-        },
-        {
-          path:'franchisee-accounts/regist',
-          name: 'franchisee-register',
-          component: FranchiseeRegisterView
         },
         {
           path:'manager-accounts/:userId',
@@ -124,12 +143,6 @@ const router = createRouter({
           component: ManagerAccountEditView
         },
         {
-          path:'manager-accounts/regist',
-          name: 'manager-regist',
-          component: ManagerRegistView
-        },
-        {
-          path: 'headquarters/:headquarterId/menus',
           path: 'franchise-menu-list',
           name: 'franchise-menu-list',
           component: FranchiseMenuList,
@@ -153,6 +166,11 @@ const router = createRouter({
           path: 'headquarters/menus/:menuId',
           name: 'menu-detail',
           component: MenuDetail,
+        },
+        {
+          path: 'headquarters/menus/:menuId/franchises',
+          name: 'franchise-list-by-menu',
+          component: FranchiseListByMenu
         },
         {
           path: 'headquarters/menus/:menuId/edit',
@@ -216,6 +234,16 @@ const router = createRouter({
           component: FranchiseRegister,
         },
         {
+          path:'franchise/:franchiseId',
+          name:'franchise-detail',
+          component: FranchiseDetail,
+        },
+        {
+          path:'franchise-edit/:franchiseId',
+          name:'franchise-edit',
+          component: FranchiseEdit,
+        },
+        {
           path: 'headquarters/franchise-order-list',
           name: 'franchise-order-list',
           component: FranchiseOrderList,
@@ -224,16 +252,6 @@ const router = createRouter({
           path:'franchise-list',
           name: 'franchise-list',
           component: FranchiseList,
-        },
-        {
-          path:'franchise-detail/:franchiseId',
-          name: 'franchise-detail',
-          component: FranchiseDetail,
-        },
-        {
-          path:'franchise-edit/:franchiseId',
-          name: 'franchise-edit',
-          component: FranchiseEdit,
         },
         {
           path: '/headquarters/franchise-menu-list',
@@ -254,11 +272,6 @@ const router = createRouter({
           path:'sales-analysis',
           name: 'sales-analysis',
           component: SalesAnalysis,
-        },
-        {
-          path:'sales-forecast',
-          name: 'sales-forecast',
-          component: SalesForecast,
         },
         {
           path:'sales-ranking',
@@ -316,6 +329,16 @@ const router = createRouter({
           path: 'login',
           name: 'login',
           component: Login
+        },
+        {
+          path: 'franchisee-join',
+          name: 'franchisee-join',
+          component: FranchiseeJoin,
+        },
+        {
+          path: 'manager-join',
+          name: 'manager-join',
+          component: ManagerJoin,
         }
       ]
     },
@@ -343,7 +366,7 @@ router.beforeEach((to, from, next) => {
 
   // 로그인 페이지가 아니고, 로그인 상태가 아니면 로그인 페이지로 리다이렉트한다.
   // 로그인하지 않은 상태에서 로그인 페이지가 아닌 다른 페이지로 가는 경우, 로그인페이지로 리다이렉트 되도록
-  if(to.name !== 'login' && !authStore.isLoggedIn) {
+  if(to.name !== 'login' && to.name !== 'franchisee-join' && to.name !== 'manager-join' && !authStore.isLoggedIn) {
     next({name: 'login'});
   } else {
     next();

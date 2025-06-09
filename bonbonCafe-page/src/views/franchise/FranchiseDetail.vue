@@ -1,21 +1,37 @@
 <template>
   <v-container class="">
-    <v-col>
-      <h2>가맹점 상세 정보</h2>
-    </v-col>
+        <v-row justify="center" class="pa-10 pb-0">
+          <v-col>
+            <v-row class="mb-6">
+              <v-icon color="primary" size="40">mdi-store-plus</v-icon>
+              <div class="text-h5 font-weight-bold mt-2">가맹점 관리 / 가맹점 상세 정보</div>
+            </v-row>
+            <v-divider class="my-4"></v-divider>
+          </v-col>
+          
+        </v-row>
+
     <v-col>
       <!-- FranchiseForm을 읽기 전용 모드로 -->
       <!-- <FranchiseForm :readonly="true" v-if="formData" :form="formData" /> -->
-       <FranchiseForm 
-        :readonly="true" 
-        v-if="formData" 
-        :initialFormData="formData" 
-        :submitVisible="false" 
-        @edit="goToEdit(item)"
-        @delete="handleDelete"
-        @back="router.back()"
-        />
-
+      <v-row>
+        <v-col>
+          <FranchiseForm 
+          :readonly="true" 
+          v-if="formData" 
+          :initialFormData="formData" 
+          :submitVisible="false" 
+          @edit="goToEdit(item)"
+          @delete="handleDelete"
+          @back="router.back()"
+          />
+        </v-col>
+        <v-col>
+          <FranchiseMenuById/>
+        </v-col>
+  
+        
+      </v-row>
     </v-col>
   </v-container>
 </template>
@@ -26,39 +42,16 @@ import apiClient from '@/api'
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter  } from 'vue-router'
 import FranchiseForm from '@/components/franchise/FranchiseForm.vue'
+import FranchiseMenuById from '@/views/menu/FranchiseMenuById.vue'
 
 const route = useRoute()
 const router = useRouter()
 
-const franchiseId = route.params.franchiseId // 👈 정확히 맞춰야 함
+const franchiseId = route.params.franchiseId 
 
 
 const formData = ref(null)
 
-
-
-// onMounted(() => {
-//   const franchiseId = route.params.id
-//   fetchFranciseDetail(franchiseId)
-// })
-// const fetchFranciseDetail = async (franchiseId) => {
-// //    const franchiseId = route.params.id
-// //   console.log('franchiseId:', franchiseId) // 로그 확인
-
-//   if (!franchiseId || franchiseId === 'undefined') {
-//     console.error('유효하지 않은 franchiseId:', franchiseId)
-//     return
-//   }
-//   try {
-//     const response = await apiClient.get(`/franchise/${franchiseId}`)
-
-//     console.log("응답 객체",response.value);
-    
-//     formData.value = response.data
-//   } catch (error) {
-//     console.error('가맹점 정보 조회 실패:', error)
-//   }
-// };
 
 
 const fetchFranchiseDetail = async () => {
@@ -66,6 +59,7 @@ const fetchFranchiseDetail = async () => {
 
   try {
     const response = await apiClient.get(`/franchise/${franchiseId}`)
+    
     formData.value = response.data
   } catch (error) {
     console.error('가맹점 정보 조회 실패:', error)

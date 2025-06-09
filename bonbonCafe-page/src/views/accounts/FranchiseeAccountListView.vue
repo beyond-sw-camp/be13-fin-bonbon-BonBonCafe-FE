@@ -21,65 +21,62 @@
         <v-col cols="12" md="4" class="d-flex mt-5">
           <v-text-field
             v-model="search"
-            class="search-input"
             density="compact"
             variant="outlined"
-            placeholder="Search by name, email..."
+            placeholder="가맹점주명, 가맹점 이름으로 검색"
             prepend-inner-icon="mdi-magnify"
             clearable
+            class="me-2"
             dense
             style="flex-grow: 1"
           />
         </v-col>
+        <v-col cols="3" class="d-flex justify-left">
+          <v-btn color="primary" class="me-1" @click="handleSearch">검색</v-btn>
+          <v-btn color="grey" @click="handleClearSearch">초기화</v-btn>
+        </v-col>
 
-        <v-col cols="12" md="8" class="d-flex justify-end">
+        <!-- <v-col cols="12" md="8" class="d-flex justify-end">
           <v-btn color="primary" @click="goToCreateFranchisee" prepend-icon="mdi-plus">
             가맹점주 신규 등록
           </v-btn>
-        </v-col>
+        </v-col> -->
       </v-row>
 
       <!-- 데이터 테이블 -->
-      <v-data-table-server
+      <v-data-table
         :headers="headers"
         :items="items"
+        class="rounded-b rounded-t text-center"
         :items-length="totalItems"
         :items-per-page="pageSize"
         :page="currentPage"
         hide-default-footer
-        class="elevation-1"
         @update:options="onOptionsChange"
       >
 
-        <template #item.franchiseName="{ item }">
-          {{ item.franchiseName || '없음' }}
+        <template #item="{ item, columns }">
+          <tr @click="goToFranchiseeDetail(item.userId)" style="cursor: pointer">
+            <td v-for="column in columns" :key="column.key" class="text-center">
+    
+            <!-- 상태 칩인 경우만 따로 처리 -->
+            <v-chip
+              v-if="column.key === 'status'"
+              variant="tonal"
+              :color="getStatusColor(item.status)"
+            >
+            {{ getStatusText(item.status) }}
+            </v-chip>
+
+            <!-- 일반 텍스트는 항상 출력 -->
+            <span v-if="column.key !== 'status'">
+             {{ item[column.key] }}
+            </span>
+            </td>
+          </tr>
         </template>
 
-        <template #item.status="{ item }">
-          <!-- 계정 상태에 따라 색상과 스타일을 다르게 적용 -->
-          <v-chip
-            :color="getStatusColor(item.status)"
-            text-color="white"
-            outlined
-            small
-          >
-            {{ item.status }}
-          </v-chip>
-        </template>
-
-        <template #item.name="{ item }">
-          <!-- 각 행을 버튼처럼 만들기 위해 v-btn으로 감싸기 -->
-          <v-btn
-            class="d-flex justify-center align-center w-100"
-            @click="goToFranchiseeDetail(item.userId)"
-            outlined
-            style="text-align: center; cursor: pointer;"
-          >
-            {{ item.name }}
-          </v-btn>
-        </template>
-
-      </v-data-table-server>
+      </v-data-table>
 
       <!-- 현재 페이지 정보 및 페이지네이션 -->
       <v-row class="mt-4" align="center" justify="center">
@@ -126,7 +123,6 @@ const goToCreateFranchisee = () => {
 };
 
 
-
 const search = ref('');
 const items = ref([]);
 const currentPage = ref(1);
@@ -142,16 +138,21 @@ const headers = [
   { title: '계정 상태', align: 'center', key: 'status' }
 ];
 
-const fetchFranchiseeData = async (page, size) => {
+const fetchFranchiseeData = async (page, size, search = '') => {
   const accessToken = localStorage.getItem('accessToken');
   try {
     const response = await apiClient.get(
-      `/bonbon/user/franchisee?page=${page - 1}&size=${size}`,
+      `/bonbon/user/franchisee`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`
-        }
+        },
+      params: {
+        page: page - 1,
+        size,
+        keyword: search
       }
+    }
     );
 
     console.log(response.data.content);
@@ -166,27 +167,41 @@ const fetchFranchiseeData = async (page, size) => {
 
 const onPageChange = (page) => {
   currentPage.value = page;
-  fetchFranchiseeData(page, pageSize.value);
+  fetchFranchiseeData(page, pageSize.value, search.value);
 };
 
 const onPageSizeChange = (size) => {
   pageSize.value = size;
   currentPage.value = 1;
-  fetchFranchiseeData(1, size);
+  fetchFranchiseeData(1, size, search.value);
 };
 
 onMounted(() => {
-  fetchFranchiseeData(currentPage.value, pageSize.value);
+  fetchFranchiseeData(currentPage.value, pageSize.value, search.value);
 });
 
-watch(search, () => {
-  currentPage.value = 1;
-  fetchFranchiseeData(1, pageSize.value);
-});
+// watch(search, async(visible) => {
+//   currentPage.value = 1;
+//   fetchFranchiseeData(1, pageSize.value, search.value);
+// });
 
 watch(currentPage, (newPage) => {
-  fetchFranchiseeData(newPage, pageSize.value);
+  fetchFranchiseeData(newPage, pageSize.value, search.value);
 });
+
+
+const handleSearch = () => {
+  currentPage.value = 1;
+  fetchFranchiseeData(1, pageSize.value, search.value);
+};
+
+const handleClearSearch = () => {
+  search.value = '';  // 검색어 초기화
+  currentPage.value = 1;  // 페이지도 첫 번째 페이지로 초기화
+  fetchFranchiseeData(1, pageSize.value);  // 조건 없는 전체 리스트 조회
+};
+
+
 
 // 계정 상태에 맞는 색상 반환 함수
 const getStatusColor = (status) => {
@@ -205,6 +220,26 @@ const getStatusColor = (status) => {
       return 'blue'; // 기본 색상
   }
 };
+
+const getStatusText = (status) => {
+  switch (status) {
+    case 'ACTIVE':
+      return '활성화'
+    case 'INACTIVE':
+      return '비활성화'
+    case 'PENDING':
+      return '승인 대기'
+    case 'EXPIRED':
+      return '만료'
+    case 'PENDING':
+      return '승인 대기'
+    case 'DELETED':
+      return '삭제'
+    default:
+      return '알 수 없음'
+    }
+}
+
 </script>
 
 <style scoped>
@@ -233,5 +268,14 @@ const getStatusColor = (status) => {
   font-size: 16px;
   font-weight: 600;
   color: gray;
+}
+
+::v-deep(.v-data-table__th) {
+  background-color: #f2f5f8 !important;
+}
+
+::v-deep(.v-data-table tbody tr:hover) {
+  background-color: #f4faff;
+  cursor: pointer;
 }
 </style>
