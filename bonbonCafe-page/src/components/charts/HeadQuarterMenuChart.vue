@@ -1,5 +1,14 @@
 <template>
   <v-card class="pa-6 elevation-2 chart-card ">
+    <v-card-title class="chart-card-title">
+      지난 3개월 메뉴별 판매 비율
+    </v-card-title>
+    <v-card-subtitle class="chart-card-subtitle">
+      본사 집계 기준으로 전국 가맹점에서 판매된 메뉴별 누적 매출을 분석한 결과입니다.  
+      <br/>
+      상위 인기 메뉴들의 상대적 판매 비중을 한눈에 확인할 수 있습니다.
+    </v-card-subtitle>
+
     <v-card-text class="d-flex flex-row justify-space-between align-center">
         <!-- 차트 영역 -->
         <div class="chart-wrapper mr-4" style="flex: 1;">
@@ -114,37 +123,6 @@ onMounted(async () => {
                     legend: { 
                         display: false,
                     },
-                    title: {
-                        display: true,
-                        text: '지난 3개월 메뉴별 판매 비율',
-                        font: {
-                            size: 25,
-                            weight: '700',
-                            family: "'Noto Sans KR', sans-serif"
-                        },
-                        color: '#222',
-                        padding: {
-                            top: 5,
-                            bottom: 20
-                        },
-                        align: 'start'
-                        },
-                    subtitle: {
-                        display: true,
-                        text: [ 
-                            '본사 집계 기준으로 전국 가맹점에서 판매된 메뉴별 누적 매출을 분석한 결과입니다.',
-                            '상위 인기 메뉴들의 상대적 판매 비중을 한눈에 확인할 수 있습니다.'
-                            ],
-                        font: {
-                            size: 14,
-                            style: 'italic'
-                        },
-                        color: 'gray',
-                        padding: {
-                            bottom: 30
-                        },
-                        align: 'start'
-                    }
                 },
             }
         })
@@ -152,16 +130,37 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+
+.chart-card-title {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 25px;
+  font-weight: 700;
+  color: #222222;
+  justify-content: flex-start;
+  padding-top: 5px;   
+  padding-bottom: 20px; 
+}
+
+.chart-card-subtitle {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 13px;
+  font-style: italic;
+  color: rgb(26, 26, 26);
+  text-align: left;
+  margin-bottom: 0px;
+  margin-top: 0px;
+}
+
 .chart-card {
     background-color: #ffff;
     border-radius: 40px;
-    height: 600px;
+    height: 700px;
 }
 /* canvas 영역을 고정 높이로 */
 .chart-wrapper {
     position: relative;
     width: 100%;
-    height: 500px;
+    height: 520px;
 }
 .chart-wrapper canvas {
     width: 100% !important;

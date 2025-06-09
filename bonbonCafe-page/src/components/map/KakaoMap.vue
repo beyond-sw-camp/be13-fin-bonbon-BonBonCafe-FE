@@ -1,11 +1,12 @@
 <template>
-    <div id="map-container">
-        <div v-if="selectedStore" id="info">
-          <FranchiseInfo :selectedStore="selectedStore"@focus-marker="handleFocusMarker"/>
-        </div>
-        <div id="maps" ref="mapContainer" style="width:100%;height: 900px; "></div>
+  <div id="map-container">
+    <div v-if="selectedStore" id="info">
+      <FranchiseInfo :selectedStore="selectedStore" @focus-marker="handleFocusMarker" />
     </div>
+    <div id="maps" ref="mapContainer" style="width: 100%; height: 900px;"></div>
+  </div>
 </template>
+
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import apiClient from '@/api'
@@ -15,8 +16,9 @@ const { VITE_KAKAO_MAP_KEY } = import.meta.env
 
 const mapContainer = ref(null)
 const map = ref(null)
-const markers = ref([])  // 마커와 관련 데이터 담기
+const markers = ref([]) // 마커와 관련 데이터
 const selectedStore = ref(null)
+const currentOverlay = ref(null) // 현재 표시 중인 오버레이
 
 const fetchMarkers = async () => {
   try {
@@ -42,7 +44,6 @@ const loadMap = async (container) => {
       }
       map.value = new kakao.maps.Map(container, options)
 
-      // const imageSrc = 'https://bonbon-file-bucket.s3.ap-northeast-2.amazonaws.com/16d84f46-83a9-46f6-be4a-931027271ff3_gps_15864494.png'
       const imageSrc = 'https://bonbon-file-bucket.s3.ap-northeast-2.amazonaws.com/777fb5c7-ac23-4567-b993-9cd5d899aa38_free-icon-fast-food-4958939.png'
       const imageSize = new kakao.maps.Size(40, 40)
       const imageOption = { offset: new kakao.maps.Point(50, 69) }
@@ -55,6 +56,7 @@ const loadMap = async (container) => {
       })
 
       const storeList = await fetchMarkers()
+
       markers.value = storeList.map(store => {
         const position = new kakao.maps.LatLng(store.latitude, store.longitude)
         const marker = new kakao.maps.Marker({
@@ -64,27 +66,15 @@ const loadMap = async (container) => {
           title: store.name,
         })
 
-        // const infoStyle = `
-        //   border-radius: 8px;
-        //   background-color: white;
-        //   padding: 0;
-        //   margin: 0;
-        //   overflow: hidden;
-        // `
-        // const imageUrl = store.franchiseImage
-        // const infowindow = new kakao.maps.InfoWindow({
-        //   content: `
-        //     <div style="${infoStyle}">
-        //       <span class="title" style="font-weight:bold;">${store.name}</span>
-        //       <div class="imgs" style="margin-top:5px;">
-        //         <img src="${imageUrl}" alt="${store.name}" style="width:100%; height:auto; border-radius:4px;"onerror="this.style.display='none';" />
-        //       </div>
-        //     </div>
-        //   `,
-        //   removable: true,
-        // })
+        kakao.maps.event.addListener(marker, 'click', () => {
+          // 기존 오버레이 닫기
+          if (currentOverlay.value) {
+            currentOverlay.value.setMap(null)
+            currentOverlay.value = null
+          }
 
-        const overlayContent = document.createElement('div')
+          // 오버레이 DOM 생성
+          const overlayContent = document.createElement('div')
           overlayContent.style.cssText = `
             background: white;
             border-radius: 10px;
@@ -112,25 +102,24 @@ const loadMap = async (container) => {
             " class="close-btn">&times;</button>
           `
 
-        const overlay = new kakao.maps.CustomOverlay({
-          content: overlayContent,
-          position: new kakao.maps.LatLng(store.latitude, store.longitude),
-          xAnchor: 0.5,
-          yAnchor: 1.2
-        })
+          const overlay = new kakao.maps.CustomOverlay({
+            content: overlayContent,
+            position: position,
+            xAnchor: 0.6,
+            yAnchor: 4.0,
+          })
 
-        // 닫기 버튼 이벤트
-        overlayContent.querySelector('.close-btn').addEventListener('click', () => {
-          overlay.setMap(null)
-        })
-
-        kakao.maps.event.addListener(marker, 'click', () => {
-          overlay.setMap(map.value, marker)
-          // infowindow.open(map.value, marker)
+          overlay.setMap(map.value)
+          currentOverlay.value = overlay
           selectedStore.value = store
+
+          overlayContent.querySelector('.close-btn').addEventListener('click', () => {
+            overlay.setMap(null)
+            currentOverlay.value = null
+          })
         })
 
-        return { marker, store, overlay }
+        return { marker, store }
       })
 
       clusterer.addMarkers(markers.value.map(m => m.marker))
@@ -163,30 +152,25 @@ watch(selectedStore, (newVal) => {
 </script>
 
 <style scoped>
-#map-container{
+#map-container {
   display: flex;
-  flex-direction: row; 
-  margin: none;  
+  flex-direction: row;
   height: 900px;
 }
 
-#info{
+#info {
   width: 300px;
   padding: 10px;
-  flex-shrink: 0; /* 줄어들지 않도록 고정 */
+  flex-shrink: 0;
   background-color: #f5f5f5;
-  height: 900px;           /* 지도 높이와 동일하게 고정 */
-  overflow-y: auto;        /* 세로 스크롤 허용 */
-  box-sizing: border-box;  /* 패딩 포함한 높이 계산 */
+  height: 900px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
-#maps{
-  flex: 1; /* 나머지 영역 전부 차지 */
+#maps {
+  flex: 1;
   height: 100%;
   border: 1px solid #ccc;
 }
-.element.style{
-  border-radius: 5px;
-}
-
-</style> 
+</style>

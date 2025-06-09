@@ -48,6 +48,7 @@ apiClient.interceptors.response.use(
 
         // 이전 요청에 대한 config 객체
         const originalRequest = error.config;
+        console.log(error);
 
         if (
             originalRequest.url === '/bonbon/user/refresh' // 이미 재시도 한 요청

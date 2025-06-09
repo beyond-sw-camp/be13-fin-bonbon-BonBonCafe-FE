@@ -60,6 +60,7 @@
             <v-divider></v-divider>
 
             <v-col cols="12" class="d-flex justify-end mt-4">
+              <v-btn color="secondary" @click="goToList">목록으로</v-btn>
               <v-btn color="primary" @click="goToEdit">수정하기</v-btn>
             </v-col>
 
@@ -103,6 +104,10 @@ onMounted(() => {
   kakaoMapElement.style.height = `${parentHeight}px`;
   kakaoMapElement.style.width = '100%';
 });
+
+const goToList = () => {
+  router.push({name : 'franchisee-accounts-list'}); // 원하는 목록 페이지 경로로 변경
+};
 
 const goToEdit = () => {
   router.push(`/franchisee-accounts/${userId}/edit`);
