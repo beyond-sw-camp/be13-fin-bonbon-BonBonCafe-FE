@@ -2,10 +2,10 @@
 <template>
   <v-card class="pa-6 elevation-2 chart-card">
     <v-card-title class="chart-card-title">
-      최근 3개월 매출 현황
+      지난 3개월 매출 현황
     </v-card-title>
     <v-card-subtitle class="chart-card-subtitle">
-      최근 90일간 전국 가맹점의 일별 매출 데이터를 한눈에 살펴보고
+      최근 3개월간 전국 가맹점의 일별 매출 데이터를 한눈에 살펴보고
       <br/>
       매출의 흐름과 변화를 빠르게 파악할 수 있도록 제공합니다.
     </v-card-subtitle>
@@ -54,7 +54,7 @@ onMounted(async () => {
     data: {
       datasets: [
        {
-          label: '올해 매출 (원)',
+          label: '올해 매출',
           data: points,
           borderColor: 'rgb(75, 192, 192)',
           fill: false,
@@ -91,10 +91,37 @@ onMounted(async () => {
             tooltipFormat: 'yyyy-MM-dd',
             displayFormats: { week: 'MM-dd' }
           },
+          title: {
+            display: true,
+            text: '날짜',
+            font: {size: 14, weight: '600'},
+            color: '#444',
+          },
           ticks: { autoSkip: false, stepSize: 1 },
           grid: { display: false }
         },
-        y: { beginAtZero: true }
+        y: { 
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: '만(원)',
+            font: {size: 14, weight: '600'},
+            color: '#444',
+          },
+          ticks: {
+              callback: value => {
+                if (value === 0) {
+                  return '0';
+                }
+                return (value / 10_000).toFixed(0);
+              },
+                
+              color: '#444',
+              font: {
+                size: 13
+              }
+            },
+        }
       },
       plugins: { legend: { display: true, position: 'bottom' } }
     }

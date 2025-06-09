@@ -38,23 +38,22 @@
 
         <!-- 초기화 버튼 -->
         <v-col cols="auto" class="mr-2">
-            <v-btn variant="tonal" color="grey" @click="resetFilters">
-            <v-icon start>mdi-close</v-icon>
-            초기화
+            <v-btn  color="primary" @click="resetFilters" class="search-btn" >
+            <v-icon center>mdi-cached</v-icon>
             </v-btn>
         </v-col>
 
          <!-- ADD 버튼 (오른쪽 끝) -->
         <v-col class="ml-auto" cols="auto">
-        <v-btn variant="tonal" color="grey" @click="goToRegister">
+        <v-btn  color="primary" @click="goToRegister" class="search-btn">
             <v-icon start>mdi-plus</v-icon>
-            ADD
+            등록
         </v-btn>
         </v-col>
     </v-row>
 
 
-        <!-- ↓ 이하 기존 테이블/페이지네이션 등 그대로 유지 -->
+        <!-- 이하 기존 테이블/페이지네이션 등 그대로 유지 -->
 
         <div>
             <!-- <Table :header="header" :item="item"/> -->
@@ -322,5 +321,8 @@
         font-weight: bold;
         border-radius: 8px;
     }
-
+.search-btn {
+  height: 48px;
+  font-weight: bold;
+}
 </style>

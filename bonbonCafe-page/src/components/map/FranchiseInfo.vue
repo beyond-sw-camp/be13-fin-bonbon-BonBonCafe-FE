@@ -35,12 +35,7 @@
 
 
         <h4 class="pa-2 mt-2">매출</h4>
-            <sales-forecast-form v-if="selectedStore.franchiseId" :store-id="selectedStore.franchiseId" />
-            <v-card v-else>
-                <v-card-title>
-                    데이터 없음
-                </v-card-title>
-            </v-card>
+            <sales-forecast-form  :store-id="selectedStore.franchiseId" />
 
         <h4 class="pa-2 mt-2">메뉴 순위</h4>
             <MenuRanking :franchiseId="selectedStore.franchiseId || null" />
@@ -75,6 +70,7 @@ const fetchFranciseInfo = async (store) => {
     console.log(store);
     
     const response = await apiClient.get(`/franchise/summary/${store.franchiseId}`);
+
     return data.value = response.data;
     
   } catch (error) {

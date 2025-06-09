@@ -54,11 +54,15 @@ const menuGroups = computed(() => [
   {
     title: '가맹점 관리',
     icon: 'mdi-coffee-outline',
-    items: [
-      { title: '가맹점 조회' },
-      { title: '가맹점 등록' },
-      { title: 'kakao map' },
-    ],
+    items:
+     userRole.value === 'ROLE_HEADQUARTER' || userRole.value === 'ROLE_MANAGER'
+      ?[
+        { title: '가맹점 조회' },
+        { title: 'kakao map' },
+      ]
+      :[
+         { title: 'kakao map' },
+      ]
   },
   {
     title: '본사',

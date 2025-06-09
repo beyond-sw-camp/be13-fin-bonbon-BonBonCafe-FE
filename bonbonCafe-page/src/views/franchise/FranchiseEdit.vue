@@ -1,6 +1,15 @@
 <template>
   <v-container class="containerF">
-    <h2>가맹점 수정</h2>
+    <v-row justify="center" class="pa-10 pb-0">
+          <v-col>
+            <v-row class="mb-6">
+              <v-icon color="primary" size="40">mdi-store-plus</v-icon>
+              <div class="text-h5 font-weight-bold mt-2">가맹점 관리 / 가맹점 정보 수정</div>
+            </v-row>
+            <v-divider class="my-4"></v-divider>
+          </v-col>
+          
+        </v-row>
     <FranchiseForm
       :initialFormData="formData"
       :readonly="false"

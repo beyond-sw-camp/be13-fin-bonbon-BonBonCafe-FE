@@ -33,7 +33,7 @@
                             rounded
                         />
                         {{ item.menuName }}</td>
-                    <td class="text-center">{{ item.totalAmount.toLocaleString() }}</td>
+                    <td class="text-center">{{ amountsMan[idx] }}</td>
                     <td class="text-center">{{ percentages[idx] }}%</td>
                 </tr>
             </tbody>
@@ -74,6 +74,15 @@ const chartColors = [
 const totalSales = computed(() =>
     ranking.value.reduce((sum, r) => sum + r.totalAmount, 0)
 )   
+
+const amountsMan = computed(() =>
+  ranking.value.map(r => {
+    const man = Math.floor(r.totalAmount / 10_000)
+    return man > 0
+      ? `${man.toLocaleString()}만`
+      : '0'
+  })
+)
 
 // 각 항목의 비율
 const percentages = computed(() =>

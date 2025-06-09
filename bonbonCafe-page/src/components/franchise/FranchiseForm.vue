@@ -232,6 +232,38 @@
           </v-col>
         </v-row>
 
+        <v-divider class="my-4" />
+
+        <v-row dense class="mb-4" align="center">
+          <v-col cols="3">
+            <label><span class="required-star">*</span>메모</label>
+          </v-col>
+          <v-col cols="6">
+          <template v-if="!props.readonly">
+              <v-text-field
+              style="height: 200px;"
+              v-model="form.memo"
+              type="text"
+              :readonly="props.readonly"
+              density="compact"
+              variant="outlined"
+              hide-details
+              />
+            </template>
+            <template v-else>
+              <v-text-field
+              v-if="props.readonly"
+              style="height: 200px;"
+              v-model="form.memo"
+              readonly
+              variant="outlined"
+              density="compact"
+              />
+            </template>
+          </v-col>
+
+        </v-row>
+
 
         <!-- 버튼 영역 -->
          <v-row justify="center" v-if="props.submitVisible">
@@ -299,6 +331,7 @@ const form = reactive({
   openTime: '',
   closeTime: '',
   openHours: '',
+  memo: '',
   franchiseImage: '',
   storeSize: 0,
   seatingCapacity: 0,
@@ -337,6 +370,7 @@ function SubmitEvent() {
            storeSize: form.storeSize,
            franchiseImage: form.franchiseImage,
            seatingCapacity: form.seatingCapacity,
+           memo: form.memo,
            parkingAvailability: form.parkingAvailability,
            openHours: `${form.openTime}~${form.closeTime}`,
            status: form.status

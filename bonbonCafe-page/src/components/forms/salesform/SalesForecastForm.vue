@@ -32,16 +32,6 @@ const props = defineProps({
   },
 })
 
-// // 페이지 진입 시 바로 매출 조회 요청
-// onMounted(async () => {
-//     await salesStore.setFilters({
-//         region: null,
-//         store: props.storeId,                                      // 테스트용 가맹점 ID
-//         startDate: start.format('YYYY-MM-DD'),
-//         endDate: end.format('YYYY-MM-DD')
-//     })
-//     initChart()
-// })
 
 watch(() => props.storeId, async (newStoreId) => {
     
