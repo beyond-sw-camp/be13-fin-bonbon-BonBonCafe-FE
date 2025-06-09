@@ -75,6 +75,7 @@ const fetchFranciseInfo = async (store) => {
     console.log(store);
     
     const response = await apiClient.get(`/franchise/summary/${store.franchiseId}`);
+
     return data.value = response.data;
     
   } catch (error) {

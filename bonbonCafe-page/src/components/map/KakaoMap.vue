@@ -23,6 +23,9 @@ const currentOverlay = ref(null) // 현재 표시 중인 오버레이
 const fetchMarkers = async () => {
   try {
     const response = await apiClient.get('/franchise/locations')
+    console.log("가맹점 위치 정보 ", response);
+
+    
     return response.data || []
   } catch (error) {
     console.error('마커 데이터 불러오기 실패:', error)
@@ -82,31 +85,40 @@ const loadMap = async (container) => {
             width: 220px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
             position: relative;
+            transform: translateY(-100%);
           `
 
           overlayContent.innerHTML = `
-            <div style="font-weight: bold; font-size: 16px; margin-bottom: 5px;">${store.name}</div>
-            <img src="${store.franchiseImage}" 
-                alt="${store.name}" 
-                onerror="this.src='https://bonbon-file-bucket.s3.ap-northeast-2.amazonaws.com/profile-default.jpg'"
-                style="width: 100%; height: auto; border-radius: 5px; object-fit: cover;" />
-            <button style="
-              position: absolute;
-              top: 5px;
-              right: 5px;
-              background: transparent;
-              border: none;
-              font-size: 18px;
-              cursor: pointer;
-              color: #999;
-            " class="close-btn">&times;</button>
-          `
+              <div style="font-weight: bold; font-size: 18px; margin-bottom: 10px; color: #333;">${store.name}</div>
+
+              <img src="${store.franchiseImage}" 
+                  alt="${store.name}" 
+                  onerror="this.src='https://bonbon-file-bucket.s3.ap-northeast-2.amazonaws.com/profile-default.jpg'"
+                  style="width: 100%; height: auto; border-radius: 8px; object-fit: cover; box-shadow: 0 1px 4px rgba(0,0,0,0.2);" />
+
+              <div style="margin-top: 12px; font-weight: 600; font-size: 14px; color: #444;">현장 점검 메모</div>
+              <div style="margin-top: 6px; font-size: 13px; line-height: 1.4; color: #555; background-color: #f9f9f9; padding: 8px; border-radius: 6px;">
+                ${store.memo && store.memo.trim() ? store.memo : '특이사항 없음'}
+              </div>
+
+              <button style="
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                background: transparent;
+                border: none;
+                font-size: 20px;
+                cursor: pointer;
+                color: #bbb;
+                transition: color 0.2s;
+              " class="close-btn" onmouseover="this.style.color='#666'" onmouseout="this.style.color='#bbb'">&times;</button>
+            `
 
           const overlay = new kakao.maps.CustomOverlay({
             content: overlayContent,
             position: position,
             xAnchor: 0.6,
-            yAnchor: 4.0,
+            yAnchor: 0.5,
           })
 
           overlay.setMap(map.value)
