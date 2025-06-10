@@ -52,6 +52,11 @@ jobs:
               cd bonbonCafe-page
               npm ci
 
+        # 5.5 .env 파일 추가
+        - name: Create .env file
+          run: |
+              echo "VITE_KAKAO_MAP_KEY=${{ secrets.VITE_KAKAO_MAP_KEY }}" > bonbonCafe-page/.env
+
         # 6. 단계 | Vite 빌드
         - name: Build 
           run: |
