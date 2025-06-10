@@ -182,8 +182,7 @@
         <v-col cols="12" md="6">
           <v-card class="pa-6" elevation="2" style="width: 100%; height: 530px;">
             <div class="text-subtitle-2 font-weight-bold mb-2">가맹점 위치 확인</div>
-            <!-- <KakaoMap class="kakao-map" /> -->
-            <div id="map" ref="mapContainer" style="width: 100%; height: 95%;"></div>
+            <KakaoMap class="kakao-map" />
           </v-card>
         </v-col>
       </v-row>
@@ -193,13 +192,10 @@
   </template>
   
   <script setup>
-  // import KakaoMap from '@/components/map/KakaoMap.vue';
+  import KakaoMap from '@/components/map/KakaoMap.vue';
   import { ref, onMounted, watch, nextTick } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import apiClient from '@/api';
-
-  const { VITE_KAKAO_MAP_KEY } = import.meta.env;
-
   
   const route = useRoute();
   const router = useRouter();
@@ -223,18 +219,6 @@
     { text: 'DELETED', value: 'DELETED', color: 'grey' }
   ];
 
-  const fetchMarkers = async (keyword) => {
-  try {
-    const response = await apiClient.get('/franchise/locations', {
-      params: { keyword },
-    });
-    return response.data || [];
-  } catch (error) {
-    console.error('마커 데이터 불러오기 실패:', error);
-    return [];
-  }
-};
-
   const franchiseList = ref([]); 
 
   // watch(editedInfo, () => {
@@ -255,64 +239,11 @@
       franchiseeInfo.value = response.data;
       editedInfo.value = { ...response.data };
   
-      // const mapEl = document.querySelector('.kakao-map');
-      // if (mapEl && mapEl.parentElement) {
-      //   mapEl.style.height = `${mapEl.parentElement.clientHeight}px`;
-      //   mapEl.style.width = '100%';
-      // }
-
-       const franchiseName = franchiseeInfo.value.franchiseName;
-
-    const locations = await fetchMarkers(franchiseName);
-
-    if (locations.length > 0) {
-      // Kakao 지도 SDK 스크립트 로드 (이미 로드되어 있으면 생략)
-      await new Promise((resolve, reject) => {
-        if (window.kakao && window.kakao.maps) {
-          resolve();
-          return;
-        }
-        const script = document.createElement('script');
-        script.onload = resolve;
-        script.onerror = reject;
-        script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${VITE_KAKAO_MAP_KEY}&autoload=false&libraries=clusterer`;
-        document.head.appendChild(script);
-      });
-
-      // Kakao Maps API 초기화
-      window.kakao.maps.load(() => {
-        const { latitude, longitude } = locations[0];
-        const mapContainer = document.getElementById('map');
-
-        const mapOption = {
-          center: new window.kakao.maps.LatLng(latitude, longitude),
-          level: 3,
-        };
-
-        const map = new window.kakao.maps.Map(mapContainer, mapOption);
-
-        const markerPosition = new window.kakao.maps.LatLng(latitude, longitude);
-        const imageSrc  =  'https://bonbon-file-bucket.s3.ap-northeast-2.amazonaws.com/777fb5c7-ac23-4567-b993-9cd5d899aa38_free-icon-fast-food-4958939.png'
-        const imageSize = new window.kakao.maps.Size(40, 40); // 마커 이미지 크기 (가로, 세로)
-        const markerImage = new window.kakao.maps.MarkerImage(imageSrc, imageSize);
-        const marker = new window.kakao.maps.Marker({ 
-          position: markerPosition,
-          image: markerImage 
-        });
-        marker.setMap(map);
-        
-
-        const infowindow = new window.kakao.maps.InfoWindow({
-          content: `<div style="padding:5px;">${franchiseName}</div>`,
-          position: markerPosition,
-          removable: false,
-        });
-
-        infowindow.open(map, marker);
-      });
-        } else {
-      console.warn('위치 정보 없음');
-    }
+      const mapEl = document.querySelector('.kakao-map');
+      if (mapEl && mapEl.parentElement) {
+        mapEl.style.height = `${mapEl.parentElement.clientHeight}px`;
+        mapEl.style.width = '100%';
+      }
 
     } catch (error) {
       console.error('정보 불러오기 실패:', error);
