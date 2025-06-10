@@ -1,5 +1,5 @@
 <template>
-    <v-container fluid class="pa-4">
+    <v-container fluid class="pa-4 managerForm">
   
   
       <v-card class="pa-6 rounded-lg shadow-lg">
@@ -270,6 +270,12 @@
   ::v-deep(.v-data-table tbody tr:hover) {
     background-color: #f4faff;
     cursor: pointer;
+  }
+  .managerForm{
+    margin: 40px auto;
+    padding: 40px;
+    max-width: 1300px;
+    min-height: 850px;
   }
   </style>
   

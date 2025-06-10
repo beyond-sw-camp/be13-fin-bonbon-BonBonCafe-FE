@@ -6,13 +6,13 @@
         <v-card elevation="2" class="pa-6">
           <h3 class="text-2xl font-bold mb-4">{{ menu.name }}</h3>
 
-          <p><strong>가격:</strong> {{ menu.price }}원</p>
-          <p><strong>설명:</strong> {{ menu.description }}</p>
-          <p><strong>상태:</strong> {{ menu.status }}</p>
+          <p><strong>가격 :</strong> {{ menu.price }}원</p>
+          <p><strong>설명 :</strong> {{ menu.description }}</p>
+          <p><strong>상태 :</strong> {{ statusLabel }}</p>
 
           <!-- 카테고리 -->
           <div v-if="menu.categories?.length" class="mt-4">
-            <p><strong>카테고리:</strong></p>
+            <p><strong>카테고리 :</strong></p>
             <div class="d-flex flex-wrap" style="gap: 6px;">
               <v-chip v-for="cat in menu.categories" :key="cat.id" color="indigo" text-color="white" label small>
                 {{ cat.categoryName }}
@@ -22,10 +22,11 @@
 
           <!-- 재료 -->
           <div v-if="menu.menuDetails?.length" class="mt-6">
-            <p><strong>재료:</strong></p>
+            <p><strong>재료 :</strong></p>
             <ul class="ingredient-list">
               <li v-for="detail in menu.menuDetails" :key="detail.ingredientName">
-                {{ detail.ingredientName }} - {{ detail.quantity }}g
+                {{ detail.ingredientName }} - {{ detail.quantity }}{{ detail.unit }}
+
               </li>
             </ul>
           </div>
@@ -101,7 +102,13 @@ import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import apiClient from '@/api'
+import { computed } from 'vue'
 
+const statusLabel = computed(() => {
+  if (menu.value.status === 'ACTIVE') return '활성화'
+  if (menu.value.status === 'INACTIVE') return '비활성화'
+  return menu.value.status || '-'
+})
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()

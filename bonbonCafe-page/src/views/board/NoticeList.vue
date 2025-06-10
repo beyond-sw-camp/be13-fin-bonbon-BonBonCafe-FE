@@ -7,7 +7,7 @@
           <v-row class="mb-4" align="center" justify="space-between">
             <v-col>
               <v-typography class="list">게시판 /</v-typography>
-              <v-typography class="title">📌 공지사항 목록</v-typography>
+              <v-typography class="title">📌 공지사항</v-typography>
             </v-col>
             <v-col class="text-right" v-if="userRole === 'ROLE_HEADQUARTER'">
               <v-btn color="primary" @click="goToRegister">
@@ -100,7 +100,7 @@ const fetchNotices = async () => {
     totalPages.value = data.totalPages
     totalElements.value = data.totalElements
   } catch (e) {
-    console.error('❌ 공지사항 목록 조회 실패', e)
+    console.error('❌ 공지사항 조회 실패', e)
   }
 }
 

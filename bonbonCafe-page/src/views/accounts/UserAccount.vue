@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container class="tt">
         <UserInfoDetailForm />
     </v-container>
 </template>
@@ -9,6 +9,11 @@ import UserInfoDetailForm from '@/components/forms/userform/UserInfoDetailForm.v
 
 </script>
 
-<style lang="scss" scoped>
-
+<style scoped>
+.tt{
+    margin: 40px auto;
+    padding: 30px;
+    max-width: 1300px;
+    min-height: 700px;
+}
 </style>

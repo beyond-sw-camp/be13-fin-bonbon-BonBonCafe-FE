@@ -4,26 +4,12 @@
 
     <v-card class="pa-6 elevation-2 edit-card">
       <v-form @submit.prevent="submitUpdate" ref="formRef">
-        <v-text-field
-          v-model="form.title"
-          label="제목"
-          required
-          class="mb-4"
-        />
-        <v-textarea
-          v-model="form.content"
-          label="내용"
-          rows="6"
-          required
-          class="mb-4"
-        />
-        <v-select
-          v-model="form.postType"
-          label="유형"
-          :items="['NOTICE', 'EVENT']"
-          required
-          class="mb-6"
-        />
+        <v-text-field v-model="form.title" label="제목" required class="mb-4" />
+        <v-textarea v-model="form.content" label="내용" rows="6" required class="mb-4" />
+        <v-select v-model="form.postType" label="유형" :items="[
+          { text: '공지', value: 'NOTICE' },
+          { text: '이벤트', value: 'EVENT' }
+        ]" item-title="text" item-value="value" required class="mb-6" />
 
         <div class="d-flex justify-end" style="gap: 12px;">
           <v-btn color="#D8DBBD" variant="flat" type="submit">수정 완료</v-btn>

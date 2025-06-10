@@ -107,7 +107,7 @@ const menuGroups = computed(() => [
     title: '공지사항',
     icon: 'mdi-clipboard-check-outline',
     items: [
-      { title: '공지사항 목록' },
+      { title: '공지사항' },
       { title: '이벤트' },
     ],
   },
@@ -143,7 +143,7 @@ const routeMap = {
   'kakao map': '/kakao-map',
   '매출 분석': '/sales-analysis',
   '매출 순위': '/sales-ranking',
-  '공지사항 목록': '/notice-list',
+  '공지사항': '/notice-list',
   '이벤트': '/event-list',
 }
 

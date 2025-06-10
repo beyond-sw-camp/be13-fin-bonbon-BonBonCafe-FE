@@ -7,9 +7,7 @@
       <v-main class="d-flex align-center justify-center main-bg" height="100%">
       <!-- <v-main class="d-flex flex-column main-bg"  style="width: 100%; height: 130vh;"> -->
 
-        <v-container
-          class="pa-0"
-          >
+        <v-container fluid class="pa-0">
           <RouterView/>
         </v-container>
         
@@ -29,8 +27,6 @@ import Sidebar from '@/components/common/Sidebar.vue';
 <style scoped>
 .main-bg {
   background-color: #f5f5f5;
-  /* min-height: 100vh; */
-  /* padding-top: 70px; */
   
 }
 </style>
