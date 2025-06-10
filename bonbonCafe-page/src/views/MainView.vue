@@ -1,8 +1,7 @@
 <template>
-    <div class = "shrink-wrapper">
         
-    <v-container>
-        <v-row class="mainC ma-4">
+    <v-container fluid class="pa-12">
+        <v-row class="mainC ">
             <!-- 지난 가맹점 순위 -->
             <v-col cols="5 ">
                 <HeadQuarterRanking/>
@@ -13,7 +12,7 @@
                 <HeadQuarterMenuChart/>
             </v-col>
         </v-row>
-        <v-row class="mainC ma-4">
+        <v-row class="mainC">
             <!-- 지난 매출 추이 -->
             <v-col cols="6">
                 <HeadQuarterSalesChart/>
@@ -26,7 +25,6 @@
         </v-row>
 
     </v-container>
-    </div>
 </template>
 
 <script setup>
@@ -41,10 +39,6 @@ import HeadQuarterForecastChart from '@/components/charts/HeadQuarterForecastCha
 
 <style scoped>
 
-/* .shrink-wrapper {
-  margin-left: -150px;
-  width: calc(100% + 192px);
-} */
 
 .mainC{
     display: flex;
