@@ -1,5 +1,5 @@
 <template>
-    <v-container class="d-flex justify-center align-center fill-height" fluid>
+    <v-container class="d-flex justify-center align-center fill-height tt" fluid>
     <!-- 상단 타이틀 -->
     
 
@@ -220,6 +220,12 @@ const confirmPasswordMatchMsg = ref('');
   font-size: 16px;
   font-weight: 600;
   color: gray;
+}
+.tt{
+    margin: 40px auto;
+    padding: 40px;
+    max-width: 1300px;
+    min-height: 700px;
 }
 
 
