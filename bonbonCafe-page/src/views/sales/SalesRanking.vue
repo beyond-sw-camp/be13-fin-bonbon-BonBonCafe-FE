@@ -221,6 +221,7 @@ async function downloadAsPdf() {
   padding: 40px;
   max-width: 1300px;
   background-color: #fff;
+  margin-bottom: 300px;
 }
 
 /* 테이블 래퍼 스타일 */
