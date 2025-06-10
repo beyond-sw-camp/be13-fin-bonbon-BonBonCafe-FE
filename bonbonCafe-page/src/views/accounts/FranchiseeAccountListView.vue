@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="pa-4">
+  <v-container fluid class="pa-4 franchiseeForm">
 
 
     <v-card class="pa-6 rounded-lg shadow-lg">
@@ -277,5 +277,11 @@ const getStatusText = (status) => {
 ::v-deep(.v-data-table tbody tr:hover) {
   background-color: #f4faff;
   cursor: pointer;
+}
+.franchiseeForm{
+  margin: 40px auto;
+  padding: 40px;
+  max-width: 1300px;
+  min-height: 800px;
 }
 </style>
