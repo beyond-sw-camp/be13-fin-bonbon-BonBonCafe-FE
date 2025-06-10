@@ -11,7 +11,8 @@
           <v-text-field v-model="menu.description" label="설명" />
           <v-row>
             <v-col cols="12" md="6">
-              <v-select v-model="menu.status" :items="['ACTIVE', 'INACTIVE']" label="상태" required />
+              <v-select v-model="menu.status" :items="statusOptions" label="상태" item-title="label" item-value="value"
+                required />
             </v-col>
             <v-col cols="12" md="6">
               <v-select v-model="selectedCategories" :items="allCategories" label="카테고리" item-title="categoryName"
@@ -208,6 +209,11 @@ const submitMenu = async () => {
 const goBack = () => {
   router.back()
 }
+
+const statusOptions = [
+  { label: '활성화', value: 'ACTIVE' },
+  { label: '비활성화', value: 'INACTIVE' }
+]
 </script>
 
 <style scoped>
