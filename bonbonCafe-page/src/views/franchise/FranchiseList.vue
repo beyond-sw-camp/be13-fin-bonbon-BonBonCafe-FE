@@ -1,56 +1,56 @@
 <template>
     <v-card class=" franchise-card ">
         <v-row class="mb-6 align-center" dense>
-        <!-- 지역 선택 -->
-        <v-col cols="auto" class="mr-4">
-            <SelectBox
-            class="select-region"
-            v-model="selectedRegion"
-            :placeholder="'지역 선택'"
-            :items="regionList"
-            />
-        </v-col>
+            <!-- 지역 선택 -->
+            <v-col cols="auto" class="mr-4">
+                <SelectBox
+                class="select-region"
+                v-model="selectedRegion"
+                :placeholder="'지역 선택'"
+                :items="regionList"
+                />
+            </v-col>
 
-        <!-- 구 선택 -->
-        <v-col cols="auto" class="mr-4">
-            <SelectBox
-            class="select-district"
-            v-model="selectedDistrict"
-            :placeholder="'구 선택'"
-            :items="districtList"
-            />
-        </v-col>
+            <!-- 구 선택 -->
+            <v-col cols="auto" class="mr-4">
+                <SelectBox
+                class="select-district"
+                v-model="selectedDistrict"
+                :placeholder="'구 선택'"
+                :items="districtList"
+                />
+            </v-col>
 
-        <!-- 검색 -->
-        <v-col cols="auto" class="mr-4">
-            <v-text-field
-            v-model="searchKeyword"
-            class="search-input"
-            density="comfortable"
-            variant="outlined"
-            placeholder="Search here"
-            append-inner-icon="mdi-magnify"
-            @keydown.enter="onSearch"
-            @click:append-inner="onSearch"
-            style="width: 300px;"  
-            />
-        </v-col>
+            <!-- 검색 -->
+            <v-col cols="auto" class="mr-4">
+                <v-text-field
+                v-model="searchKeyword"
+                class="search-input"
+                density="comfortable"
+                variant="outlined"
+                placeholder="Search here"
+                append-inner-icon="mdi-magnify"
+                @keydown.enter="onSearch"
+                @click:append-inner="onSearch"
+                style="width: 300px;"  
+                />
+            </v-col>
 
-        <!-- 초기화 버튼 -->
-        <v-col cols="auto" class="mr-2">
-            <v-btn  color="primary" @click="resetFilters" class="search-btn" >
-            <v-icon center>mdi-cached</v-icon>
+            <!-- 초기화 버튼 -->
+            <v-col cols="auto" class="mr-2">
+                <v-btn  color="primary" @click="resetFilters" class="search-btn" >
+                <v-icon center>mdi-cached</v-icon>
+                </v-btn>
+            </v-col>
+
+            <!-- ADD 버튼 (오른쪽 끝) -->
+            <v-col class="ml-auto" cols="auto">
+            <v-btn  color="primary" @click="goToRegister" class="search-btn">
+                <v-icon start>mdi-plus</v-icon>
+                등록
             </v-btn>
-        </v-col>
-
-         <!-- ADD 버튼 (오른쪽 끝) -->
-        <v-col class="ml-auto" cols="auto">
-        <v-btn  color="primary" @click="goToRegister" class="search-btn">
-            <v-icon start>mdi-plus</v-icon>
-            등록
-        </v-btn>
-        </v-col>
-    </v-row>
+            </v-col>
+        </v-row>
 
 
         <!-- 이하 기존 테이블/페이지네이션 등 그대로 유지 -->
@@ -276,13 +276,14 @@
 </script>
 
 <style scoped>
-    .v-data-table {
-        min-height: 400px; /* 원하는 높이로 조절 */
-    }
+    /* .v-data-table {
+        min-height: 500px; 
+    } */
     .franchise-card {
         margin: 40px auto;
         padding: 40px;
         max-width: 1300px;
+        min-height: 800px;
         background-color: #fff;
         /* border-radius: 16px; */
     }
